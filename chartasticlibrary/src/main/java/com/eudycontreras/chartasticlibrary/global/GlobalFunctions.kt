@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary
+package com.eudycontreras.chartasticlibrary.global
 
 /**
  * Created by eudycontreras.

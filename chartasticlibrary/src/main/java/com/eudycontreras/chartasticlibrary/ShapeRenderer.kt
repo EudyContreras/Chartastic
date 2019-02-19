@@ -22,11 +22,19 @@ class ShapeRenderer(
         get() = mRendering
         set(value) {mRendering = value}
 
-    fun addShapes(vararg shape: Shape) {
+    fun <T : Shape> addShape(shape: T) {
+        mShapes.add(shape)
+    }
+
+    fun <T : Shape> addShape(shape: Array<T>) {
         mShapes.addAll(shape)
     }
 
-    fun removeShapes(vararg shape: Shape) {
+    fun <T : Shape> removeShape(shape: T) {
+        mShapes.remove(shape)
+    }
+
+    fun <T : Shape> removeShape(vararg shape: T) {
         mShapes.removeAll(shape)
     }
 
@@ -37,9 +45,6 @@ class ShapeRenderer(
     }
 
     class RenderingProperties{
-        var showStroke: Boolean = false
-
-        var drawShadow: Boolean = false
 
         var lightSource: LightSource? = null
 

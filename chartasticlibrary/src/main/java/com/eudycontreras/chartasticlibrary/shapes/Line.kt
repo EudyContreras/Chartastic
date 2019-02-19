@@ -9,7 +9,7 @@ import com.eudycontreras.chartasticlibrary.ShapeRenderer
  * Created by eudycontreras.
  */
 
-class Rectangle: Shape() {
+class Line : Shape() {
 
     override fun update() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

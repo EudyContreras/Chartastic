@@ -3,10 +3,7 @@ package com.eudycontreras.chartasticlibrary
 import android.graphics.Canvas
 import android.graphics.Paint
 import com.eudycontreras.chartasticlibrary.extensions.dp
-import com.eudycontreras.chartasticlibrary.properties.Color
-import com.eudycontreras.chartasticlibrary.properties.Coordinate
-import com.eudycontreras.chartasticlibrary.properties.Dimension
-import com.eudycontreras.chartasticlibrary.properties.Shadow
+import com.eudycontreras.chartasticlibrary.properties.*
 
 /**
  * Created by eudycontreras.
@@ -19,12 +16,21 @@ abstract class Shape(
     var elevation: Float = 0f
     ) {
 
-    var shadow: Shadow? = null
+    var render: Boolean = true
+
+    var showStroke: Boolean = false
+    var drawShadow: Boolean = false
+
+    var strokeWidth: Float = 0f
+    var cornerRadii: Float = 0f
 
     var strokeColor: Color? = null
-    var strokeWidth: Float = 0f
 
-    var cornerRadii: Float = 0f
+    var shadow: Shadow? = null
+
+    fun getBounds() : Bounds {
+        return Bounds(coordinate, dimension)
+    }
 
     abstract fun update()
 

@@ -3,7 +3,7 @@ package com.eudycontreras.chartasticlibrary.properties
 import android.graphics.Canvas
 import android.graphics.Paint
 import com.eudycontreras.chartasticlibrary.Shape
-import com.eudycontreras.chartasticlibrary.mapRange
+import com.eudycontreras.chartasticlibrary.global.mapRange
 
 
 /**
@@ -102,7 +102,13 @@ class Shadow {
 
         val color: Color = Color.fromColor(shadowColorStart)
 
-        val steps = mapRange(shape.elevation, Shape.MinElevation, Shape.MaxElevation, minStepCount.toFloat(), maxStepCount.toFloat()).toInt()
+        val steps = mapRange(
+            shape.elevation,
+            Shape.MinElevation,
+            Shape.MaxElevation,
+            minStepCount.toFloat(),
+            maxStepCount.toFloat()
+        ).toInt()
 
         for( i: Int in 0..shape.elevation.toInt() step steps) {
 
@@ -111,7 +117,8 @@ class Shadow {
                 0f,
                 shape.elevation,
                 shadowColorStart.getAlpha().toFloat(),
-                shadowColorEnd.getAlpha().toFloat()).toInt()
+                shadowColorEnd.getAlpha().toFloat()
+            ).toInt()
 
 
             color.updateAlpha(amount)

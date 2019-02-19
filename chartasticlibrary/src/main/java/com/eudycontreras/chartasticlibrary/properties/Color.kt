@@ -1,7 +1,7 @@
 package com.eudycontreras.chartasticlibrary.properties
 
 import androidx.annotation.ColorInt
-import com.eudycontreras.chartasticlibrary.AndroidColor
+import com.eudycontreras.chartasticlibrary.global.AndroidColor
 
 
 /**
@@ -29,6 +29,13 @@ data class Color(
         this.blue = AndroidColor.blue(color)
     }
 
+    constructor(color: Color): this(){
+        this.alpha = color.alpha
+        this.red = color.red
+        this.green = color.green
+        this.blue = color.blue
+    }
+
     fun updateColor(
         alpha: Int = 0,
         red: Int = 0,
@@ -54,6 +61,57 @@ data class Color(
 
     fun getOpacity(): Float {
         return (alpha.toFloat()/255f)
+    }
+
+    fun subtractAlpha(amount: Float): Color {
+        val color = Color(this)
+        color.alpha -= (Math.round(amount * 255))
+        return color
+    }
+
+    fun addAlpha(amount: Float): Color {
+        val alpha = this.alpha + (Math.round(amount * 255))
+        return this.copy(alpha = alpha)
+    }
+
+    fun subtractAlpha(amount: Int): Color {
+        val alpha = this.alpha - amount
+        return this.copy(alpha = alpha)
+    }
+
+    fun addAlpha(amount: Int): Color {
+        val alpha = this.alpha + amount
+        return this.copy(alpha = alpha)
+    }
+
+    fun addRed(amount: Int): Color {
+        red += amount
+        return this
+    }
+
+    fun addGreen(amount: Int): Color {
+        green += amount
+        return this
+    }
+
+    fun addBlue(amount: Int): Color {
+        blue += amount
+        return this
+    }
+
+    fun subtractRed(amount: Int): Color {
+        red -= amount
+        return this
+    }
+
+    fun subtractGreen(amount: Int): Color {
+        green -= amount
+        return this
+    }
+
+    fun subtractBlue(amount: Int): Color {
+        blue -= amount
+        return this
     }
 
     fun getAlpha() = alpha
@@ -90,7 +148,7 @@ data class Color(
 
     companion object {
 
-        val White  = Color(255, 255, 0, 0)
+        val White  = Color(255, 255, 255, 255)
         val Black  = Color(255, 0, 0, 0)
         val Red  = Color(255, 255, 0, 0)
         val Green  = Color(255, 0, 255, 0)

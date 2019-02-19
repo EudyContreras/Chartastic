@@ -8,8 +8,10 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
+import androidx.core.content.ContextCompat
 import com.eudycontreras.chartasticlibrary.R
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
+import com.eudycontreras.chartasticlibrary.charts.grid.ChartGrid
 import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
@@ -31,7 +33,6 @@ class RectangleView : View {
             typedArray.recycle()
         }
     }
-
 
     private var paint: Paint = Paint()
 
@@ -59,29 +60,39 @@ class RectangleView : View {
 
         val bounds = Bounds(Coordinate(0f,0f), Dimension(usableWidth, usableHeight))
 
-        properties.drawShadow = true
-        properties.showStroke = true
-        properties.lightSource = LightSource(0f,0f,10f, 10f)
+        properties.lightSource = LightSource(usableWidth,0f,10f, 10f)
 
         renderer = ShapeRenderer(paint, bounds, properties)
-        addRectangle(
-            x = (bounds.dimension.width/2) - ((bounds.dimension.width/2)/2),
+        addShape(
+            x = (bounds.dimension.width/2) - ((bounds.dimension.width/2)),
             y = (bounds.dimension.height/2) - ((bounds.dimension.height/2)/2),
-            width =  bounds.dimension.width/2,
+            width =  bounds.dimension.width,
             height = bounds.dimension.height/2
         )
     }
 
-    private fun addRectangle(x: Float, y: Float, width: Float, height: Float) {
+    private fun addShape(x: Float, y: Float, width: Float, height: Float) {
         val rectangle = Rectangle()
+        rectangle.drawShadow = false
+        rectangle.showStroke = false
         rectangle.elevation = 30.dp
-        rectangle.cornerRadii = 20.dp
+        rectangle.cornerRadii = 0.dp
         rectangle.coordinate = Coordinate(x, y)
         rectangle.dimension = Dimension(width, height)
-        rectangle.color.setColor(Color.Red)
+        rectangle.color = Color.toColor(ContextCompat.getColor(context, R.color.colorAccent))
         rectangle.strokeColor = Color.Blue
         rectangle.strokeWidth = 1.dp
-        renderer?.addShapes(rectangle)
+        renderer?.addShape(rectangle)
+
+        val chartGrid = ChartGrid(16.dp, rectangle.getBounds())
+        chartGrid.borderColor = Color.White
+        chartGrid.innerLinesColor = Color.White.subtractAlpha(0.4f)
+        chartGrid.borderThickness = 4.dp
+        chartGrid.showBorder(ChartGrid.Border.TOP, false)
+        chartGrid.showBorder(ChartGrid.Border.RIGHT, false)
+        chartGrid.setHorizontalPointCount(10)
+        chartGrid.build()
+        renderer?.addShape(chartGrid.getShapes())
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -97,7 +108,6 @@ class RectangleView : View {
             renderer?.renderShape(canvas)
         }
     }
-
 
     private fun getCalculatedOffsetY(parent: ViewGroup): Int {
         val property = Property(parent.top)
