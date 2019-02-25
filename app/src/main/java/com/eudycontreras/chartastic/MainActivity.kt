@@ -12,6 +12,8 @@ import com.eudycontreras.chartasticlibrary.charts.data.DataTableMatrix
 import com.eudycontreras.chartasticlibrary.charts.data.MatrixProperties
 import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.Color
+import com.eudycontreras.chartasticlibrary.properties.Gradient
+import com.eudycontreras.chartasticlibrary.properties.Gradient.Companion.BOTTOM_TO_TOP
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.random.Random
 
@@ -30,7 +32,9 @@ class MainActivity : AppCompatActivity() {
             Coder("Mike", (0..10_001).random(), color.adjust(1.2f)),
             Coder("Liza", (0..10_001).random(), color.adjust(1.2f)),
             Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Maria", (0..10_001).random(), color.adjust(1.2f))
+            Coder("Maria", (0..10_001).random(), color.adjust(1.2f)),
+            Coder("Jose", (0..10_001).random(), color.adjust(1.2f)),
+            Coder("Lena", (0..10_001).random(), color.adjust(1.2f))
         )
 
         val data = Pair<MatrixProperties, DataTableMatrix>(
@@ -46,7 +50,9 @@ class MainActivity : AppCompatActivity() {
                 createRecord(coders[3]),
                 createRecord(coders[4]),
                 createRecord(coders[5]),
-                createRecord(coders[6])
+                createRecord(coders[6]),
+                createRecord(coders[7]),
+                createRecord(coders[8])
             )
         )
 
@@ -56,10 +62,16 @@ class MainActivity : AppCompatActivity() {
 
         for (coder in coders) {
             val item = BarChartItem<Coder>(coder.name, coder.loc)
-            item.elevation = 12.dp
+            item.elevation = 4.dp
             item.color = color
             item.roundedTop = true
             item.roundedBottom = false
+            item.cornerRadius = BarChartItem.DEFUALT_ROUND_RADIUS
+            item.gradient = Gradient(Color.fromColor(color), Color.fromColor(color).subtractGreen(95).subtractBlue(95), BOTTOM_TO_TOP)
+            item.backgroundOptions.padding = 0.dp
+            item.backgroundOptions.color = Color.rgba(90, 97, 98, 0.4f)
+            item.backgroundOptions.showBackground = false
+
             chartData.addBarChartItem(item)
         }
 

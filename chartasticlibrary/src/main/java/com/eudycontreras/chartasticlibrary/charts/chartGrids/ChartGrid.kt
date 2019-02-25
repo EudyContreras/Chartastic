@@ -1,8 +1,19 @@
-package com.eudycontreras.chartasticlibrary.charts.grid
+package com.eudycontreras.chartasticlibrary.charts.chartGrids
 
+import android.content.Context
+import android.graphics.Paint
+import android.graphics.Typeface
+import com.eudycontreras.chartasticlibrary.Shape
+import com.eudycontreras.chartasticlibrary.charts.ChartElement
+import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChartData
+import com.eudycontreras.chartasticlibrary.charts.chartText.ChartText
 import com.eudycontreras.chartasticlibrary.extensions.dp
+import com.eudycontreras.chartasticlibrary.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.Color
+import com.eudycontreras.chartasticlibrary.properties.Coordinate
+import com.eudycontreras.chartasticlibrary.properties.Dimension
+import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line
 
 /**
@@ -10,101 +21,284 @@ import com.eudycontreras.chartasticlibrary.shapes.Line
  */
 
 
-class ChartGrid (
-    var padding: Float,
-    private var bounds: Bounds
-){
+class ChartGrid(private var context: Context) {
+
     enum class Border(var value: Int) {
         TOP(0),
         LEFT(1),
         RIGHT(2),
-        BOTTOM(3)
+        BOTTOM(3),
+        ALL(-1)
     }
 
-    private var border: Border = Border.TOP
+    enum class LinePlacement {
+        ALIGNED,
+        BETWEEN
+    }
 
-    private val borders = arrayOf(Line(), Line(), Line(), Line())
+    lateinit var data: BarChartData
+
+    lateinit var bounds: Bounds
+
+    lateinit var drawableZone: Bounds
+
+    private val valuesX = HashMap<Int, ChartGridAxisX>()
+    private val valuesY = HashMap<Int, ChartGridAxisY>()
+
+    private val borders = arrayListOf(Line(), Line(), Line(), Line())
 
     private val horizontalGridLines = ArrayList<Line>()
 
-    var borderThickness: Float = 12.dp
+    private var borderLineThickness = 1.dp
 
-    var borderColor: Color = Color()
+    private var mValueYPointCount = 0
 
-    var innerLinesColor: Color = Color()
+    private var showLines = true
+    private var showYText = true
 
-    fun build() {
-
-        borders[Border.TOP.value].color.setColor(borderColor)
-        borders[Border.TOP.value].elevation = borderThickness
-        borders[Border.TOP.value].drawShadow = true
-        borders[Border.TOP.value].coordinate.x = bounds.coordinate.x + padding
-        borders[Border.TOP.value].coordinate.y = bounds.coordinate.y + padding
-        borders[Border.TOP.value].dimension.height = borderThickness
-        borders[Border.TOP.value].dimension.width = bounds.dimension.width - (padding * 2)
-
-        borders[Border.LEFT.value].color.setColor(borderColor)
-        borders[Border.LEFT.value].elevation = borderThickness
-        borders[Border.LEFT.value].drawShadow = true
-        borders[Border.LEFT.value].coordinate.x = bounds.coordinate.x + padding
-        borders[Border.LEFT.value].coordinate.y = bounds.coordinate.y + padding
-        borders[Border.LEFT.value].dimension.height = bounds.dimension.height - (padding * 2)
-        borders[Border.LEFT.value].dimension.width = borderThickness
-
-        borders[Border.RIGHT.value].color.setColor(borderColor)
-        borders[Border.RIGHT.value].elevation = borderThickness
-        borders[Border.RIGHT.value].drawShadow = true
-        borders[Border.RIGHT.value].coordinate.x = borders[Border.TOP.value].coordinate.x + (borders[Border.TOP.value].dimension.width- (padding / 2))
-        borders[Border.RIGHT.value].coordinate.y = bounds.coordinate.y + padding
-        borders[Border.RIGHT.value].dimension.height = bounds.dimension.height - (padding * 2)
-        borders[Border.RIGHT.value].dimension.width = borderThickness
-
-        borders[Border.BOTTOM.value].color.setColor(borderColor)
-        borders[Border.BOTTOM.value].elevation = borderThickness
-        borders[Border.BOTTOM.value].drawShadow = true
-        borders[Border.BOTTOM.value].coordinate.x = bounds.coordinate.x + padding
-        borders[Border.BOTTOM.value].coordinate.y = borders[Border.LEFT.value].coordinate.y + (borders[Border.LEFT.value].dimension.height - (borderThickness))
-        borders[Border.BOTTOM.value].dimension.height = borderThickness
-        borders[Border.BOTTOM.value].dimension.width = bounds.dimension.width - (padding * 2)
-
-        val thickness = 1.dp
-
-        val top = (borders[Border.TOP.value].coordinate.y) + borderThickness
-        val bottom = (borders[Border.BOTTOM.value].coordinate.y)
-
-        val height: Float = (bottom - top)
-
-        val increase = height / (horizontalGridLines.count())
-
-        var offset = 0f
-
-        for(line in horizontalGridLines){
-            line.color.setColor(innerLinesColor)
-            line.elevation = thickness/2
-            line.drawShadow = true
-            line.coordinate.x = bounds.coordinate.x + (padding)
-            line.coordinate.y = top + offset
-            line.dimension.height = thickness
-            line.dimension.width = bounds.dimension.width - (padding * 2)
-            offset += increase
+    var valueYPointCount: Int
+        get(){
+            return mValueYPointCount
         }
+        set(value) {
+            mValueYPointCount = value
+        }
+
+    private var mPointLineColor = Color()
+
+    var pointLineColor: Color
+        get() = mPointLineColor
+        set(value) {mPointLineColor = value}
+
+    private var mPointLineThickness = 1.dp
+
+    var pointLineThickness: Float
+        get() = mPointLineThickness
+        set(value) {mPointLineThickness = value}
+
+    init {
+        valuesY[ChartGridAxisY.LEFT] = ChartGridAxisY(Paint(), ChartGridAxisY.LEFT, this)
+        valuesY[ChartGridAxisY.RIGHT] = ChartGridAxisY(Paint(), ChartGridAxisY.RIGHT, this)
     }
 
-    fun setHorizontalPointCount(count: Int) {
+    private fun buildBorders(
+        bounds: Bounds,
+        paddingTop: Float
+    ) {
+        val left = valuesY[ChartGridAxisY.LEFT]!!.getValues().second + valuesY[ChartGridAxisY.RIGHT]!!.getValues().second
+        val right = valuesY[ChartGridAxisY.RIGHT]!!.getValues().third + valuesY[ChartGridAxisY.LEFT]!!.getValues().third
+
+        val top = bounds.coordinate.y
+        val bottom = bounds.dimension.height
+
+        borders[Border.TOP.value].coordinate.x = left
+        borders[Border.TOP.value].coordinate.y = top
+        borders[Border.TOP.value].dimension.width = Math.abs(left - right)
+
+        borders[Border.LEFT.value].coordinate.x = left
+        borders[Border.LEFT.value].coordinate.y = top
+        borders[Border.LEFT.value].dimension.height = Math.abs(bottom - top) + top
+
+        borders[Border.BOTTOM.value].coordinate.x = left
+        borders[Border.BOTTOM.value].coordinate.y = (top + bottom) - borders[Border.BOTTOM.value].dimension.height
+        borders[Border.BOTTOM.value].dimension.width = Math.abs(left - right) +  borders[Border.LEFT.value].dimension.width
+
+        borders[Border.RIGHT.value].coordinate.x = left + Math.abs(left - right)
+        borders[Border.RIGHT.value].coordinate.y = top
+        borders[Border.RIGHT.value].dimension.height = Math.abs(bottom - top) + top
+
+        val coordinates = Coordinate().apply {
+            x = borders[Border.LEFT.value].coordinate.x + borders[Border.LEFT.value].dimension.width
+            y = borders[Border.TOP.value].coordinate.y + borders[Border.TOP.value].dimension.height + (paddingTop * 1f)
+        }
+
+        val dimension = Dimension().apply {
+            width = (borders[Border.RIGHT.value].coordinate.x - borders[Border.LEFT.value].coordinate.x) - borders[Border.LEFT.value].dimension.width
+            height = ((borders[Border.BOTTOM.value].coordinate.y - borders[Border.TOP.value].coordinate.y) - borders[Border.TOP.value].dimension.height) - (paddingTop * 1f)
+        }
+
+        drawableZone = Bounds(coordinates, dimension)
+    }
+
+    private fun buildLines(values: Triple<List<ChartText>, Float, Float>, placement: LinePlacement, value: Int) {
         horizontalGridLines.clear()
-        for (i : Int in 0 until count) {
-            horizontalGridLines.add(Line())
+        for (index in 0 until values.first.size) {
+            val text = values.first[index]
+            val line = Line()
+
+            line.color.setColor(mPointLineColor)
+            line.elevation = 0f
+            line.drawShadow = false
+            line.render = showLines
+
+            if (placement == LinePlacement.ALIGNED) {
+                line.coordinate.x = borders[Border.TOP.value].coordinate.x
+                line.coordinate.y = text.y - (text.dimension.height / 2)
+                line.dimension.height = mPointLineThickness
+                line.dimension.width = borders[Border.TOP.value].dimension.width
+            } else {
+
+                if (index < values.first.size -1) {
+                    val shift =  index + 1
+                    val next = values.first[shift].y
+
+                    if (value == ChartGridAxisY.LEFT) {
+                        line.coordinate.x = bounds.coordinate.x
+                        line.dimension.width = bounds.dimension.width
+                    } else {
+                        line.coordinate.x = borders[Border.TOP.value].coordinate.x
+                        line.dimension.width = bounds.dimension.width
+                    }
+                    line.coordinate.y = text.y + ((next - text.y) / 2) - (text.dimension.height / 2)
+                    line.dimension.height = mPointLineThickness
+                } else {
+                    continue
+                }
+            }
+            horizontalGridLines.add(line)
         }
     }
 
-    fun showBorder(border: Border, show: Boolean) {
+    fun setBorderColor(color: Color, border: Border = Border.ALL) {
+        if (border == Border.ALL) {
+            borders.forEach { it.color.setColor(color) }
+            return
+        }
+        borders[border.value].color.setColor(color)
+    }
+
+    fun setBorderElevation(elevation: Float, border: Border = Border.ALL) {
+        if (border == Border.ALL) {
+            borders.forEach {
+                if (it.render) {
+                    it.drawShadow = elevation > 0
+                    it.elevation = elevation
+                }
+            }
+            return
+        }
+
+        if (borders[border.value].render) {
+            borders[border.value].drawShadow = elevation > 0
+            borders[border.value].elevation = elevation
+        }
+    }
+
+    fun setBorderThickness(thickness: Float, border: Border = Border.ALL) {
+        if (border == Border.ALL) {
+            this.borderLineThickness = thickness
+            borders[Border.TOP.value].dimension.height = thickness
+            borders[Border.LEFT.value].dimension.width = thickness
+            borders[Border.BOTTOM.value].dimension.height = thickness
+            borders[Border.RIGHT.value].dimension.width = thickness
+            return
+        }
+        when (border) {
+            Border.RIGHT -> borders[Border.RIGHT.value].dimension.width = thickness
+            Border.TOP -> borders[Border.TOP.value].dimension.height = thickness
+            Border.LEFT -> borders[Border.LEFT.value].dimension.width = thickness
+            Border.BOTTOM -> borders[Border.BOTTOM.value].dimension.height = thickness
+            else -> this.borderLineThickness = thickness
+        }
+    }
+
+    fun setDataSource(data: BarChartData) {
+        this.data = data
+    }
+
+    fun getBorderThickness(border: Border = Border.ALL): Float {
+        if (border == Border.ALL) {
+            return borderLineThickness
+        }
+        return when (border) {
+            Border.RIGHT -> borders[Border.RIGHT.value].dimension.width
+            Border.TOP -> borders[Border.TOP.value].dimension.height
+            Border.LEFT -> borders[Border.LEFT.value].dimension.width
+            Border.BOTTOM -> borders[Border.BOTTOM.value].dimension.height
+            else -> borderLineThickness
+        }
+    }
+
+    fun getBorderColor(border: Border): Color {
+        return borders[border.value].color
+    }
+
+    fun getBorderElevation(border: Border): Float {
+        return borders[border.value].elevation
+    }
+
+    fun showBorder(show: Boolean, border: ChartGrid.Border = Border.ALL) {
+        if (border == Border.ALL) {
+            borders.forEach { it.render = show }
+            return
+        }
         borders[border.value].render = show
     }
 
-    fun getShapes(): Array<Line> {
-        val shapes = ArrayList<Line>()
-        shapes.addAll(horizontalGridLines)
-        shapes.addAll(borders)
-        return shapes.toTypedArray()
+    fun showYValues(
+        bounds: Bounds,
+        paddingTop: Float,
+        paddingLeft: Float,
+        paddingRight: Float,
+        value: Int,
+        append: String = "",
+        prepend: String = ""
+    ) {
+        valuesY[value]?.let {
+            it.paddingLeft = paddingLeft
+            it.paddingRight = paddingRight
+            it.paddingTop = paddingTop
+            it.prepend = prepend
+            it.append = append
+            it.textSize = 9.sp
+            it.typeFace = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            it.textColor = Color.rgba(255, 255, 255, 0.75f)
+            it.build(data, bounds, mValueYPointCount)
+            it.showText(showYText)
+
+            buildBorders(bounds, paddingTop)
+            buildLines(it.getValues(), LinePlacement.ALIGNED, value)
+        }
+    }
+
+    fun showXValues(value: Int, padding: Float, bounds: Bounds) {
+
+    }
+
+    fun getGridValueY(value: Int): ChartGridAxisY {
+        return valuesY[value]!!
+    }
+
+    fun getElements(value: Int): List<ChartElement> {
+        return valuesY[value]!!.getElements()
+    }
+
+    fun getBoundingBox(value: Int): Shape {
+        return valuesY[value]!!.getBoundingBox()
+    }
+
+    fun getBorders(): List<Line> {
+        return borders
+    }
+
+    fun getLines(): List<Line> {
+        return horizontalGridLines
+    }
+
+    fun showGridLines(value: Boolean) {
+        this.showLines = value
+        horizontalGridLines.forEach { it.render = value }
+    }
+
+    fun showYTextValues(value: Boolean, type: Int) {
+        this.showYText = value
+        valuesY[type]?.showText(value)
+    }
+
+    fun getBoundingBox(): Shape {
+        return BoundingBox().apply {
+            dimension = drawableZone.dimension
+            coordinate = drawableZone.coordinate
+        }
     }
 }

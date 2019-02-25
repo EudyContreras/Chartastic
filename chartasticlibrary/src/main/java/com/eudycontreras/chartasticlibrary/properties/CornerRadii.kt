@@ -21,4 +21,14 @@ class CornerRadii {
         bottomLeft = false
         bottomRight = false
     }
+
+    fun copy(cornerRadii: CornerRadii) {
+        this.rx = cornerRadii.rx
+        this.ry = cornerRadii.ry
+
+        this.topLeft = cornerRadii.topLeft
+        this.topRight = cornerRadii.topRight
+        this.bottomLeft = cornerRadii.bottomLeft
+        this.bottomRight = cornerRadii.bottomRight
+    }
 }

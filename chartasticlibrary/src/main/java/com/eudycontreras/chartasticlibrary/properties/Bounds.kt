@@ -1,7 +1,5 @@
 package com.eudycontreras.chartasticlibrary.properties
 
-import com.eudycontreras.chartasticlibrary.Shape
-
 /**
  * Created by eudycontreras.
  */
@@ -10,32 +8,37 @@ data class Bounds(
     var coordinate: Coordinate = Coordinate(),
     var dimension: Dimension = Dimension()
 ) {
-    fun intercepts(shape: Shape) : Boolean {
-        val startX = shape.coordinate.x
-        val startY = shape.coordinate.y
+    val left: Float
+        get() = coordinate.x
 
-        val endX = startX + shape.dimension.width
-        val endY = startY + shape.dimension.height
+    val right: Float
+        get() = coordinate.x + dimension.width
 
-        val width = shape.dimension.width
-        val height = shape.dimension.height
+    val top: Float
+        get() = coordinate.y
 
-        return intercepts(startX, startY, endX, endY, width, height)
+    val bottom: Float
+        get() = coordinate.y + dimension.height
+
+    fun intercepts(other: Bounds): Boolean {
+        val x = this.coordinate.x
+        val y = this.coordinate.y
+        val width = this.dimension.width
+        val height = this.dimension.height
+
+        return x < other.coordinate.x + other.dimension.width && x + width > other.coordinate.x && y < other.coordinate.y + other.dimension.height && y + height > other.coordinate.y
     }
 
-    fun intercepts(
-        sourceStartX: Float,
-        sourceStartY: Float,
-        sourceEndX: Float,
-        sourceEndY: Float,
-        sourceWidth: Float,
-        sourceHeight: Float
-    ): Boolean {
-        TODO("Implement the intercept")
+    fun isInside(x: Float, y: Float): Boolean{
+       return (x > left && x < right && y > top && y < bottom)
     }
 
-    fun isInside(): Boolean{
-        TODO("Implement the isInside")
+    fun isInside(bounds: Bounds): Boolean{
+        return isInside(bounds.top, bounds.left, bounds.bottom, bounds.right)
+    }
+
+    fun isInside(top: Float, left: Float, bottom: Float, right: Float): Boolean{
+        return this.top >= top && this.left >= left && this.bottom <= bottom && this.right <= right
     }
 
     fun subtract(dp: Float): Bounds {

@@ -32,7 +32,7 @@ abstract class Shape(
 
     var shader: Shader? = null
 
-    fun recycle() {
+    fun reset() {
         coordinate.x = 0f
         coordinate.y = 0f
 
