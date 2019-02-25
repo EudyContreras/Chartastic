@@ -2,7 +2,9 @@ package com.eudycontreras.chartasticlibrary.properties
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
+import com.eudycontreras.chartasticlibrary.extensions.drawRoundRect
 import com.eudycontreras.chartasticlibrary.global.mapRange
 
 
@@ -12,8 +14,8 @@ import com.eudycontreras.chartasticlibrary.global.mapRange
 
 class Shadow {
 
-    private var shadowColorStart = Color(45,35,35,35)
-    private var shadowColorEnd= Color(0,35,35,35)
+    private var shadowColorStart = Color(25,35,35,35)
+    private var shadowColorEnd = Color(0,35,35,35)
 
     var minStepCount = 1
     var maxStepCount = 10
@@ -23,11 +25,7 @@ class Shadow {
     var shiftTop: Float = 0f
     var shiftBottom: Float = 0f
 
-    var position: LightSource.Position = LightSource.Position.CENTER
-
-    fun computeShift(shape: Shape, lightSource: LightSource) {
-        TODO()
-    }
+    private var position: LightSource.Position = LightSource.Position.CENTER
 
     fun computeShift(shape: Shape, position: LightSource.Position) {
         val elevation = shape.elevation
@@ -67,7 +65,8 @@ class Shadow {
         }
     }
 
-    fun draw(shape: Shape, paint: Paint, canvas: Canvas) {
+    fun draw(shape: Shape, path: Path, paint: Paint, canvas: Canvas) {
+        path.reset()
 
         val left = shape.coordinate.x
         val right = shape.coordinate.x + shape.dimension.width
@@ -120,17 +119,16 @@ class Shadow {
                 shadowColorEnd.getAlpha().toFloat()
             ).toInt()
 
-
             color.updateAlpha(amount)
             paint.color = color.toColor()
 
             canvas.drawRoundRect(
+                path,
                 shiftedLeft - i,
                 shiftedTop - i ,
                 shiftedRight + i,
                 shiftedBottom + i,
-                shape.cornerRadii,
-                shape.cornerRadii,
+                shape.corners,
                 paint)
         }
     }

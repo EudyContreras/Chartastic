@@ -10,3 +10,5 @@ typealias MatrixProperties = Array<Triple<String, Any, Any>>
 typealias DataTableMatrix = Array<Array<out Any>>
 
 typealias DataTableGrouper = Pair<String?, DataTableGroup.GroupPointer>
+
+typealias DataChangeListener = (DataTableValue) -> Unit

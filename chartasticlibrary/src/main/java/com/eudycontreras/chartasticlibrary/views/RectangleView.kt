@@ -8,20 +8,24 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
-import androidx.core.content.ContextCompat
 import com.eudycontreras.chartasticlibrary.R
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
-import com.eudycontreras.chartasticlibrary.charts.grid.ChartGrid
-import com.eudycontreras.chartasticlibrary.extensions.dp
+import com.eudycontreras.chartasticlibrary.charts.Chart
+import com.eudycontreras.chartasticlibrary.charts.ChartRenderer
 import com.eudycontreras.chartasticlibrary.properties.*
-import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 
 /**
  * Created by eudycontreras.
  */
 class RectangleView : View {
 
-    private var properties: ShapeRenderer.RenderingProperties = ShapeRenderer.RenderingProperties()
+    private var properties = ShapeRenderer.RenderingProperties()
+
+    private var chartRenderer: ChartRenderer = ChartRenderer()
+
+    constructor(context: Context, chart: Chart) : this(context) {
+         chartRenderer.addChart(chart)
+    }
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -34,16 +38,16 @@ class RectangleView : View {
         }
     }
 
+    private var initialized: Boolean = false
+
     private var paint: Paint = Paint()
-
-    private var renderer: ShapeRenderer? = null
-
-    init {
-
-    }
 
     private fun setUpAttributes(typedArray: TypedArray) {
 
+    }
+
+    fun setChart(chart: Chart) {
+        chartRenderer.addChart(chart)
     }
 
     private fun initializeValues() {
@@ -61,51 +65,20 @@ class RectangleView : View {
         val bounds = Bounds(Coordinate(0f,0f), Dimension(usableWidth, usableHeight))
 
         properties.lightSource = LightSource(usableWidth,0f,10f, 10f)
-
-        renderer = ShapeRenderer(paint, bounds, properties)
-        addShape(
-            x = (bounds.dimension.width/2) - ((bounds.dimension.width/2)),
-            y = (bounds.dimension.height/2) - ((bounds.dimension.height/2)/2),
-            width =  bounds.dimension.width,
-            height = bounds.dimension.height/2
-        )
-    }
-
-    private fun addShape(x: Float, y: Float, width: Float, height: Float) {
-        val rectangle = Rectangle()
-        rectangle.drawShadow = false
-        rectangle.showStroke = false
-        rectangle.elevation = 30.dp
-        rectangle.cornerRadii = 0.dp
-        rectangle.coordinate = Coordinate(x, y)
-        rectangle.dimension = Dimension(width, height)
-        rectangle.color = Color.toColor(ContextCompat.getColor(context, R.color.colorAccent))
-        rectangle.strokeColor = Color.Blue
-        rectangle.strokeWidth = 1.dp
-        renderer?.addShape(rectangle)
-
-        val chartGrid = ChartGrid(16.dp, rectangle.getBounds())
-        chartGrid.borderColor = Color.White
-        chartGrid.innerLinesColor = Color.White.subtractAlpha(0.4f)
-        chartGrid.borderThickness = 4.dp
-        chartGrid.showBorder(ChartGrid.Border.TOP, false)
-        chartGrid.showBorder(ChartGrid.Border.RIGHT, false)
-        chartGrid.setHorizontalPointCount(10)
-        chartGrid.build()
-        renderer?.addShape(chartGrid.getShapes())
+        chartRenderer.setShapeRenderer(ShapeRenderer(paint, properties))
+        chartRenderer.buildCharts(bounds)
+        initialized = true
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        if (renderer == null) {
+        if (!initialized) {
             initializeValues()
-            if (renderer != null) {
-                renderer?.renderShape(canvas)
-            }
+            chartRenderer.renderCharts(canvas)
             invalidate()
         } else {
-            renderer?.renderShape(canvas)
+            chartRenderer.renderCharts(canvas)
         }
     }
 

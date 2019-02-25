@@ -6,11 +6,22 @@ package com.eudycontreras.chartasticlibrary.charts.data
 
 class DataTable(var name: String? = "DataTable") {
 
+    private val dataChangeListeners = ArrayList<DataChangeListener>()
+
     private val attributes = HashMap<DataTableAttribute, DataTableValue>()
 
-    private val columns = ArrayList<DataTableAttribute>()
-    private val records = ArrayList<DataTableRow>()
+    private val columns = HashMap<String,DataTableAttribute>()
 
+    private val records = ArrayList<DataTableRow>()     // Make into linkedHashMap
+
+    fun addDataChangeListeners(changeListener: DataChangeListener) {
+        dataChangeListeners.add(changeListener)
+    }
+
+    fun removeDataChangeListener(changeListener: DataChangeListener) {
+        dataChangeListeners.remove(changeListener)
+    }
+    
     fun getAttribute(attribute: DataTableAttribute): DataTableValue? {
         return attributes[attribute]
     }
@@ -34,16 +45,16 @@ class DataTable(var name: String? = "DataTable") {
     }
 
     fun addColumn(vararg column: DataTableAttribute) {
-        columns.addAll(column)
+        columns.putAll(column.map { Pair(it.name, it) })
     }
 
     fun addColumn(column: List<DataTableAttribute>) {
-        columns.addAll(column)
+        columns.putAll(column.map { Pair(it.name, it) })
     }
 
     fun removeColumn(vararg column: DataTableAttribute) {
-        if(!columns.removeAll(column)) {
-            return
+        for (col in column) {
+            columns.remove(col.name)
         }
         for(col in column) {
             for(record in records) {
@@ -53,10 +64,8 @@ class DataTable(var name: String? = "DataTable") {
     }
 
     fun removeColumn(vararg column: String) {
-        for(col in column) {
-            if(!columns.removeAll{it.name.contentEquals(col)}) {
-                return
-            }
+        for (col in column) {
+            columns.remove(col)
         }
         for(col in column) {
             for(record in records) {
@@ -73,6 +82,10 @@ class DataTable(var name: String? = "DataTable") {
         records.addAll(record)
     }
 
+    fun updateRecord(key: Int, value: DataTableValue) {
+
+    }
+
     fun removeRecord(vararg record: DataTableRow): Boolean {
         return records.removeAll(record)
     }
@@ -85,8 +98,17 @@ class DataTable(var name: String? = "DataTable") {
         return getValuesForColumn(column.name)
     }
 
+    fun getTypeForColumn(column: String): Any {
+        if (columns.containsKey(column)) {
+            return columns[column]?.type!!
+        }
+        throw Exception("Column does not exist!")
+    }
+
     fun getValuesForColumn(column: String): List<DataTableValue> {
-        return records.flatMap { it.recordValues.filter { rec -> rec.attribute.contentEquals(column) } }
+        val values = records.flatMap { it.recordValues.filter { rec -> rec.attribute.contentEquals(column) } }
+
+        return values
     }
 
     fun getRecords(): List<DataTableRow> {
@@ -97,11 +119,15 @@ class DataTable(var name: String? = "DataTable") {
         return records.filter(predicate)
     }
 
-    fun getColumns(): List<DataTableAttribute> {
+    fun getColumns(): Map<String, DataTableAttribute> {
         return columns
     }
 
     companion object {
+
+        private const val TYPE_INDEX = 0
+        private const val COL_INDEX = 1
+        private const val ROW_INDEX = 2
 
         fun <T> parseWith(handler: ((T) -> DataTable)? = null): DataTableParser<T> = object : DataTableParser<T> {
             override fun create(from: T) = handler?.invoke(from)
@@ -117,16 +143,15 @@ class DataTable(var name: String? = "DataTable") {
         }
 
         fun parseWith(matrix: DataTableMatrix, name: String? = null): DataTable {
-
             val dataTable = if (name == null) DataTable() else DataTable(name)
 
-            val columns = matrix[0].mapIndexed { index, col ->
-               DataTableAttribute(matrix[1][index].toString(),col)
+            val columns = matrix[COL_INDEX].mapIndexed { index, col ->
+               DataTableAttribute(col.toString(),matrix[TYPE_INDEX][index])
             }
 
             val records = ArrayList<DataTableRow>()
 
-            for(i in 2 until matrix.size) {
+            for(i in ROW_INDEX until matrix.size) {
                 val row = matrix[i]
                 val record = DataTableRow()
                 for((index, rec) in row.withIndex()) {

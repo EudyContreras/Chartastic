@@ -1,4 +1,9 @@
-package com.eudycontreras.chartasticlibrary.charts.data
+package com.eudycontreras.chartasticlibrary.charts.chartModels.barChart
+
+import com.eudycontreras.chartasticlibrary.charts.data.DataTable
+import com.eudycontreras.chartasticlibrary.charts.data.DataTableGroup
+import com.eudycontreras.chartasticlibrary.charts.data.DataTableGrouper
+import com.eudycontreras.chartasticlibrary.charts.data.DataTableValue
 
 /**
  * Created by eudycontreras.

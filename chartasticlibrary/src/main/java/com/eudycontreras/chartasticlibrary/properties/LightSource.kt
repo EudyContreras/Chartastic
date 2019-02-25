@@ -54,8 +54,5 @@ data class LightSource(
                 centerPoint.first < centerX && centerPoint.second < centerY -> Position.BOTTOM_RIGHT
                 else -> Position.CENTER
             }
-
     }
-
-
 }

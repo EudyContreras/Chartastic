@@ -2,7 +2,6 @@ package com.eudycontreras.chartasticlibrary
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.LightSource
 
 /**
@@ -11,7 +10,6 @@ import com.eudycontreras.chartasticlibrary.properties.LightSource
 
 class ShapeRenderer(
     var paint: Paint = Paint(),
-    var bounds: Bounds = Bounds(),
     var properties: RenderingProperties = RenderingProperties.Default
 ) {
     private var mRendering = false
@@ -40,6 +38,18 @@ class ShapeRenderer(
 
     fun renderShape(canvas: Canvas?) {
         for (shape in mShapes) {
+            shape.render(paint, canvas, properties)
+        }
+    }
+
+    fun renderShape(canvas: Canvas?, vararg shapes: Shape) {
+        for (shape in shapes) {
+            shape.render(paint, canvas, properties)
+        }
+    }
+
+    fun renderShape(canvas: Canvas?, shapes: List<Shape>) {
+        for (shape in shapes) {
             shape.render(paint, canvas, properties)
         }
     }

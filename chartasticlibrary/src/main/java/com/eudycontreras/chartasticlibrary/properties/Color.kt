@@ -9,7 +9,7 @@ import com.eudycontreras.chartasticlibrary.global.AndroidColor
  */
 
 data class Color(
-    private var alpha: Int = 0,
+    private var alpha: Int = 255,
     private var red: Int = 0,
     private var green: Int = 0,
     private var blue: Int = 0
@@ -69,6 +69,18 @@ data class Color(
         return color
     }
 
+    fun adjust(amount: Float): Color {
+        val color = Color(this)
+        color.red = (this.red * amount).toInt()
+        color.green = (this.green * amount).toInt()
+        color.blue = (this.blue * amount).toInt()
+
+        color.red = clamp(color.red)
+        color.green = clamp(color.green)
+        color.blue = clamp(color.blue)
+        return color
+    }
+
     fun addAlpha(amount: Float): Color {
         val alpha = this.alpha + (Math.round(amount * 255))
         return this.copy(alpha = alpha)
@@ -85,32 +97,32 @@ data class Color(
     }
 
     fun addRed(amount: Int): Color {
-        red += amount
+        red = clamp(red + amount)
         return this
     }
 
     fun addGreen(amount: Int): Color {
-        green += amount
+        green = clamp(green + amount)
         return this
     }
 
     fun addBlue(amount: Int): Color {
-        blue += amount
+        blue = clamp(blue + amount)
         return this
     }
 
     fun subtractRed(amount: Int): Color {
-        red -= amount
+        red = clamp(red - amount)
         return this
     }
 
     fun subtractGreen(amount: Int): Color {
-        green -= amount
+        green = clamp( green - amount)
         return this
     }
 
     fun subtractBlue(amount: Int): Color {
-        blue -= amount
+        blue = clamp(blue - amount)
         return this
     }
 
@@ -131,6 +143,15 @@ data class Color(
         colorChanged = true
     }
 
+    fun setColor(red: Int, green: Int, blue: Int, alpha: Int) {
+        this.alpha = alpha
+        this.red = red
+        this.green = green
+        this.blue = blue
+
+        colorChanged = true
+    }
+
     fun toColor(): Int {
         return if (mTempColor == -1) {
             mTempColor = AndroidColor.argb(alpha, red, green, blue)
@@ -146,6 +167,13 @@ data class Color(
         }
     }
 
+    private fun clamp(color: Int): Int {
+        return when {
+            color > 255 -> 255
+            color < 0 -> 0
+            else -> color
+        }
+    }
     companion object {
 
         val White  = Color(255, 255, 255, 255)
@@ -212,12 +240,52 @@ data class Color(
             )
         }
 
+        fun rgb(red: Int, green: Int, blue: Int): Color{
+            return Color(
+                alpha = 255,
+                red = red,
+                green = green,
+                blue = blue
+            )
+        }
+
+        fun rgba(red: Int, green: Int, blue: Int, alpha: Int): Color{
+            return Color(
+                alpha = alpha,
+                red = red,
+                green = green,
+                blue = blue
+            )
+        }
+
+        fun rgba(red: Int, green: Int, blue: Int, alpha: Float): Color{
+            return Color(
+                alpha = (alpha * 255).toInt(),
+                red = red,
+                green = green,
+                blue = blue
+            )
+        }
+
         fun toColor(@ColorInt color: Int): Color {
             return Color(color)
         }
 
         fun fromColor(color: Color) : Color {
             return Color(color.alpha, color.red, color.green, color.blue)
+        }
+
+        fun fromHexString(color: String): Color {
+            return Color(AndroidColor.parseColor(color))
+        }
+
+        fun random(): Color {
+            return Color(
+                (190 until 191).random(),
+                (0 until 205).random(),
+                (0 until 205).random(),
+                (0 until 205).random()
+            )
         }
     }
 }

@@ -37,5 +37,21 @@ data class Bounds(
     fun isInside(): Boolean{
         TODO("Implement the isInside")
     }
+
+    fun subtract(dp: Float): Bounds {
+        val newX = coordinate.x + dp
+        val newY = coordinate.y + dp
+        val newWidth = dimension.width - (dp * 2)
+        val newHeight = dimension.height - (dp * 2)
+        return Bounds(Coordinate(newX,newY), Dimension(newWidth,newHeight))
+    }
+
+    fun add(dp: Float): Bounds {
+        val newX = coordinate.x - dp
+        val newY = coordinate.y - dp
+        val newWidth = dimension.width + dp
+        val newHeight = dimension.height + dp
+        return Bounds(Coordinate(newX,newY), Dimension(newWidth,newHeight))
+    }
 }
 
