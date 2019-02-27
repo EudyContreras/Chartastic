@@ -2,6 +2,7 @@ package com.eudycontreras.chartasticlibrary
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.properties.LightSource
 
 /**
@@ -12,19 +13,25 @@ class ShapeRenderer(
     var paint: Paint = Paint(),
     var properties: RenderingProperties = RenderingProperties.Default
 ) {
-    private var mRendering = false
+    private val path: Path = Path()
 
     private val mShapes =  ArrayList<Shape>()
 
-    var rendering: Boolean
-        get() = mRendering
-        set(value) {mRendering = value}
+    private val shapePool = ArrayList<Shape>()
+
+    var renderCapsule: ((Canvas?) -> Unit)? = null
+
+    var rendering: Boolean = false
 
     fun <T : Shape> addShape(shape: T) {
         mShapes.add(shape)
     }
 
     fun <T : Shape> addShape(shape: Array<T>) {
+        mShapes.addAll(shape)
+    }
+
+    fun <T : Shape> addShape(shape: List<T>) {
         mShapes.addAll(shape)
     }
 
@@ -37,24 +44,27 @@ class ShapeRenderer(
     }
 
     fun renderShape(canvas: Canvas?) {
-        for (shape in mShapes) {
-            shape.render(paint, canvas, properties)
-        }
+        mShapes.forEach { it.render(path, paint, canvas, properties) }
+        renderCapsule?.invoke(canvas)
     }
 
     fun renderShape(canvas: Canvas?, vararg shapes: Shape) {
-        for (shape in shapes) {
-            shape.render(paint, canvas, properties)
+        shapes.forEach { it.render(path, paint, canvas, properties) }
+        if (mShapes.isNotEmpty()) {
+            renderShape(canvas)
         }
     }
 
     fun renderShape(canvas: Canvas?, shapes: List<Shape>) {
-        for (shape in shapes) {
-            shape.render(paint, canvas, properties)
+        shapes.forEach { it.render(path, paint, canvas, properties) }
+        if (mShapes.isNotEmpty()) {
+            renderShape(canvas)
         }
     }
 
     class RenderingProperties{
+
+        var useSystemShadow: Boolean = false
 
         var lightSource: LightSource? = null
 

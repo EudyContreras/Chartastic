@@ -5,6 +5,7 @@ package com.eudycontreras.chartasticlibrary.properties
  */
 
 data class Property<T>(private var value: T) {
+
     fun setValue(value: T) {
         this.value = value
     }

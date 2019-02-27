@@ -10,7 +10,26 @@ import com.eudycontreras.chartasticlibrary.ShapeRenderer
  * Created by eudycontreras.
  */
 
-class Line : Shape() {
+class Circle: Shape() {
+
+    var radius: Float = Math.min(dimension.width, dimension.height)
+        set(value) {
+            field = value
+            dimension.width = value
+            dimension.height = value
+        }
+
+    var centerX: Float = 0f
+        set(value) {
+            field = value
+            coordinate.x = value - (radius/2)
+        }
+
+    var centerY: Float = 0f
+        set(value) {
+            field = value
+            coordinate.y = value - (radius/2)
+        }
 
     override fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
@@ -35,7 +54,7 @@ class Line : Shape() {
             paint.shader = shader
         }
 
-        canvas?.drawRoundRect(left, top, right, bottom, corners.rx, corners.ry, paint)
+        canvas?.drawOval(left, top, right, bottom, paint)
 
         if (showStroke) {
 
@@ -44,7 +63,7 @@ class Line : Shape() {
                 paint.strokeWidth = strokeWidth
                 paint.color = it.toColor()
 
-                canvas?.drawRoundRect(left, top, right, bottom, corners.rx, corners.ry, paint)
+                canvas?.drawOval(left, top, right, bottom, paint)
             }
         }
     }

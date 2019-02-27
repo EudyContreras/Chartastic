@@ -3,7 +3,6 @@ package com.eudycontreras.chartasticlibrary
 import android.graphics.*
 import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.*
-import com.eudycontreras.chartasticlibrary.properties.Color
 
 /**
  * Created by eudycontreras.
@@ -12,21 +11,46 @@ import com.eudycontreras.chartasticlibrary.properties.Color
 abstract class Shape(
     var coordinate: Coordinate = Coordinate(),
     var dimension: Dimension = Dimension(),
-    var color: Color = Color(),
+    var color: MutableColor = MutableColor(),
     var elevation: Float = 0f
 ) {
+    var ownerId: Int = -1
+
     var corners: CornerRadii = CornerRadii()
 
     var render: Boolean = true
 
     var showStroke: Boolean = false
+        get() = field && strokeWidth > 0
+
+    var shadowPosition: LightSource.Position? = null
+
+    val left: Float
+        get() = coordinate.x
+
+    val top: Float
+        get() = coordinate.y
+
+    val bottom: Float
+        get() = top + dimension.height
+
+    val right: Float
+        get() = left + dimension.width
+
     var drawShadow: Boolean = false
+        get() = field && elevation > 0
+        set(value) {
+            field = value
+            if (shadow == null) {
+                if (value) {
+                    shadow = Shadow()
+                }
+            }
+        }
 
     var strokeWidth: Float = 0f
 
-    var strokeColor: Color? = null
-
-    var path: Path = Path()
+    var strokeColor: MutableColor? = null
 
     var shadow: Shadow? = null
 
@@ -50,11 +74,8 @@ abstract class Shape(
         strokeWidth = 0f
         strokeColor = null
 
-        path.reset()
-
         shadow = null
         shader = null
-
     }
 
     fun getBounds() : Bounds {
@@ -65,7 +86,7 @@ abstract class Shape(
 
     }
 
-    abstract fun render(paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties)
+    abstract fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties)
 
     companion object {
         val MaxElevation = 50.dp
@@ -73,58 +94,72 @@ abstract class Shape(
 
         fun getShader(
             gradient: Gradient,
-            left: Float,
-            top: Float,
-            right: Float,
-            bottom: Float
+            x: Float,
+            y: Float,
+            width: Float,
+            height: Float
         ): Shader {
+            val zero = 0f
             when (gradient.type) {
+
                 Gradient.TOP_TO_BOTTOM -> return LinearGradient(
-                    left,
-                    top,
-                    right,
-                    bottom,
-                    gradient.colorOne.toColor(),
-                    gradient.colorTwo.toColor(),
-                    Shader.TileMode.CLAMP
+                    zero,
+                    y,
+                    zero,
+                    y + height,
+                    gradient.colors.map { it.toColor() }.toIntArray(),
+                    getPositions(gradient.colors.size),
+                    Shader.TileMode.MIRROR
                 )
                 Gradient.BOTTOM_TO_TOP -> return LinearGradient(
-                    left,
-                    top,
-                    right,
-                    bottom,
-                    gradient.colorOne.toColor(),
-                    gradient.colorTwo.toColor(),
+                    zero,
+                    y + height,
+                    zero,
+                    y,
+                    gradient.colors.map { it.toColor() }.toIntArray(),
+                    getPositions(gradient.colors.size),
                     Shader.TileMode.CLAMP
                 )
                 Gradient.LEFT_TO_RIGHT -> return LinearGradient(
-                    left,
-                    top,
-                    right,
-                    bottom,
-                    gradient.colorOne.toColor(),
-                    gradient.colorTwo.toColor(),
+                    x,
+                    zero,
+                    x + width,
+                    zero,
+                    gradient.colors.map { it.toColor() }.toIntArray(),
+                    getPositions(gradient.colors.size),
                     Shader.TileMode.CLAMP
                 )
                 Gradient.RIGHT_TO_LEFT -> return LinearGradient(
-                    left,
-                    top,
-                    right,
-                    bottom,
-                    gradient.colorOne.toColor(),
-                    gradient.colorTwo.toColor(),
+                    x + width,
+                    zero,
+                    x,
+                    zero,
+                    gradient.colors.map { it.toColor() }.toIntArray(),
+                    getPositions(gradient.colors.size),
                     Shader.TileMode.CLAMP
                 )
                 else -> return LinearGradient(
-                    left,
-                    top,
-                    right,
-                    bottom,
-                    gradient.colorOne.toColor(),
-                    gradient.colorTwo.toColor(),
+                    x,
+                    y,
+                    width,
+                    height,
+                    gradient.colors.map { it.toColor() }.toIntArray(),
+                    getPositions(gradient.colors.size),
                     Shader.TileMode.CLAMP
                 )
             }
+        }
+
+        private fun getPositions(count: Int): FloatArray {
+            val value: Float = 1f / (count - 1)
+            val array = ArrayList<Float>()
+            var increase = value
+            array.add(0f)
+            for (i in 0 until count-1) {
+                array.add(increase)
+                increase += (value )
+            }
+            return array.toFloatArray()
         }
     }
 }

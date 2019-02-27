@@ -2,6 +2,7 @@ package com.eudycontreras.chartasticlibrary.shapes
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.extensions.drawRoundRect
@@ -12,23 +13,20 @@ import com.eudycontreras.chartasticlibrary.extensions.drawRoundRect
 
 class Rectangle: Shape() {
 
-    override fun render(paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
+    override fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
 
-        val left = coordinate.x
-        val top = coordinate.y
-        val bottom = top + dimension.height
-        val right = left + dimension.width
-
-        paint.shader = null
         paint.reset()
 
         if (drawShadow) {
-            renderingProperties.lightSource?.computeShadow(this)
-
-            shadow?.draw(this, path, paint, canvas!!)
+            if (renderingProperties.useSystemShadow) {
+                paint.setShadowLayer(elevation, 0f, -elevation / 2, shadow!!.shadowColorStart.toColor())
+            } else {
+                renderingProperties.lightSource?.computeShadow(this, shadowPosition)
+                shadow?.draw(this, path, paint, canvas!!)
+            }
         }
 
         paint.style = Paint.Style.FILL

@@ -1,8 +1,7 @@
 package com.eudycontreras.chartasticlibrary.charts.chartModels.barChart
 
 import com.eudycontreras.chartasticlibrary.Shape
-import com.eudycontreras.chartasticlibrary.properties.Color
-import com.eudycontreras.chartasticlibrary.properties.Gradient
+import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 
 
@@ -15,7 +14,7 @@ data class BarChartItem<Data>(
     var action: ((Data) -> Unit)? = null
 ) {
     companion object {
-        const val DEFUALT_ROUND_RADIUS = -1f
+        const val DEFAULT_ROUND_RADIUS = -1f
     }
 
     private val cornerRadiiMultiplier = 0.75f
@@ -24,7 +23,7 @@ data class BarChartItem<Data>(
 
     private var shapes: ArrayList<Shape> = ArrayList()
 
-    var color: Color = Color()
+    var color: MutableColor = MutableColor()
         set(value) {
             field = value
             shape.color = value
@@ -34,7 +33,8 @@ data class BarChartItem<Data>(
         set(value) {
             field = value
             field?.let {
-                shape.shader = Shape.getShader(it, x, y , x + thickness, y + length)
+                color = if(it.colors.isNotEmpty()) it.colors[0] else color
+                shape.shader = Shape.getShader(it, x, y, thickness, length)
             }
         }
 
@@ -60,7 +60,7 @@ data class BarChartItem<Data>(
         set(value) {
             field = value
             shape.dimension.width = field
-            if (cornerRadius == DEFUALT_ROUND_RADIUS) {
+            if (cornerRadius == DEFAULT_ROUND_RADIUS) {
                 shape.corners.apply {
                     this.rx = field * cornerRadiiMultiplier
                     this.ry = field * cornerRadiiMultiplier
@@ -68,7 +68,7 @@ data class BarChartItem<Data>(
             }
         }
 
-    var strokeColor: Color?
+    var strokeColor: MutableColor?
         get() = shape.strokeColor
         set(value) {
             shape.strokeColor = value
@@ -101,13 +101,34 @@ data class BarChartItem<Data>(
             shape.corners.bottomRight = value
         }
 
+    var elevationShadowColor: Color? = Shadow.DefaultColor
+        get() = field?:Shadow.DefaultColor
+        set(value) {
+            field = value
+            val last = shape.drawShadow
+            shape.drawShadow = true
+            shape.shadow?.let { shadow ->
+                value?.let {
+                    shadow.shadowColorStart = MutableColor.fromColor(it).updateAlpha(25)
+                    shadow.shadowColorEnd = MutableColor.fromColor(it).updateAlpha(0)
+                }
+            }
+            shape.drawShadow = last
+        }
+
+    var elevationShadowPosition: LightSource.Position = LightSource.Position.TOP_LEFT_RIGHT
+        set(value) {
+            field = value
+            shape.shadowPosition = value
+        }
+
     var cornerRadius: Float = 0f
         set(value) {
             field = value
             if(value >= 0) {
                 shape.corners.rx = value
                 shape.corners.ry = value
-            } else if (value == DEFUALT_ROUND_RADIUS) {
+            } else if (value == DEFAULT_ROUND_RADIUS) {
                 shape.corners.rx = thickness * cornerRadiiMultiplier
                 shape.corners.ry = thickness * cornerRadiiMultiplier
             }
@@ -125,15 +146,18 @@ data class BarChartItem<Data>(
         shape.dimension.width = thickness
         shape.dimension.height = length
         shape.shader = gradient?.let {
-            Shape.getShader(it, x, y , x + thickness, y + length)
+            Shape.getShader(it, x, y, thickness, length)
         }
-
         backgroundOptions.showBackground = backgroundOptions.showBackground
     }
 
     fun getShapes(): ArrayList<Shape> {
         if (shapes.isEmpty()) {
-            shapes = arrayListOf(backgroundOptions.background, shape)
+            if(backgroundOptions.showBackground) {
+                shapes = arrayListOf(backgroundOptions.background, shape)
+                return shapes
+            }
+            shapes = arrayListOf(shape)
         }
         return shapes
     }
@@ -153,7 +177,7 @@ data class BarChartItem<Data>(
                 background.dimension.height += value
             }
 
-        var color: Color = Color()
+        var color: MutableColor = MutableColor()
             set(value) {
                 field = value
                 background.color.setColor(field)

@@ -1,6 +1,6 @@
 package com.eudycontreras.chartastic
 
-import com.eudycontreras.chartasticlibrary.properties.Color
+import com.eudycontreras.chartasticlibrary.properties.MutableColor
 
 /**
  * Created by eudycontreras.
@@ -8,5 +8,5 @@ import com.eudycontreras.chartasticlibrary.properties.Color
 data class Coder(
     val name: String,
     val loc: Int,
-    val color: Color
+    val color: MutableColor
 )

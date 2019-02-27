@@ -6,8 +6,8 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.extensions.sp
-import com.eudycontreras.chartasticlibrary.properties.Color
 import com.eudycontreras.chartasticlibrary.properties.Dimension
+import com.eudycontreras.chartasticlibrary.properties.MutableColor
 
 /**
  * Created by eudycontreras.
@@ -31,7 +31,7 @@ class ChartText(
     var bounds: Rect = Rect()
 
     var textSize: Float = 12.sp
-    var textColor: Color = Color.White
+    var textColor: MutableColor = MutableColor.White
     var typeFace: Typeface = Typeface.DEFAULT
 
     var alignment: Alignment = Alignment.LEFT

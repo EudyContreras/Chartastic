@@ -9,7 +9,7 @@ import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.extensions.roundToNearest
 import com.eudycontreras.chartasticlibrary.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.Bounds
-import com.eudycontreras.chartasticlibrary.properties.Color
+import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 
 /**
@@ -31,7 +31,7 @@ class ChartGridAxisY(
 
     var typeFace: Typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
 
-    var textColor = Color.White
+    var textColor = MutableColor.White
 
     var valuesYBounds: Bounds = Bounds()
 

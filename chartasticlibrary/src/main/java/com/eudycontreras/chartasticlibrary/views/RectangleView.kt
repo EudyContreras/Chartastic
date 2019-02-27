@@ -5,14 +5,18 @@ import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
+import androidx.core.content.ContextCompat
 import com.eudycontreras.chartasticlibrary.R
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.Chart
 import com.eudycontreras.chartasticlibrary.charts.ChartRenderer
+import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.*
+import com.eudycontreras.chartasticlibrary.shapes.Circle
 
 /**
  * Created by eudycontreras.
@@ -64,9 +68,17 @@ class RectangleView : View {
 
         val bounds = Bounds(Coordinate(0f,0f), Dimension(usableWidth, usableHeight))
 
-        properties.lightSource = LightSource(usableWidth,0f,10f, 10f)
-        chartRenderer.setShapeRenderer(ShapeRenderer(paint, properties))
+        setLayerType(LAYER_TYPE_SOFTWARE, paint)
+
+        properties.lightSource = LightSource(usableWidth/2 ,usableHeight,10f, 10f)
+
+        val renderer = ShapeRenderer(paint, properties)
+
+        chartRenderer.setShapeRenderer(renderer)
         chartRenderer.buildCharts(bounds)
+
+        renderer.addShape(marker)
+
         initialized = true
     }
 
@@ -80,6 +92,37 @@ class RectangleView : View {
         } else {
             chartRenderer.renderCharts(canvas)
         }
+    }
+
+    var marker: Circle = Circle().apply {
+        radius = 40.dp
+        render = true
+        color = MutableColor.fromColor(ContextCompat.getColor(context, R.color.colorAccent)).updateAlpha(0.3f)
+        strokeColor = MutableColor.fromColor(ContextCompat.getColor(context, R.color.colorAccent))
+        strokeWidth = 2.dp
+        showStroke = true
+    }
+
+
+    override fun onTouchEvent(motionEvent: MotionEvent?): Boolean {
+        motionEvent?.let { event ->
+            val x = event.x
+            val y = event.y
+
+            marker.centerX = x
+            marker.centerY = y
+
+            when (event.action) {
+                MotionEvent.ACTION_UP -> marker.render = false
+                MotionEvent.ACTION_DOWN -> marker.render = true
+            }
+
+            invalidate()
+
+        }
+
+        return true
+
     }
 
     private fun getCalculatedOffsetY(parent: ViewGroup): Int {

@@ -12,11 +12,23 @@ data class LightSource(
     var y: Float = 0f,
     var radius: Float = 0f,
     var intensity: Float = 0f,
-    var color: Color = Color.Default
+    var color: MutableColor = MutableColor.Default
 ) {
 
     enum class Position {
-        TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, CENTER
+        TOP_LEFT,
+        TOP_RIGHT,
+
+        TOP_LEFT_RIGHT,
+        BOTTOM_LEFT_RIGHT,
+
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT,
+
+        TOP_LEFT_BOTTOM,
+        TOP_RIGHT_BOTTOM,
+
+        CENTER
     }
 
     val centerPoint: Pair<Float,Float>
@@ -25,22 +37,30 @@ data class LightSource(
         }
 
     fun computeShadow(shapes: List<Shape>) {
-        for (shape in shapes) {
-            shape.shadow = Shadow()
-            shape.shadow?.computeShift(shape, computePosition(shape))
-        }
+        shapes.forEach { it.shadow?.computeShift(it, computePosition(it)) }
     }
 
     fun computeShadow(vararg shapes: Shape) {
-        for (shape in shapes) {
-            shape.shadow = Shadow()
-            shape.shadow?.computeShift(shape, computePosition(shape))
-        }
+        shapes.forEach { it.shadow?.computeShift(it, computePosition(it)) }
     }
 
     fun computeShadow(shape: Shape) {
-        shape.shadow = Shadow()
         shape.shadow?.computeShift(shape, computePosition(shape))
+    }
+
+    fun computeShadow(shape: Shape, shadowPosition: Position?) {
+        when (shadowPosition) {
+            Position.TOP_LEFT -> shape.shadow?.computeShift(shape, Position.BOTTOM_RIGHT)
+            Position.TOP_RIGHT -> shape.shadow?.computeShift(shape, Position.BOTTOM_LEFT)
+            Position.TOP_LEFT_RIGHT -> shape.shadow?.computeShift(shape, Position.BOTTOM_LEFT_RIGHT)
+            Position.BOTTOM_LEFT_RIGHT -> shape.shadow?.computeShift(shape, Position.TOP_LEFT_RIGHT)
+            Position.BOTTOM_LEFT -> shape.shadow?.computeShift(shape, Position.TOP_RIGHT)
+            Position.BOTTOM_RIGHT -> shape.shadow?.computeShift(shape, Position.TOP_LEFT)
+            Position.TOP_LEFT_BOTTOM -> shape.shadow?.computeShift(shape, Position.TOP_RIGHT_BOTTOM)
+            Position.TOP_RIGHT_BOTTOM -> shape.shadow?.computeShift(shape, Position.TOP_LEFT_BOTTOM)
+            Position.CENTER -> shape.shadow?.computeShift(shape, Position.CENTER)
+            else -> {shape.shadow?.computeShift(shape, computePosition(shape))}
+        }
     }
 
     private fun computePosition(shape: Shape): Position {
@@ -48,11 +68,21 @@ data class LightSource(
         val centerY = shape.coordinate.y + (shape.dimension.height / 2)
 
         return when {
-                centerPoint.first > centerX && centerPoint.second > centerY -> Position.TOP_LEFT
-                centerPoint.first > centerX && centerPoint.second < centerY -> Position.BOTTOM_LEFT
-                centerPoint.first < centerX && centerPoint.second > centerY -> Position.TOP_RIGHT
-                centerPoint.first < centerX && centerPoint.second < centerY -> Position.BOTTOM_RIGHT
-                else -> Position.CENTER
-            }
+            centerPoint.first > centerX && centerPoint.second > centerY -> Position.TOP_LEFT
+            centerPoint.first < centerX && centerPoint.second > centerY -> Position.TOP_RIGHT
+
+            centerPoint.first > centerX && centerPoint.second < centerY -> Position.BOTTOM_LEFT
+            centerPoint.first < centerX && centerPoint.second < centerY -> Position.BOTTOM_RIGHT
+
+            centerPoint.first > centerX && centerPoint.second == centerY -> Position.TOP_RIGHT_BOTTOM
+            centerPoint.first < centerX && centerPoint.second == centerY -> Position.TOP_LEFT_BOTTOM
+
+            centerPoint.first == centerX && centerPoint.second > centerY -> Position.BOTTOM_LEFT_RIGHT
+            centerPoint.first == centerX && centerPoint.second < centerY -> Position.TOP_LEFT_RIGHT
+
+            centerPoint.first == centerX && centerPoint.second == centerY -> Position.CENTER
+
+            else -> Position.CENTER
+        }
     }
 }

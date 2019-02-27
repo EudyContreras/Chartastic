@@ -14,7 +14,7 @@ class ChartRenderer {
 
     private val charts =  ArrayList<Chart>()
 
-    private var shapeRenderer = ShapeRenderer()
+    var mShapeRenderer = ShapeRenderer()
 
     var rendering: Boolean
         get() = mRendering
@@ -37,20 +37,23 @@ class ChartRenderer {
     }
 
     fun setShapeRenderer(shapeRenderer: ShapeRenderer) {
-        this.shapeRenderer = shapeRenderer
+        this.mShapeRenderer = shapeRenderer
     }
 
     fun buildCharts(bounds: Bounds) {
-        for (chart in charts) {
-            chart.build(bounds)
+        charts.forEach { it.build(bounds) }
+
+        mShapeRenderer.addShape(charts.map { it.getBackground() })
+        mShapeRenderer.addShape(charts.flatMap { it.getShapes() })
+
+        val elements = charts.flatMap { it.getElements() }
+
+        mShapeRenderer.renderCapsule = { canvas ->
+            elements.forEach { it.render(canvas) }
         }
     }
 
     fun renderCharts(canvas: Canvas?) {
-        for (chart in charts) {
-            shapeRenderer.renderShape(canvas, chart.getBackground())
-            chart.getElements().forEach { it.render(canvas) }
-            shapeRenderer.renderShape(canvas, chart.getShapes())
-        }
+        mShapeRenderer.renderShape(canvas)
     }
 }

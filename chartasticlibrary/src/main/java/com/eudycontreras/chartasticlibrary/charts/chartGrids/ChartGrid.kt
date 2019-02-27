@@ -10,9 +10,9 @@ import com.eudycontreras.chartasticlibrary.charts.chartText.ChartText
 import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.Bounds
-import com.eudycontreras.chartasticlibrary.properties.Color
 import com.eudycontreras.chartasticlibrary.properties.Coordinate
 import com.eudycontreras.chartasticlibrary.properties.Dimension
+import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line
 
@@ -64,9 +64,9 @@ class ChartGrid(private var context: Context) {
             mValueYPointCount = value
         }
 
-    private var mPointLineColor = Color()
+    private var mPointLineColor = MutableColor()
 
-    var pointLineColor: Color
+    var pointLineColor: MutableColor
         get() = mPointLineColor
         set(value) {mPointLineColor = value}
 
@@ -109,12 +109,12 @@ class ChartGrid(private var context: Context) {
 
         val coordinates = Coordinate().apply {
             x = borders[Border.LEFT.value].coordinate.x + borders[Border.LEFT.value].dimension.width
-            y = borders[Border.TOP.value].coordinate.y + borders[Border.TOP.value].dimension.height + (paddingTop * 1f)
+            y = borders[Border.TOP.value].coordinate.y + borders[Border.TOP.value].dimension.height + paddingTop
         }
 
         val dimension = Dimension().apply {
-            width = (borders[Border.RIGHT.value].coordinate.x - borders[Border.LEFT.value].coordinate.x) - borders[Border.LEFT.value].dimension.width
-            height = ((borders[Border.BOTTOM.value].coordinate.y - borders[Border.TOP.value].coordinate.y) - borders[Border.TOP.value].dimension.height) - (paddingTop * 1f)
+            width = (borders[Border.RIGHT.value].coordinate.x - coordinates.x) - borders[Border.RIGHT.value].dimension.width
+            height = (borders[Border.BOTTOM.value].coordinate.y - coordinates.y)
         }
 
         drawableZone = Bounds(coordinates, dimension)
@@ -159,7 +159,7 @@ class ChartGrid(private var context: Context) {
         }
     }
 
-    fun setBorderColor(color: Color, border: Border = Border.ALL) {
+    fun setBorderColor(color: MutableColor, border: Border = Border.ALL) {
         if (border == Border.ALL) {
             borders.forEach { it.color.setColor(color) }
             return
@@ -219,7 +219,7 @@ class ChartGrid(private var context: Context) {
         }
     }
 
-    fun getBorderColor(border: Border): Color {
+    fun getBorderColor(border: Border): MutableColor {
         return borders[border.value].color
     }
 
@@ -252,7 +252,7 @@ class ChartGrid(private var context: Context) {
             it.append = append
             it.textSize = 9.sp
             it.typeFace = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            it.textColor = Color.rgba(255, 255, 255, 0.75f)
+            it.textColor = MutableColor.rgba(255, 255, 255, 0.75f)
             it.build(data, bounds, mValueYPointCount)
             it.showText(showYText)
 

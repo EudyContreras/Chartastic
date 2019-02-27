@@ -11,9 +11,9 @@ import com.eudycontreras.chartasticlibrary.charts.chartGrids.ChartGridAxisY
 import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.global.mapRange
 import com.eudycontreras.chartasticlibrary.properties.Bounds
-import com.eudycontreras.chartasticlibrary.properties.Color
 import com.eudycontreras.chartasticlibrary.properties.Coordinate
 import com.eudycontreras.chartasticlibrary.properties.Dimension
+import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 
 /**
@@ -27,7 +27,9 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
     private val mShapes = ArrayList<Shape>()
     private val mElements = ArrayList<ChartElement>()
 
-    private val mYValue = ChartGridAxisY.RIGHT
+    private val mYValue = ChartGridAxisY.LEFT
+
+    private var showBoundingBoxes = false
 
     override fun build(bounds: Bounds) {
 
@@ -38,7 +40,7 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
             x = (bounds.dimension.width / 2) - ((bounds.dimension.width / 2) * widthMultiplier),
             y = (bounds.dimension.height / 2) - ((bounds.dimension.height / 2) * heightMultiplier),
             width = (bounds.dimension.width * widthMultiplier),
-            height = bounds.dimension.height * heightMultiplier
+            height = (bounds.dimension.height * heightMultiplier)
         )
 
         buildGrid(16.dp, rectBounds.subtract(10.dp))
@@ -47,7 +49,9 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
 
         }
 
-        buildBars(mYValue)
+        val spacing = 10.dp
+
+        buildBars(mYValue, spacing)
     }
 
     override fun getBackground(): Shape {
@@ -59,8 +63,11 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
             mShapes.addAll(chartGrid.getLines())
             mShapes.addAll(data.getBarChartItems().flatMap { it.getShapes() })
             mShapes.addAll(chartGrid.getBorders())
-            //mShapes.add(chartGrid.getBoundingBox(mYValue))
-            //mShapes.add(chartGrid.getBoundingBox())
+
+            if (showBoundingBoxes) {
+                mShapes.add(chartGrid.getBoundingBox(mYValue))
+                mShapes.add(chartGrid.getBoundingBox())
+            }
         }
         return mShapes
     }
@@ -73,13 +80,11 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
     }
 
     private fun setBackground(x: Float, y: Float, width: Float, height: Float): Bounds {
-        rectangle.drawShadow = true
         rectangle.showStroke = false
-        rectangle.elevation = 10.dp
         rectangle.coordinate = Coordinate(x, y)
         rectangle.dimension = Dimension(width, height)
-        rectangle.color = Color(ContextCompat.getColor(context, R.color.colorPrimary))
-        rectangle.strokeColor = Color.Blue
+        rectangle.color = MutableColor(ContextCompat.getColor(context, R.color.colorPrimary))
+        rectangle.strokeColor = MutableColor.Blue
         rectangle.strokeWidth = 1.dp
 
         return rectangle.getBounds()
@@ -87,11 +92,11 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
 
     private fun buildGrid(padding: Float, bounds: Bounds) {
         chartGrid.valueYPointCount = 16
-        chartGrid.pointLineColor = Color.rgba(255, 255, 255, 0.35f)
+        chartGrid.pointLineColor = MutableColor.rgba(130, 130, 130, 0.35f)
         chartGrid.pointLineThickness = 0.8f.dp
         chartGrid.bounds = bounds
         chartGrid.setDataSource(data)
-        chartGrid.setBorderColor(Color.White, ChartGrid.Border.ALL)
+        chartGrid.setBorderColor(MutableColor.White, ChartGrid.Border.ALL)
         chartGrid.showBorder(false, ChartGrid.Border.TOP)
         chartGrid.showBorder(false, ChartGrid.Border.RIGHT)
         chartGrid.showBorder(false, ChartGrid.Border.LEFT)
@@ -103,11 +108,11 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
         chartGrid.showYValues(bounds, padding, 6.dp, 6.dp, mYValue, " LOC")
     }
 
-    private fun buildBars(value: Int) {
-        val spacing = 16.dp
+    private fun buildBars(value: Int, spacing: Float) {
         val bounds = chartGrid.drawableZone
 
-        var lastBarX = bounds.coordinate.x + spacing
+        var lastBarX = chartGrid.drawableZone.coordinate.x + spacing
+        var start = (spacing/2)
 
         for(bar in data.getBarChartItems()) {
             bar.length = mapRange(
@@ -116,14 +121,14 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
                 chartGrid.getGridValueY(value).maxY.toString().toFloat(),
                 0f,
                 bounds.dimension.height)
-            bar.thickness = (bounds.dimension.width / data.getBarChartItems().size) - spacing
-            bar.x = lastBarX
+            bar.thickness = (bounds.dimension.width / data.getBarChartItems().size - 1) - (spacing)
+            bar.x = lastBarX - start
             bar.y = (bounds.coordinate.y + bounds.dimension.height) - bar.length
             bar.build()
-            lastBarX += (bounds.dimension.width / data.getBarChartItems().size) - (spacing / data.getBarChartItems().size)
-
+            lastBarX += ((bounds.dimension.width) / (data.getBarChartItems().size)) - ((spacing/2) / data.getBarChartItems().size)
             bar.backgroundOptions.height = bounds.dimension.height
             bar.backgroundOptions.y = bounds.coordinate.y
+            start = 0f
         }
     }
 }

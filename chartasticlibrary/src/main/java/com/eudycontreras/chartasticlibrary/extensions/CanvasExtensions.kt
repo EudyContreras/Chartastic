@@ -34,6 +34,23 @@ fun Canvas.drawRoundRect(
     radiusX: Float,
     radiusY: Float,
 
+    corners: CornerRadii,
+    paint: Paint
+) {
+    this.drawRoundRect(path, left, top, right, bottom, radiusX, radiusY, corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, paint)
+}
+
+fun Canvas.drawRoundRect(
+    path: Path,
+
+    left: Float,
+    top: Float,
+    right: Float,
+    bottom: Float,
+
+    radiusX: Float,
+    radiusY: Float,
+
     topLeft: Boolean,
     topRight: Boolean,
     bottomLeft: Boolean,
