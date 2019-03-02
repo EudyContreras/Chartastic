@@ -1,24 +1,22 @@
 package com.eudycontreras.chartasticlibrary.charts
 
 import android.graphics.Canvas
+import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
+import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 
 /**
  * Created by eudycontreras.
  */
 
-class ChartRenderer {
-
-    private var mRendering = false
+class ChartRenderer(private var view: ChartView) {
 
     private val charts =  ArrayList<Chart>()
 
-    var mShapeRenderer = ShapeRenderer()
+    var shapeRenderer = ShapeRenderer()
 
-    var rendering: Boolean
-        get() = mRendering
-        set(value) {mRendering = value}
+    var rendering: Boolean = false
 
     fun <T : Chart> addChart(chart: T) {
         charts.add(chart)
@@ -36,24 +34,32 @@ class ChartRenderer {
         charts.removeAll(chart)
     }
 
-    fun setShapeRenderer(shapeRenderer: ShapeRenderer) {
-        this.mShapeRenderer = shapeRenderer
+    fun notifyFullyVissible() {
+
     }
 
     fun buildCharts(bounds: Bounds) {
-        charts.forEach { it.build(bounds) }
+        charts.forEach { it.build(view, bounds) }
 
-        mShapeRenderer.addShape(charts.map { it.getBackground() })
-        mShapeRenderer.addShape(charts.flatMap { it.getShapes() })
+        shapeRenderer.addShape(charts.map { it.getBackground() })
+        shapeRenderer.addShape(charts.flatMap { it.getShapes() })
 
         val elements = charts.flatMap { it.getElements() }
 
-        mShapeRenderer.renderCapsule = { canvas ->
+        shapeRenderer.renderCapsule = { canvas ->
             elements.forEach { it.render(canvas) }
         }
     }
 
     fun renderCharts(canvas: Canvas?) {
-        mShapeRenderer.renderShape(canvas)
+        shapeRenderer.renderShape(canvas)
+    }
+
+    fun delegateTouchEvent(motionEvent: MotionEvent, x: Float, y: Float) {
+        charts.forEach {
+            if (it is TouchableElement) {
+                it.onTouch(motionEvent, x, y, shapeRenderer)
+            }
+        }
     }
 }

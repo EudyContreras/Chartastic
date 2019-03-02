@@ -31,7 +31,7 @@ class ChartGridAxisY(
 
     var typeFace: Typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD)
 
-    var textColor = MutableColor.White
+    var textColor = MutableColor.rgb(255, 255, 255)
 
     var valuesYBounds: Bounds = Bounds()
 

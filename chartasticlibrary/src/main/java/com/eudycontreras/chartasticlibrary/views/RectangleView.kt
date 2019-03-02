@@ -4,28 +4,29 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
-import androidx.core.content.ContextCompat
-import com.eudycontreras.chartasticlibrary.R
+import android.widget.ScrollView
+import androidx.core.widget.NestedScrollView
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.Chart
 import com.eudycontreras.chartasticlibrary.charts.ChartRenderer
-import com.eudycontreras.chartasticlibrary.extensions.dp
+import com.eudycontreras.chartasticlibrary.charts.ChartView
 import com.eudycontreras.chartasticlibrary.properties.*
-import com.eudycontreras.chartasticlibrary.shapes.Circle
+
+
+
 
 /**
  * Created by eudycontreras.
  */
-class RectangleView : View {
+class RectangleView : View, ChartView {
 
-    private var properties = ShapeRenderer.RenderingProperties()
-
-    private var chartRenderer: ChartRenderer = ChartRenderer()
+    private var chartRenderer: ChartRenderer = ChartRenderer(this)
 
     constructor(context: Context, chart: Chart) : this(context) {
          chartRenderer.addChart(chart)
@@ -34,7 +35,7 @@ class RectangleView : View {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.RectangleView)
+        val typedArray = context.obtainStyledAttributes(attrs, com.eudycontreras.chartasticlibrary.R.styleable.RectangleView)
         try {
             setUpAttributes(typedArray)
         } finally {
@@ -45,6 +46,10 @@ class RectangleView : View {
     private var initialized: Boolean = false
 
     private var paint: Paint = Paint()
+
+    init {
+        setLayerType(LAYER_TYPE_SOFTWARE, paint)
+    }
 
     private fun setUpAttributes(typedArray: TypedArray) {
 
@@ -68,16 +73,10 @@ class RectangleView : View {
 
         val bounds = Bounds(Coordinate(0f,0f), Dimension(usableWidth, usableHeight))
 
-        setLayerType(LAYER_TYPE_SOFTWARE, paint)
-
-        properties.lightSource = LightSource(usableWidth/2 ,usableHeight,10f, 10f)
-
-        val renderer = ShapeRenderer(paint, properties)
-
-        chartRenderer.setShapeRenderer(renderer)
+        chartRenderer.shapeRenderer = ShapeRenderer(paint).apply {
+            properties.lightSource = LightSource(usableWidth/2 ,usableHeight,10f, 10f)
+        }
         chartRenderer.buildCharts(bounds)
-
-        renderer.addShape(marker)
 
         initialized = true
     }
@@ -94,35 +93,83 @@ class RectangleView : View {
         }
     }
 
-    var marker: Circle = Circle().apply {
-        radius = 40.dp
-        render = true
-        color = MutableColor.fromColor(ContextCompat.getColor(context, R.color.colorAccent)).updateAlpha(0.3f)
-        strokeColor = MutableColor.fromColor(ContextCompat.getColor(context, R.color.colorAccent))
-        strokeWidth = 2.dp
-        showStroke = true
+    private var sizeRatio = 0.5f
+
+    private var fullyVisible: Boolean = false
+
+    override var onFullyVisible: ((ChartView)-> Unit)? = null
+
+    override fun fullyVisible(): Boolean = fullyVisible
+
+    fun observeVisibility() {
+        val scrollBounds = Rect()
+        val parent = findScrollParent(this.parent as ViewGroup)
+
+        if (parent != null) {
+            if (parent is ScrollView) {
+                parent.viewTreeObserver.addOnScrollChangedListener {
+                    val scrollY = parent.scrollY
+                    val scrollX = parent.scrollX
+
+                    parent.getDrawingRect(scrollBounds)
+
+                    val top = this.y
+                    val bottom = top + this.height
+
+                    if (scrollBounds.top < (top + ((bottom - top) * sizeRatio)) && scrollBounds.bottom > (bottom - ((bottom - top) * sizeRatio))) {
+                        if (!fullyVisible) {
+                            fullyVisible = true
+                            onFullyVisible?.invoke(this)
+                        }
+                    }
+                }
+            }
+        }
     }
 
+
+    private fun findScrollParent(parent: ViewGroup): ViewParent? {
+        val property: Property<ViewGroup?> = Property(parent)
+
+        return if(parent !is ScrollView && parent !is NestedScrollView) {
+
+            digOutParent(parent.parent as ViewGroup, property)
+
+            property.getValue()
+
+        }else {
+            parent
+        }
+    }
+
+    private fun digOutParent(parent: ViewGroup?, property: Property<ViewGroup?>) {
+        if (parent != null) {
+            if (parent is ScrollView || parent is NestedScrollView) {
+                property.setValue(parent)
+            } else {
+                digOutParent(parent.parent as ViewGroup, property)
+            }
+        } else {
+            property.setValue(null)
+        }
+    }
 
     override fun onTouchEvent(motionEvent: MotionEvent?): Boolean {
         motionEvent?.let { event ->
             val x = event.x
             val y = event.y
 
-            marker.centerX = x
-            marker.centerY = y
-
-            when (event.action) {
-                MotionEvent.ACTION_UP -> marker.render = false
-                MotionEvent.ACTION_DOWN -> marker.render = true
-            }
+            chartRenderer.delegateTouchEvent(motionEvent, x, y)
 
             invalidate()
-
         }
 
         return true
 
+    }
+
+    override fun updateView() {
+        invalidate()
     }
 
     private fun getCalculatedOffsetY(parent: ViewGroup): Int {

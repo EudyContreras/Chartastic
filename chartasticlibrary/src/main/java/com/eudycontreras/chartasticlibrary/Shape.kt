@@ -1,6 +1,7 @@
 package com.eudycontreras.chartasticlibrary
 
 import android.graphics.*
+import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.*
 
@@ -8,22 +9,22 @@ import com.eudycontreras.chartasticlibrary.properties.*
  * Created by eudycontreras.
  */
 
-abstract class Shape(
-    var coordinate: Coordinate = Coordinate(),
-    var dimension: Dimension = Dimension(),
-    var color: MutableColor = MutableColor(),
-    var elevation: Float = 0f
-) {
+abstract class Shape {
+
     var ownerId: Int = -1
 
-    var corners: CornerRadii = CornerRadii()
+    val corners: CornerRadii by lazy { CornerRadii()}
 
     var render: Boolean = true
+
+    var clipFilledArea: Boolean = false
 
     var showStroke: Boolean = false
         get() = field && strokeWidth > 0
 
-    var shadowPosition: LightSource.Position? = null
+    var shadowPosition: LightSource.Position = LightSource.Position.BOTTOM_LEFT
+
+    var touchProcessor: ((Shape, MotionEvent, Float, Float) -> Unit)? = null
 
     val left: Float
         get() = coordinate.x
@@ -36,6 +37,24 @@ abstract class Shape(
 
     val right: Float
         get() = left + dimension.width
+
+    var bounds: Bounds = Bounds()
+
+    var coordinate: Coordinate
+        get() = bounds.coordinate
+        set(value) {
+            bounds.coordinate = value
+        }
+
+    var dimension: Dimension
+        get() = bounds.dimension
+        set(value) {
+            bounds.dimension = value
+        }
+
+    var color: MutableColor = MutableColor()
+
+    var elevation: Float = 0f
 
     var drawShadow: Boolean = false
         get() = field && elevation > 0
@@ -76,10 +95,6 @@ abstract class Shape(
 
         shadow = null
         shader = null
-    }
-
-    fun getBounds() : Bounds {
-        return Bounds(coordinate, dimension)
     }
 
     fun update(delta: Float) {

@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
+import com.eudycontreras.chartasticlibrary.extensions.drawRoundRect
 
 /**
  * Created by eudycontreras.
@@ -12,7 +13,9 @@ import com.eudycontreras.chartasticlibrary.ShapeRenderer
 
 class Line : Shape() {
 
-    override fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
+    val paint = Paint()
+
+    override fun render(path: Path, p: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
@@ -21,7 +24,7 @@ class Line : Shape() {
 
         if (drawShadow) {
             if (renderingProperties.useSystemShadow) {
-                paint.setShadowLayer(elevation, 0f, -elevation / 2, shadow!!.shadowColorStart.toColor())
+                paint.setShadowLayer(elevation, 0f, 0f, shadow!!.shadowColor.updateAlpha(1f).toColor())
             } else {
                 renderingProperties.lightSource?.computeShadow(this, shadowPosition)
                 shadow?.draw(this, path, paint, canvas!!)
@@ -35,7 +38,7 @@ class Line : Shape() {
             paint.shader = shader
         }
 
-        canvas?.drawRoundRect(left, top, right, bottom, corners.rx, corners.ry, paint)
+        canvas?.drawRoundRect(path, left, top, right, bottom, corners, paint)
 
         if (showStroke) {
 
@@ -44,7 +47,7 @@ class Line : Shape() {
                 paint.strokeWidth = strokeWidth
                 paint.color = it.toColor()
 
-                canvas?.drawRoundRect(left, top, right, bottom, corners.rx, corners.ry, paint)
+                canvas?.drawRoundRect(path, left, top, right, bottom, corners, paint)
             }
         }
     }

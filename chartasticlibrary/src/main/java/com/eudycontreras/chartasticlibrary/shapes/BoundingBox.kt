@@ -26,6 +26,7 @@ class BoundingBox : Shape() {
         if (!render) {
             return
         }
+
         paint.reset()
 
         paint.style = Paint.Style.FILL

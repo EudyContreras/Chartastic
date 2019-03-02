@@ -20,6 +20,12 @@ data class Bounds(
     val bottom: Float
         get() = coordinate.y + dimension.height
 
+    fun copyProps(): Bounds {
+        val coordinates =  this.coordinate.copyProps()
+        val dimensions = this.dimension.copyProps()
+        return Bounds(coordinates, dimensions)
+    }
+
     fun intercepts(other: Bounds): Boolean {
         val x = this.coordinate.x
         val y = this.coordinate.y
@@ -49,6 +55,18 @@ data class Bounds(
         return Bounds(Coordinate(newX,newY), Dimension(newWidth,newHeight))
     }
 
+    fun subtractDimenion(width: Float, height: Float): Bounds {
+        val newWidth = dimension.width - (width * 2)
+        val newHeight = dimension.height - (height * 2)
+        return Bounds(Coordinate(coordinate.x,coordinate.y), Dimension(newWidth,newHeight))
+    }
+
+    fun subtractCoordinates(x: Float, y: Float): Bounds {
+        val newX = coordinate.x + x
+        val newY = coordinate.y + y
+        return Bounds(Coordinate(newX,newY), Dimension(dimension.width,dimension.height))
+    }
+
     fun add(dp: Float): Bounds {
         val newX = coordinate.x - dp
         val newY = coordinate.y - dp
@@ -56,5 +74,18 @@ data class Bounds(
         val newHeight = dimension.height + dp
         return Bounds(Coordinate(newX,newY), Dimension(newWidth,newHeight))
     }
+
+    fun addtDimenion(width: Float, height: Float): Bounds {
+        val newWidth = dimension.width + (width * 2)
+        val newHeight = dimension.height + (height * 2)
+        return Bounds(Coordinate(coordinate.x,coordinate.y), Dimension(newWidth,newHeight))
+    }
+
+    fun addCoordinates(x: Float, y: Float): Bounds {
+        val newX = coordinate.x - x
+        val newY = coordinate.y - y
+        return Bounds(Coordinate(newX,newY), Dimension(dimension.width,dimension.height))
+    }
+
 }
 

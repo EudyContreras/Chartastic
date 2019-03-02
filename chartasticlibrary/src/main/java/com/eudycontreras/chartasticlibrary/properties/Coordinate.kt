@@ -7,4 +7,8 @@ package com.eudycontreras.chartasticlibrary.properties
 data class Coordinate(
     var x: Float = 0f,
     var y: Float = 0f
-)
+) {
+    fun copyProps(): Coordinate {
+        return Coordinate(x, y)
+    }
+}

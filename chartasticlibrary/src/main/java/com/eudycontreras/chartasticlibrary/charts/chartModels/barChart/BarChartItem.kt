@@ -1,6 +1,8 @@
 package com.eudycontreras.chartasticlibrary.charts.chartModels.barChart
 
+import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
+import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 
@@ -11,8 +13,10 @@ import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 data class BarChartItem<Data>(
     var label: String,
     var value: Any,
+    var data: Data,
     var action: ((Data) -> Unit)? = null
-) {
+): ChartAnimation.Animateable{
+
     companion object {
         const val DEFAULT_ROUND_RADIUS = -1f
     }
@@ -22,6 +26,10 @@ data class BarChartItem<Data>(
     private val shape: Rectangle = Rectangle()
 
     private var shapes: ArrayList<Shape> = ArrayList()
+
+    var activeColor: MutableColor = MutableColor()
+
+    var hoverColor: MutableColor = MutableColor()
 
     var color: MutableColor = MutableColor()
         set(value) {
@@ -109,8 +117,7 @@ data class BarChartItem<Data>(
             shape.drawShadow = true
             shape.shadow?.let { shadow ->
                 value?.let {
-                    shadow.shadowColorStart = MutableColor.fromColor(it).updateAlpha(25)
-                    shadow.shadowColorEnd = MutableColor.fromColor(it).updateAlpha(0)
+                    shadow.shadowColor = MutableColor.fromColor(it)
                 }
             }
             shape.drawShadow = last
@@ -139,6 +146,47 @@ data class BarChartItem<Data>(
             field = value
         }
 
+    private var touching = false
+
+    private var touchProcessor: (Shape, MotionEvent, Float, Float) -> Unit = { shape, motionEvent, x, y ->
+        when (motionEvent.action) {
+            MotionEvent.ACTION_DOWN -> {
+                touching = true
+                if (shape.bounds.isInside(x, y)) {
+                    if (shape.color != activeColor) {
+                        shape.color = activeColor
+                    }
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                touching = false
+                action?.invoke(data)
+                if (shape.color != color) {
+                    shape.color = color
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (shape.bounds.isInside(x, y)) {
+                    if (shape.color != hoverColor) {
+                        shape.color = hoverColor
+                    }
+                } else {
+                    if (shape.color != color) {
+                        shape.color = color
+                    }
+                }
+            }
+            else -> {
+                touching = false
+                action?.invoke(data)
+                if (shape.color != color) {
+                    shape.color = color
+                }
+            }
+        }
+    }
+
+
     fun build() {
         shape.color = color
         shape.coordinate.x = x
@@ -148,7 +196,32 @@ data class BarChartItem<Data>(
         shape.shader = gradient?.let {
             Shape.getShader(it, x, y, thickness, length)
         }
+        shape.shadow?.let {
+            it.minStepCount = 0f
+            it.maxStepCount = 18f
+        }
         backgroundOptions.showBackground = backgroundOptions.showBackground
+
+        shape.touchProcessor = touchProcessor
+        shape.render = false
+    }
+
+    var savedState: Pair<Float,Float> = Pair(0f,0f)
+
+    override fun onPreAnimation() {
+        savedState = Pair(y,length)
+        y += length
+        length = 0f
+        shape.render = true
+    }
+
+    override fun onPostAnimation() {
+
+    }
+
+    override fun onAnimate(delta: Float) {
+        y = (savedState.first + savedState.second) - (savedState.second * delta)
+        length = savedState.second * delta
     }
 
     fun getShapes(): ArrayList<Shape> {
@@ -205,7 +278,7 @@ data class BarChartItem<Data>(
                 background.coordinate.y = y
                 background.dimension.height = height
                 background.dimension.width = thickness
-                background.corners.copy(shape.corners)
+                background.corners.copyProps(shape.corners)
                 background.coordinate.x -= padding
                 background.coordinate.y -= padding
                 background.dimension.width += (padding * 2)

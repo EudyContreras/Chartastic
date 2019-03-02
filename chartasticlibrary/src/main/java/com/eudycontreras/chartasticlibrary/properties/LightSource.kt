@@ -12,7 +12,7 @@ data class LightSource(
     var y: Float = 0f,
     var radius: Float = 0f,
     var intensity: Float = 0f,
-    var color: MutableColor = MutableColor.Default
+    var color: MutableColor = MutableColor()
 ) {
 
     enum class Position {

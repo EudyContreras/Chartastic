@@ -44,14 +44,18 @@ data class MutableColor(
     }
 
     fun updateAlpha(alpha: Int): MutableColor {
+        if(alpha != this.alpha) {
+            colorChanged = true
+        }
         this.alpha = alpha
-        colorChanged = true
         return this
     }
 
     fun updateAlpha(alpha: Float): MutableColor {
-        this.alpha = Math.round(255f * alpha)
-        colorChanged = true
+        if((alpha * 255f).toInt() != this.alpha) {
+            colorChanged = true
+        }
+        this.alpha = (alpha * 255f).toInt()
         return this
     }
 
@@ -78,18 +82,18 @@ data class MutableColor(
     }
 
     fun addAlpha(amount: Float): MutableColor {
-        val alpha = this.alpha + (Math.round(amount * 255))
-        return this.copy(alpha = alpha)
+        alpha += clamp((Math.round(amount * 255)))
+        return this
     }
 
     fun subtractAlpha(amount: Int): MutableColor {
-        val alpha = this.alpha - amount
-        return this.copy(alpha = alpha)
+        alpha = clamp(alpha - amount)
+        return this
     }
 
     fun addAlpha(amount: Int): MutableColor {
-        val alpha = this.alpha + amount
-        return this.copy(alpha = alpha)
+        alpha = clamp(alpha + amount)
+        return this
     }
 
     fun addRed(amount: Int): MutableColor {
@@ -130,22 +134,24 @@ data class MutableColor(
 
     override fun getBlue() = blue
 
-    fun setColor(color: MutableColor) {
+    fun setColor(color: MutableColor): MutableColor {
         this.alpha = color.alpha
         this.red = color.red
         this.green = color.green
         this.blue = color.blue
 
         colorChanged = true
+        return this
     }
 
-    fun setColor(red: Int, green: Int, blue: Int, alpha: Int) {
+    fun setColor(red: Int, green: Int, blue: Int, alpha: Int): MutableColor {
         this.alpha = alpha
         this.red = red
         this.green = green
         this.blue = blue
 
         colorChanged = true
+        return this
     }
 
     override fun toColor(): Int {
@@ -163,15 +169,19 @@ data class MutableColor(
         }
     }
 
+    fun copy(): MutableColor {
+        return MutableColor(alpha, red, green, blue)
+    }
+
     companion object {
 
-        val White  = MutableColor(255, 255, 255, 255)
-        val Black  = MutableColor(255, 0, 0, 0)
-        val Red  = MutableColor(255, 255, 0, 0)
-        val Green  = MutableColor(255, 0, 255, 0)
-        val Blue  = MutableColor(255, 0, 0, 255)
+        val White: Color  = MutableColor(255, 255, 255, 255)
+        val Black: Color = MutableColor(255, 0, 0, 0)
+        val Red: Color = MutableColor(255, 255, 0, 0)
+        val Green: Color = MutableColor(255, 0, 255, 0)
+        val Blue: Color = MutableColor(255, 0, 0, 255)
 
-        val Default: MutableColor = MutableColor()
+        val Default: Color = MutableColor()
 
         fun adjustAlpha(color: MutableColor, factor: Float) {
             color.updateAlpha((Math.round(color.alpha * factor)))
@@ -240,10 +250,19 @@ data class MutableColor(
 
         fun random(): MutableColor {
             return MutableColor(
-                (190 until 191).random(),
-                (0 until 205).random(),
-                (0 until 205).random(),
-                (0 until 205).random()
+                255,
+                (50 until 205).random(),
+                (50 until 205).random(),
+                (50 until 205).random()
+            )
+        }
+
+        fun randomBlue(): MutableColor {
+            return MutableColor(
+                255,
+                20,
+                (100 until 205).random(),
+                (130 until 245).random()
             )
         }
     }

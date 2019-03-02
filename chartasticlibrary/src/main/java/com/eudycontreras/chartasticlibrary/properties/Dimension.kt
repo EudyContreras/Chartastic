@@ -14,6 +14,26 @@ data class Dimension(
         return this
     }
 
+    fun subtractWidth(dp: Float): Dimension {
+        val newWidth = width - (dp * 2)
+        return Dimension(newWidth, this.height)
+    }
+
+    fun addWidth(dp: Float): Dimension {
+        val newWidth = width - (dp * 2)
+        return Dimension(newWidth, this.height)
+    }
+
+    fun subtractHeight(dp: Float): Dimension {
+        val newHeight = height - (dp * 2)
+        return Dimension(this.width, newHeight)
+    }
+
+    fun addHeiggt(dp: Float): Dimension {
+        val newHeight = height - (dp * 2)
+        return Dimension(this.width, newHeight)
+    }
+
     operator fun plusAssign(other: Dimension) {
         this.width += other.width
         this.height += other.height
@@ -28,6 +48,10 @@ data class Dimension(
     operator fun minusAssign(other: Dimension) {
         this.width -= other.width
         this.height -= other.height
+    }
+
+    fun copyProps(): Dimension {
+        return Dimension(width, height)
     }
 }
 

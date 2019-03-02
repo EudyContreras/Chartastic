@@ -17,6 +17,7 @@ class ChartText(
     var text: String,
     var paint: Paint
 ): ChartElement {
+
     private var mRender: Boolean = true
 
     override var render: Boolean
@@ -31,7 +32,7 @@ class ChartText(
     var bounds: Rect = Rect()
 
     var textSize: Float = 12.sp
-    var textColor: MutableColor = MutableColor.White
+    var textColor: MutableColor = MutableColor.rgb(255, 255, 255)
     var typeFace: Typeface = Typeface.DEFAULT
 
     var alignment: Alignment = Alignment.LEFT

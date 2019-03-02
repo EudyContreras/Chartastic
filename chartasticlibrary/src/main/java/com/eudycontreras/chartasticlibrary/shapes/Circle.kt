@@ -31,7 +31,9 @@ class Circle: Shape() {
             coordinate.y = value - (radius/2)
         }
 
-    override fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
+    val paint = Paint()
+
+    override fun render(path: Path, p: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
@@ -40,10 +42,10 @@ class Circle: Shape() {
 
         if (drawShadow) {
             if (renderingProperties.useSystemShadow) {
-                paint.setShadowLayer(elevation, 0f, -elevation / 2, shadow!!.shadowColorStart.toColor())
+                paint.setShadowLayer(elevation, 0f, -elevation / 2, shadow!!.shadowColor.toColor())
             } else {
                 renderingProperties.lightSource?.computeShadow(this, shadowPosition)
-                shadow?.draw(this, path, paint, canvas!!)
+                shadow?.drawOval(this, paint, canvas!!)
             }
         }
 

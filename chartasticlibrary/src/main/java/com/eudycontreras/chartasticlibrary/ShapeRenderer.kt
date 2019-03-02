@@ -3,6 +3,8 @@ package com.eudycontreras.chartasticlibrary
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import android.view.MotionEvent
+import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableShape
 import com.eudycontreras.chartasticlibrary.properties.LightSource
 
 /**
@@ -59,6 +61,14 @@ class ShapeRenderer(
         shapes.forEach { it.render(path, paint, canvas, properties) }
         if (mShapes.isNotEmpty()) {
             renderShape(canvas)
+        }
+    }
+
+    fun delegateTouchEvent(motionEvent: MotionEvent, x: Float, y: Float) {
+        mShapes.forEach {
+            if (it is TouchableShape && it.touchProcessor != null) {
+                it.onTouch(motionEvent, x, y)
+            }
         }
     }
 

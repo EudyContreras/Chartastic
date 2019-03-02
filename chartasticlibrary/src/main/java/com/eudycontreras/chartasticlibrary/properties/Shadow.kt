@@ -1,5 +1,6 @@
 package com.eudycontreras.chartasticlibrary.properties
 
+import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
@@ -15,13 +16,47 @@ import com.eudycontreras.chartasticlibrary.shapes.Circle
 
 class Shadow {
 
-    var shadowColorStart = MutableColor.fromColor(DefaultColor)
-    var shadowColorEnd = MutableColor.fromColor(DefaultColor)
+    private var shadowColorStart = MutableColor.fromColor(DefaultColor)
+    private var shadowColorEnd = MutableColor.fromColor(DefaultColor)
 
-    var minStepCount = 0f
-    var maxStepCount = 20f
+    var shadowColor: MutableColor
+        get() = shadowColorStart
+        set(value) {
+            shadowColorStart.setColor(value).updateAlpha(85)
+            shadowColorEnd.setColor(value).updateAlpha(0)
+        }
+
+    var minStepCount = DEFAULT_MIN_STEP_COUNT
+        set(value) {
+            field = when {
+                value < DEFAULT_MIN_STEP_COUNT -> DEFAULT_MIN_STEP_COUNT
+                value > maxStepCount -> maxStepCount
+                else -> value
+            }
+        }
+
+    var maxStepCount = DEFAULT_MAX_STEP_COUNT - 2
+        set(value) {
+            field = when {
+                value < DEFAULT_MIN_STEP_COUNT -> DEFAULT_MIN_STEP_COUNT
+                value > DEFAULT_MAX_STEP_COUNT -> DEFAULT_MAX_STEP_COUNT
+                else -> value
+            }
+        }
+
+    init {
+        shadowColor = MutableColor.fromColor(DefaultColor)
+    }
 
     companion object {
+
+        private val shadowPaint = Paint(0).apply {
+            maskFilter = BlurMaskFilter(8f, BlurMaskFilter.Blur.NORMAL)
+        }
+
+        const val DEFAULT_MAX_STEP_COUNT = 20f
+        const val DEFAULT_MIN_STEP_COUNT = 0f
+
         val DefaultColor: Color = MutableColor.rgb(35,35,35)
     }
 
@@ -114,13 +149,15 @@ class Shadow {
 
         val color: MutableColor = MutableColor.fromColor(shadowColorStart)
 
-        val steps = mapRange(
+        var steps = Math.round(mapRange(
             shape.elevation,
             Shape.MinElevation,
             Shape.MaxElevation,
             minStepCount,
             maxStepCount
-        ).toInt()
+        ))
+
+        if (steps <= 0) steps = 1
 
         for (i in 0..shape.elevation.toInt() step steps) {
             val amount = mapRange(

@@ -1,6 +1,5 @@
 package com.eudycontreras.chartasticlibrary.charts.chartGrids
 
-import android.content.Context
 import android.graphics.Paint
 import android.graphics.Typeface
 import com.eudycontreras.chartasticlibrary.Shape
@@ -9,10 +8,7 @@ import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChartD
 import com.eudycontreras.chartasticlibrary.charts.chartText.ChartText
 import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.extensions.sp
-import com.eudycontreras.chartasticlibrary.properties.Bounds
-import com.eudycontreras.chartasticlibrary.properties.Coordinate
-import com.eudycontreras.chartasticlibrary.properties.Dimension
-import com.eudycontreras.chartasticlibrary.properties.MutableColor
+import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line
 
@@ -21,14 +17,15 @@ import com.eudycontreras.chartasticlibrary.shapes.Line
  */
 
 
-class ChartGrid(private var context: Context) {
+class ChartGrid {
 
     enum class Border(var value: Int) {
         TOP(0),
         LEFT(1),
         RIGHT(2),
         BOTTOM(3),
-        ALL(-1)
+        NONE(4),
+        ALL(-1),
     }
 
     enum class LinePlacement {
@@ -85,6 +82,8 @@ class ChartGrid(private var context: Context) {
         bounds: Bounds,
         paddingTop: Float
     ) {
+        borders.forEach { it.shadowPosition = LightSource.Position.BOTTOM_LEFT }
+
         val left = valuesY[ChartGridAxisY.LEFT]!!.getValues().second + valuesY[ChartGridAxisY.RIGHT]!!.getValues().second
         val right = valuesY[ChartGridAxisY.RIGHT]!!.getValues().third + valuesY[ChartGridAxisY.LEFT]!!.getValues().third
 

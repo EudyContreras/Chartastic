@@ -3,17 +3,29 @@ package com.eudycontreras.chartasticlibrary.shapes
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
+import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableShape
 import com.eudycontreras.chartasticlibrary.extensions.drawRoundRect
 
 /**
  * Created by eudycontreras.
  */
 
-class Rectangle: Shape() {
+class Rectangle: Shape(), TouchableShape {
 
-    override fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
+    override fun onTouch(event: MotionEvent, x: Float, y: Float) {
+        touchProcessor?.invoke(this, event, x, y)
+    }
+
+    override fun onLongPressed(event: MotionEvent, x: Float, y: Float) {
+
+    }
+
+    val paint = Paint()
+
+    override fun render(path: Path, p: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
@@ -22,7 +34,7 @@ class Rectangle: Shape() {
 
         if (drawShadow) {
             if (renderingProperties.useSystemShadow) {
-                paint.setShadowLayer(elevation, 0f, -elevation / 2, shadow!!.shadowColorStart.toColor())
+                paint.setShadowLayer(elevation, 0f, 0f, shadow!!.shadowColor.updateAlpha(255).toColor())
             } else {
                 renderingProperties.lightSource?.computeShadow(this, shadowPosition)
                 shadow?.draw(this, path, paint, canvas!!)

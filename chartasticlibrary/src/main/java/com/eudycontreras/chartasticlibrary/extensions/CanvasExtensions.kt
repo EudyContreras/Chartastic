@@ -60,56 +60,19 @@ fun Canvas.drawRoundRect(
 ){
     path.reset()
 
-    var rx = if (radiusX >= 0) radiusX else 0f
-    var ry = if (radiusY >= 0) radiusY else 0f
+    val tl = if (topLeft) Pair(radiusX, radiusY) else Pair(0f,0f)
+    val tr = if (topRight) Pair(radiusX, radiusY) else Pair(0f,0f)
+    val bl = if (bottomLeft) Pair(radiusX, radiusY) else Pair(0f,0f)
+    val br = if (bottomRight) Pair(radiusX, radiusY) else Pair(0f,0f)
 
-    val width = right - left
-    val height = bottom - top
+    val corners = arrayOf(
+        tl.first,tl.second,
+        tr.first,tr.second,
+        bl.first,bl.second,
+        br.first,br.second
+    )
 
-    if (rx > width / 2) rx = width / 2
-    if (ry > height / 2) ry = height / 2
-
-    val widthMinusCorners = width - 2 * rx
-    val heightMinusCorners = height - 2 * ry
-
-    path.moveTo(right, top + ry)
-
-    if (topRight)
-        path.rQuadTo(0f, -ry, -rx, -ry)//top-right corner
-    else {
-        path.rLineTo(0f, -ry)
-        path.rLineTo(-rx, 0f)
-    }
-    path.rLineTo(-widthMinusCorners, 0f)
-
-    if (topLeft)
-        path.rQuadTo(-rx, 0f, -rx, ry) //top-left corner
-    else {
-        path.rLineTo(-rx, 0f)
-        path.rLineTo(0f, ry)
-    }
-
-    path.rLineTo(0f, heightMinusCorners)
-
-    if (bottomRight)
-        path.rQuadTo(0f, ry, rx, ry)//bottom-left corner
-    else {
-        path.rLineTo(0f, ry)
-        path.rLineTo(rx, 0f)
-    }
-
-    path.rLineTo(widthMinusCorners, 0f)
-
-    if (bottomLeft)
-        path.rQuadTo(rx, 0f, rx, -ry) //bottom-right corner
-    else {
-        path.rLineTo(rx, 0f)
-        path.rLineTo(0f, -ry)
-    }
-
-    path.rLineTo(0f, -heightMinusCorners)
-
-    path.close()
+    path.addRoundRect(left, top, right, bottom, corners.toFloatArray(), Path.Direction.CCW)
 
     this.drawPath(path, paint)
 }

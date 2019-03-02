@@ -12,7 +12,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.animate.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -29,8 +29,8 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.1.0-alpha04'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    androidTestImplementation 'androidx.animate:runner:1.1.0-alpha4'
+    androidTestImplementation 'androidx.animate.espresso:espresso-core:3.1.0-alpha4'
 
     implementation project(':chartasticlibrary')
 }

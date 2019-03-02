@@ -22,7 +22,7 @@ class CornerRadii {
         bottomRight = false
     }
 
-    fun copy(cornerRadii: CornerRadii) {
+    fun copyProps(cornerRadii: CornerRadii) {
         this.rx = cornerRadii.rx
         this.ry = cornerRadii.ry
 
