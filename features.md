@@ -14,12 +14,21 @@ Here is a list of all the element supported by the bar chart and their current s
    - [x] The bars should be able to process touch events
    - [x] The bars should have a desired touch feedback color changes
    - [ ] The bars should be able to animate upon touch
-   - [ ] The bars should be able to have reveal and conceal animations
+   - [x] The bars should be able to have reveal and conceal animations
+     * **Possible animations**
+        * The animatioss should be able to have any interpolation
+        * The animations should be able to have stagger
+        * The animations should be able to take type ex: (Left to right), (Center to edge)
+        * The animations should be able to notify upon ending
    - [x] The bars should be able to have backgrounds of any color
    - [x] The bars should be able to have backgrounds with desired padding
-   - [ ] The bars reveal should be able to be binded to scrolling
+   - [x] The bars reveal/conceal should be able to be binded to scrolling
+     * **Possible functionality**
+        * The scroll bind should be controlled base on how much of the chart is visible
+        * The user should be able to controll when the bar is reveal based on scrolling
    - [x] The bars should be able to have any desired color
    - [x] The bars should be able to have gradient shaders with any colors or direction
+   - [x] The bars should be able to interpolate color accross themselves
    - [x] The bars should be be able to able to have elevation produced shadows
    - [x] The bars should be able to have shadows in any directions
    - [x] The bars should be able to have shadows of any color (Glow or shadow)
@@ -32,10 +41,10 @@ Here is a list of all the element supported by the bar chart and their current s
    - [x] The bars should be able to handle hovers events
    - [ ] The bars should be able to listen and adapt to live data changes
    - [x] The bars should be able to have desireable opacity levels
-   - [x] The bars should be able to have decorations set by the user
+   - [ ] The bars should be able to have decorations set by the user
       * **Possible decorations:**
          * Glow at the top of the bar
-      
+   - [ ] The bars should support listen types of listeners
    
    
    
