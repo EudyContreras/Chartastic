@@ -13,7 +13,6 @@ import com.eudycontreras.chartasticlibrary.shapes.Line
  * Created by eudycontreras.
  */
 class ValueInterceptor : TouchableElement {
-
     enum class Style {
         STYLE_ONE,
         STYLE_TWO,

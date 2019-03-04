@@ -116,7 +116,6 @@ abstract class Shape {
         ): Shader {
             val zero = 0f
             when (gradient.type) {
-
                 Gradient.TOP_TO_BOTTOM -> return LinearGradient(
                     zero,
                     y,

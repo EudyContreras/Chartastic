@@ -3,6 +3,7 @@ package com.eudycontreras.chartasticlibrary.charts.chartModels.barChart
 import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
+import com.eudycontreras.chartasticlibrary.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 
@@ -15,7 +16,7 @@ data class BarChartItem<Data>(
     var value: Any,
     var data: Data,
     var action: ((Data) -> Unit)? = null
-): ChartAnimation.Animateable{
+) : ChartAnimation.Animateable {
 
     companion object {
         const val DEFAULT_ROUND_RADIUS = -1f
@@ -23,7 +24,7 @@ data class BarChartItem<Data>(
 
     private val cornerRadiiMultiplier = 0.75f
 
-    private val shape: Rectangle = Rectangle()
+    val shape: Rectangle = Rectangle()
 
     private var shapes: ArrayList<Shape> = ArrayList()
 
@@ -41,31 +42,31 @@ data class BarChartItem<Data>(
         set(value) {
             field = value
             field?.let {
-                color = if(it.colors.isNotEmpty()) it.colors[0] else color
+                color = if (it.colors.isNotEmpty()) it.colors[0] else color
                 shape.shader = Shape.getShader(it, x, y, thickness, length)
             }
         }
 
     var x: Float = 0f
-        set(value) {
+        internal set(value) {
             field = value
             shape.coordinate.x = field
         }
 
     var y: Float = 0f
-        set(value) {
+        internal set(value) {
             field = value
             shape.coordinate.y = field
         }
 
     var length: Float = 0f
-        set(value) {
+        internal set(value) {
             field = value
             shape.dimension.height = field
         }
 
     var thickness: Float = 0f
-        set(value) {
+        internal set(value) {
             field = value
             shape.dimension.width = field
             if (cornerRadius == DEFAULT_ROUND_RADIUS) {
@@ -85,7 +86,7 @@ data class BarChartItem<Data>(
     var strokeWidth: Float
         get() = shape.strokeWidth
         set(value) {
-            shape.showStroke = value  > 0
+            shape.showStroke = value > 0
             shape.strokeWidth = value
         }
     var elevation: Float
@@ -110,7 +111,7 @@ data class BarChartItem<Data>(
         }
 
     var elevationShadowColor: Color? = Shadow.DefaultColor
-        get() = field?:Shadow.DefaultColor
+        get() = field ?: Shadow.DefaultColor
         set(value) {
             field = value
             val last = shape.drawShadow
@@ -132,7 +133,7 @@ data class BarChartItem<Data>(
     var cornerRadius: Float = 0f
         set(value) {
             field = value
-            if(value >= 0) {
+            if (value >= 0) {
                 shape.corners.rx = value
                 shape.corners.ry = value
             } else if (value == DEFAULT_ROUND_RADIUS) {
@@ -206,18 +207,16 @@ data class BarChartItem<Data>(
         shape.render = false
     }
 
-    var savedState: Pair<Float,Float> = Pair(0f,0f)
+    var savedState: Pair<Float, Float> = Pair(0f, 0f)
 
     override fun onPreAnimation() {
-        savedState = Pair(y,length)
+        savedState = Pair(y, length)
         y += length
         length = 0f
         shape.render = true
     }
 
-    override fun onPostAnimation() {
-
-    }
+    override fun onPostAnimation() {}
 
     override fun onAnimate(delta: Float) {
         y = (savedState.first + savedState.second) - (savedState.second * delta)
@@ -226,7 +225,7 @@ data class BarChartItem<Data>(
 
     fun getShapes(): ArrayList<Shape> {
         if (shapes.isEmpty()) {
-            if(backgroundOptions.showBackground) {
+            if (backgroundOptions.showBackground) {
                 shapes = arrayListOf(backgroundOptions.background, shape)
                 return shapes
             }
@@ -256,15 +255,28 @@ data class BarChartItem<Data>(
                 background.color.setColor(field)
             }
 
+        var strokeWidth: Float = 1.dp
+            set(value){
+                field = value
+                background.strokeWidth = value
+            }
+
+        var strokeColor: MutableColor = MutableColor()
+            set(value) {
+                field = value
+                background.showStroke = true
+                background.strokeColor?.setColor(field)
+            }
+
         var height: Float = length
-            set(value ) {
+            internal set(value) {
                 field = value
                 background.dimension.height = value
                 background.dimension.height += (padding * 2)
             }
 
         var y: Float = 0f
-            set(value ) {
+            internal set(value) {
                 field = value
                 background.coordinate.y = value
                 background.coordinate.y -= (padding * 2)

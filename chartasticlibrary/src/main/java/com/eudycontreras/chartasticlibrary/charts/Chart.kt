@@ -1,6 +1,5 @@
 package com.eudycontreras.chartasticlibrary.charts
 
-import android.view.View
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 

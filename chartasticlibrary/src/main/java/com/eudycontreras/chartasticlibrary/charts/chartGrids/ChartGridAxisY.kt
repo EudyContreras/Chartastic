@@ -202,17 +202,15 @@ class ChartGridAxisY(
             is Float.Companion -> {
                 val pointValues = mutableListOf<Float>()
                 val values = valueY.map { it.value.toFloat()}.sortedByDescending { it }
-                val max = values.max()!!
+                val max = values.max()!!.roundToNearest()
                 val min = values.min()!!
 
-                val rMax = max.roundToNearest()
-
                 for (count in 0 until pointCount) {
-                    val value = rMax / pointCount.toFloat()
+                    val value = max / pointCount.toFloat()
                     val point = value * count.toFloat()
                     pointValues.add(point.roundToNearest())
                 }
-                pointValues.add(rMax)
+                pointValues.add(max)
 
                 points.addAll(pointValues.sortedByDescending { it }.map { it.toString() })
 
@@ -221,17 +219,15 @@ class ChartGridAxisY(
             is Int.Companion -> {
                 val pointValues = mutableListOf<Int>()
                 val values = valueY.map { it.value.toInt()}.sortedByDescending { it }
-                val max = values.max()!!
+                val max = values.max()!!.roundToNearest()
                 val min = values.min()!!
 
-                val rMax = max.roundToNearest()
-
                 for (count in 0 until pointCount) {
-                    val value = rMax / pointCount.toFloat()
+                    val value = max / pointCount.toFloat()
                     val point = value * count.toFloat()
                     pointValues.add(point.toInt().roundToNearest())
                 }
-                pointValues.add(rMax)
+                pointValues.add(max)
 
                 points.addAll(pointValues.sortedByDescending { it }.map { it.toString() })
 
@@ -240,17 +236,15 @@ class ChartGridAxisY(
             is Double.Companion -> {
                 val pointValues = mutableListOf<Double>()
                 val values = valueY.map { it.value.toDouble()}.sortedByDescending { it }
-                val max = values.max()!!
+                val max = values.max()!!.roundToNearest()
                 val min = values.min()!!
 
-                val rMax = max.roundToNearest()
-
                 for (count in 0 until pointCount) {
-                    val value = rMax / pointCount.toFloat()
+                    val value = max / pointCount.toFloat()
                     val point = value * count.toDouble()
                     pointValues.add(point.roundToNearest())
                 }
-                pointValues.add(rMax)
+                pointValues.add(max)
 
                 points.addAll(pointValues.sortedByDescending { it }.map { it.toString() })
 

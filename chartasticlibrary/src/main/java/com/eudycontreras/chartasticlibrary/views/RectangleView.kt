@@ -107,14 +107,25 @@ class RectangleView : View, ChartView {
 
         if (parent != null) {
             if (parent is ScrollView) {
+                parent.getDrawingRect(scrollBounds)
+
+                var top = this.y
+                var bottom = top + this.height
+
+                if (scrollBounds.top < (top + ((bottom - top) * sizeRatio)) && scrollBounds.bottom > (bottom - ((bottom - top) * sizeRatio))) {
+                    if (!fullyVisible) {
+                        fullyVisible = true
+                        onFullyVisible?.invoke(this)
+                    }
+                }
                 parent.viewTreeObserver.addOnScrollChangedListener {
                     val scrollY = parent.scrollY
                     val scrollX = parent.scrollX
 
                     parent.getDrawingRect(scrollBounds)
 
-                    val top = this.y
-                    val bottom = top + this.height
+                    top = this.y
+                    bottom = top + this.height
 
                     if (scrollBounds.top < (top + ((bottom - top) * sizeRatio)) && scrollBounds.bottom > (bottom - ((bottom - top) * sizeRatio))) {
                         if (!fullyVisible) {
@@ -131,26 +142,26 @@ class RectangleView : View, ChartView {
     private fun findScrollParent(parent: ViewGroup): ViewParent? {
         val property: Property<ViewGroup?> = Property(parent)
 
+       fun digOutParent(parent: ViewGroup?) {
+            if (parent != null) {
+                if (parent is ScrollView || parent is NestedScrollView) {
+                    property.setValue(parent)
+                } else {
+                    digOutParent(parent.parent as ViewGroup)
+                }
+            } else {
+                property.setValue(null)
+            }
+        }
+
         return if(parent !is ScrollView && parent !is NestedScrollView) {
 
-            digOutParent(parent.parent as ViewGroup, property)
+            digOutParent(parent.parent as ViewGroup)
 
             property.getValue()
 
         }else {
             parent
-        }
-    }
-
-    private fun digOutParent(parent: ViewGroup?, property: Property<ViewGroup?>) {
-        if (parent != null) {
-            if (parent is ScrollView || parent is NestedScrollView) {
-                property.setValue(parent)
-            } else {
-                digOutParent(parent.parent as ViewGroup, property)
-            }
-        } else {
-            property.setValue(null)
         }
     }
 

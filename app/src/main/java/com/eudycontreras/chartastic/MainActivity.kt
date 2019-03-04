@@ -2,10 +2,10 @@ package com.eudycontreras.chartastic
 
 import android.os.Bundle
 import android.util.Log
+import android.view.animation.OvershootInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
-import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
+import com.eudycontreras.chartasticlibrary.charts.chartAnimation.BarAnimation
 import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChart
 import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChartItem
@@ -43,28 +43,37 @@ class MainActivity : AppCompatActivity() {
         val color = MutableColor(ContextCompat.getColor(this, R.color.colorAccent))
 
         val coders = arrayOf(
-            Coder("Emil", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Jake", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Zara", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Mike", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Liza", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Maria", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Jose", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Lena", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Liza", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (0..10_001).random(), color.adjust(1.2f))
+            Coder("Emil", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Jake", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Zara", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Mike", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Liza", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Maria", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Jose", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Lena", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Liza", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f))
 
         )
 
@@ -96,7 +105,15 @@ class MainActivity : AppCompatActivity() {
                 createRecord(coders[18]),
                 createRecord(coders[19]),
                 createRecord(coders[20]),
-                createRecord(coders[21])
+                createRecord(coders[21]),
+                createRecord(coders[22]),
+                createRecord(coders[23]),
+                createRecord(coders[24]),
+                createRecord(coders[25]),
+                createRecord(coders[26]),
+                createRecord(coders[27]),
+                createRecord(coders[28]),
+                createRecord(coders[29])
             )
         )
 
@@ -104,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
         val chartData = BarChartData(dataTable, "Coder", "LOC")
 
-        val range = (7..coders.size).random()
+        val range = ((coders.size * 0.7).toInt()..coders.size).random()
 
         for (i in 0 until range) {
             val coder = coders[i]
@@ -126,19 +143,31 @@ class MainActivity : AppCompatActivity() {
                 ), Gradient.LEFT_TO_RIGHT)
             }
             item.backgroundOptions.padding = 0.dp
-            item.backgroundOptions.color = MutableColor.rgba(90, 97, 98, 0.2f)
+            item.backgroundOptions.color = MutableColor.rgba(90, 96, 98, 0.15f)
             item.backgroundOptions.showBackground = true
 
             chartData.addBarChartItem(item)
         }
 
         val chart = BarChart(this, chartData)
-        chart.barRevealAnimation = ChartAnimation().apply {
+
+        chart.acrossGradient = Gradient(arrayOf(
+            MutableColor(255, 40, 100, 190),
+            MutableColor(255, 40, 190, 100),
+            MutableColor(255, 190, 190, 30),
+            MutableColor(255, 190, 40, 40),
+            MutableColor(255, 190, 190, 30),
+            MutableColor(255, 40, 190, 100),
+            MutableColor(255, 40, 100, 190)
+        ), Gradient.LEFT_TO_RIGHT)
+
+        chart.barRevealAnimation = BarAnimation().apply {
             delay = 100
             duration = 350
-            stagger = 50
+            stagger = 80
             sequential = true
-            interpolator = LinearOutSlowInInterpolator()
+            type = BarAnimation.AnimationType.EDGE_TO_CENTER
+            interpolator = OvershootInterpolator()
             onEnd = {
                 Log.d(name, "Animation done")
             }

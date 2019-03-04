@@ -7,6 +7,7 @@ data class Gradient(
     val colors: Array<MutableColor>,
     val type: Int = TOP_TO_BOTTOM
 ) {
+
     companion object {
         const val TOP_TO_BOTTOM = 0
         const val BOTTOM_TO_TOP = 1

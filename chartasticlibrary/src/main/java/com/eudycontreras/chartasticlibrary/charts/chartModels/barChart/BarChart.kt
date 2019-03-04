@@ -15,11 +15,9 @@ import com.eudycontreras.chartasticlibrary.charts.chartGrids.ChartGridAxisY
 import com.eudycontreras.chartasticlibrary.charts.chartInterceptor.ValueInterceptor
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.extensions.dp
+import com.eudycontreras.chartasticlibrary.extensions.roundToNearest
 import com.eudycontreras.chartasticlibrary.global.mapRange
-import com.eudycontreras.chartasticlibrary.properties.Bounds
-import com.eudycontreras.chartasticlibrary.properties.Coordinate
-import com.eudycontreras.chartasticlibrary.properties.Dimension
-import com.eudycontreras.chartasticlibrary.properties.MutableColor
+import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 
 /**
@@ -70,7 +68,9 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
 
     var showGridBorder: ChartGrid.Border = ChartGrid.Border.NONE
 
-    var barRevealAnimation: ChartAnimation? = null
+    var acrossGradient: Gradient? = null
+
+    var barRevealAnimation: ChartAnimation<List<ChartAnimation.Animateable>>? = null
 
     private var barsRevealed: Boolean = false
 
@@ -95,9 +95,9 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
 
         }
 
-        val spacing = 12.dp
+        val spacingMultiplier = 0.35f
 
-        buildBars(mYValue, spacing)
+        buildBars(mYValue, spacingMultiplier)
 
         buildInterceptor()
     }
@@ -138,7 +138,7 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
     }
 
     private fun buildGrid(padding: Float, bounds: Bounds) {
-        chartGrid.valueYPointCount = 10
+        chartGrid.valueYPointCount = 16
         chartGrid.pointLineColor = MutableColor.rgba(130, 130, 130, 0.35f)
         chartGrid.pointLineThickness = 0.8f.dp
         chartGrid.bounds = bounds
@@ -159,7 +159,7 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
     }
 
     private fun buildInterceptor() {
-        interceptor.visible = false
+        interceptor.visible = true
         interceptor.lineColor = MutableColor.rgb(255, 255, 255)
         interceptor.markerFillColor = MutableColor.rgb(0, 150, 235)
         interceptor.markerStrokeColor = MutableColor.rgb(255, 255, 255)
@@ -171,25 +171,51 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
         interceptor.build(chartGrid.drawableZone)
     }
 
-    private fun buildBars(value: Int, spacing: Float) {
+    private fun buildBars(value: Int, spacingMultiplier: Float) {
         val bounds = chartGrid.drawableZone.copyProps()
 
-        var lastBarX = bounds.coordinate.x + spacing
+        var lastBarX = bounds.coordinate.x
 
         for(bar in data.getBarChartItems()) {
+            val max = chartGrid.getGridValueY(value).maxY.toString().toFloat().roundToNearest()
             bar.length = mapRange(
                 bar.value.toString().toFloat(),
                 0f,
-                chartGrid.getGridValueY(value).maxY.toString().toFloat(),
+                max,
                 0f,
                 bounds.dimension.height)
-            bar.thickness = (bounds.dimension.width / data.getBarChartItems().size - 1) - (spacing)
-            bar.x = lastBarX
+            val thickness = (bounds.dimension.width / data.getBarChartItems().size - 1)
+            bar.thickness = (bounds.dimension.width / data.getBarChartItems().size - 1) - (thickness * spacingMultiplier)
+            bar.x = lastBarX + (thickness * spacingMultiplier)
             bar.y = (bounds.coordinate.y + bounds.dimension.height) - bar.length
             bar.build()
-            lastBarX += ((bounds.dimension.width) / (data.getBarChartItems().size)) - ((spacing) / data.getBarChartItems().size)
+            lastBarX += ((bounds.dimension.width) / (data.getBarChartItems().size)) - ((thickness * spacingMultiplier) / data.getBarChartItems().size)
+
             bar.backgroundOptions.height = bounds.dimension.height
             bar.backgroundOptions.y = bounds.coordinate.y
+        }
+
+        acrossGradient?.let {
+            if (data.getBarChartItems().isNotEmpty()) {
+
+                val last = data.getBarChartItems()[data.getBarChartItems().size -1]
+                val longest = data.getBarChartItems().sortedByDescending { it.length }.first()
+
+                val mainX = data.getBarChartItems()[0].x
+                val mainY = longest.y
+
+                val mainWidth = (last.x + last.thickness) - mainX
+                val mainHeight = (longest.y + longest.length) - mainY
+
+                for (bar in data.getBarChartItems()) {
+                    bar.shape.shader = Shape.getShader(
+                        it,
+                        mainX,
+                        mainY,
+                        mainWidth,
+                        mainHeight)
+                }
+            }
         }
 
         view.onFullyVisible = {
