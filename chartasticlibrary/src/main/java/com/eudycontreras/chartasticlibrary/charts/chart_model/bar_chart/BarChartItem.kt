@@ -3,10 +3,10 @@ package com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart
 import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
-import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
-import com.eudycontreras.chartasticlibrary.utilities.global.ShapeStyle
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.global.ShapeStyle
 
 
 /**
@@ -266,7 +266,7 @@ data class BarChartItem<Data>(
             }
 
         var strokeWidth: Float = 1.dp
-            set(value){
+            set(value) {
                 field = value
                 background.strokeWidth = value
             }

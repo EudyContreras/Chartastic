@@ -3,8 +3,8 @@ package com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart
 import com.eudycontreras.chartasticlibrary.charts.ChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTable
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableGroup
-import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableGrouper
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
+import com.eudycontreras.chartasticlibrary.utilities.global.DataTableGrouper
 
 /**
  * Created by eudycontreras.
@@ -15,7 +15,7 @@ class BarChartData(
     private val keyX: String = "",
     private val keyY: String = "",
     private val grouper: DataTableGrouper? = null
-): ChartData {
+) : ChartData {
     val valueX: List<DataTableValue>
         get() = dataTable.getValuesForColumn(keyX)
 
@@ -29,7 +29,7 @@ class BarChartData(
         get() = dataTable.getTypeForColumn(keyY)
 
     val groupBy: DataTableValue?
-        get() =  dataTable.getAttribute(grouper?.first)
+        get() = dataTable.getAttribute(grouper?.first)
 
     val groupTarget: DataTableGroup.GroupPointer?
         get() = grouper?.second

@@ -6,11 +6,11 @@ import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_text.ChartText
-import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
-import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 
 /**
  * Created by eudycontreras.
@@ -54,7 +54,7 @@ class ChartGrid {
     private var showYText = true
 
     var valueYPointCount: Int
-        get(){
+        get() {
             return mValueYPointCount
         }
         set(value) {
@@ -65,13 +65,17 @@ class ChartGrid {
 
     var pointLineColor: MutableColor
         get() = mPointLineColor
-        set(value) {mPointLineColor = value}
+        set(value) {
+            mPointLineColor = value
+        }
 
     private var mPointLineThickness = 1.dp
 
     var pointLineThickness: Float
         get() = mPointLineThickness
-        set(value) {mPointLineThickness = value}
+        set(value) {
+            mPointLineThickness = value
+        }
 
     init {
         valuesY[ChartGridAxisY.LEFT] = ChartGridAxisY(Paint(), ChartGridAxisY.LEFT, this)
@@ -84,7 +88,8 @@ class ChartGrid {
     ) {
         borders.forEach { it.shadowPosition = LightSource.Position.BOTTOM_LEFT }
 
-        val left = valuesY[ChartGridAxisY.LEFT]!!.getValues().second + valuesY[ChartGridAxisY.RIGHT]!!.getValues().second
+        val left =
+            valuesY[ChartGridAxisY.LEFT]!!.getValues().second + valuesY[ChartGridAxisY.RIGHT]!!.getValues().second
         val right = valuesY[ChartGridAxisY.RIGHT]!!.getValues().third + valuesY[ChartGridAxisY.LEFT]!!.getValues().third
 
         val top = bounds.coordinate.y
@@ -100,7 +105,8 @@ class ChartGrid {
 
         borders[Border.BOTTOM.value].coordinate.x = left
         borders[Border.BOTTOM.value].coordinate.y = (top + bottom) - borders[Border.BOTTOM.value].dimension.height
-        borders[Border.BOTTOM.value].dimension.width = Math.abs(left - right) +  borders[Border.LEFT.value].dimension.width
+        borders[Border.BOTTOM.value].dimension.width =
+            Math.abs(left - right) + borders[Border.LEFT.value].dimension.width
 
         borders[Border.RIGHT.value].coordinate.x = left + Math.abs(left - right)
         borders[Border.RIGHT.value].coordinate.y = top
@@ -112,7 +118,8 @@ class ChartGrid {
         }
 
         val dimension = Dimension().apply {
-            width = (borders[Border.RIGHT.value].coordinate.x - coordinates.x) - borders[Border.RIGHT.value].dimension.width
+            width =
+                (borders[Border.RIGHT.value].coordinate.x - coordinates.x) - borders[Border.RIGHT.value].dimension.width
             height = (borders[Border.BOTTOM.value].coordinate.y - coordinates.y)
         }
 
@@ -137,8 +144,8 @@ class ChartGrid {
                 line.dimension.width = borders[Border.TOP.value].dimension.width
             } else {
 
-                if (index < values.first.size -1) {
-                    val shift =  index + 1
+                if (index < values.first.size - 1) {
+                    val shift = index + 1
                     val next = values.first[shift].y
 
                     if (value == ChartGridAxisY.LEFT) {

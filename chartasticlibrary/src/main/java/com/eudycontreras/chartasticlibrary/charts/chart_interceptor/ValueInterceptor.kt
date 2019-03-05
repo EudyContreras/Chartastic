@@ -4,10 +4,10 @@ import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
-import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Circle
 import com.eudycontreras.chartasticlibrary.shapes.Line
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 
 /**
  * Created by eudycontreras.
@@ -41,7 +41,7 @@ class ValueInterceptor : TouchableElement {
         }
 
     var markerRadius: Float = 30.dp
-        set(value){
+        set(value) {
             field = value
             marker.radius = value
         }
@@ -186,7 +186,7 @@ class ValueInterceptor : TouchableElement {
 
             lineLeft.dimension.width = (marker.centerX - (marker.radius / 2)) - bounds.left
 
-            lineRight.coordinate.x = (marker.centerX + (marker.radius/ 2))
+            lineRight.coordinate.x = (marker.centerX + (marker.radius / 2))
             lineRight.dimension.width = bounds.right - lineRight.coordinate.x
         }
 
@@ -196,13 +196,13 @@ class ValueInterceptor : TouchableElement {
             marker.centerY = (value - shiftOffsetY)
             if (marker.centerY < bounds.top) {
                 marker.centerY = bounds.top
-            } else if (marker.centerY > bounds.bottom ) {
+            } else if (marker.centerY > bounds.bottom) {
                 marker.centerY = bounds.bottom
             }
 
             lineTop.dimension.height = (marker.centerY - (marker.radius / 2)) - bounds.top
 
-            lineBottom.coordinate.y = (marker.centerY + (marker.radius/ 2))
+            lineBottom.coordinate.y = (marker.centerY + (marker.radius / 2))
             lineBottom.dimension.height = bounds.bottom - lineBottom.coordinate.y
 
             lineLeft.coordinate.y = (marker.centerY)

@@ -16,13 +16,15 @@ import com.eudycontreras.chartasticlibrary.properties.MutableColor
 class ChartText(
     var text: String,
     var paint: Paint
-): ChartElement {
+) : ChartElement {
 
     private var mRender: Boolean = true
 
     override var render: Boolean
         get() = mRender
-        set(value) { mRender = value}
+        set(value) {
+            mRender = value
+        }
 
     enum class Alignment {
         LEFT,

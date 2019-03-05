@@ -9,7 +9,6 @@ data class DataTableGroup(
     var group: List<DataTable> = ArrayList(),
     var groupPointer: GroupPointer = GroupPointer.NONE
 ) {
-
     enum class GroupPointer {
         TABLE_ATTRIBUTE,
         TABLE_COLUMN,

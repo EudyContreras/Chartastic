@@ -2,15 +2,15 @@ package com.eudycontreras.chartasticlibrary.charts.chart_grid
 
 import android.graphics.Paint
 import android.graphics.Typeface
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
 import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_text.ChartText
-import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
-import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
-import com.eudycontreras.chartasticlibrary.utilities.extensions.roundToNearest
-import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.roundToNearest
+import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 
 /**
  * Created by eudycontreras.
@@ -51,14 +51,14 @@ class ChartGridAxisY(
         data: BarChartData,
         bounds: Bounds,
         pointCount: Int
-    ){
-       when (type) {
-           LEFT -> buildLeft(data, bounds, pointCount)
-           RIGHT -> buildRight(data, bounds, pointCount)
-       }
+    ) {
+        when (type) {
+            LEFT -> buildLeft(data, bounds, pointCount)
+            RIGHT -> buildRight(data, bounds, pointCount)
+        }
     }
 
-    private fun buildLeft(data:BarChartData, bounds: Bounds, pointCount: Int) {
+    private fun buildLeft(data: BarChartData, bounds: Bounds, pointCount: Int) {
         val values = data.valueY
         val type = data.valueTypeY
 
@@ -89,7 +89,8 @@ class ChartGridAxisY(
             margin = reference.x + paddingRight
 
             val top = reference.y
-            val bottom = (bounds.coordinate.y + bounds.dimension.height) - (grid.getBorderThickness(ChartGrid.Border.BOTTOM))
+            val bottom =
+                (bounds.coordinate.y + bounds.dimension.height) - (grid.getBorderThickness(ChartGrid.Border.BOTTOM))
 
             val height: Float = (bottom - top)
 
@@ -157,7 +158,8 @@ class ChartGridAxisY(
             margin = (reference.x - paddingLeft) - grid.getBorderThickness(ChartGrid.Border.RIGHT)
 
             val top = reference.y
-            val bottom = (bounds.coordinate.y + bounds.dimension.height) - (grid.getBorderThickness(ChartGrid.Border.BOTTOM))
+            val bottom =
+                (bounds.coordinate.y + bounds.dimension.height) - (grid.getBorderThickness(ChartGrid.Border.BOTTOM))
 
             val height: Float = (bottom - top)
 
@@ -195,13 +197,17 @@ class ChartGridAxisY(
         this.values = Triple(chartTexts, bounds.coordinate.x, margin)
     }
 
-    private fun createValues(valueY: List<DataTableValue>, type: Any, pointCount: Int): Triple<List<Any>,List<String>,Pair<Any,Any>>? {
+    private fun createValues(
+        valueY: List<DataTableValue>,
+        type: Any,
+        pointCount: Int
+    ): Triple<List<Any>, List<String>, Pair<Any, Any>>? {
         val points = mutableListOf<String>()
 
-        return when(type) {
+        return when (type) {
             is Float.Companion -> {
                 val pointValues = mutableListOf<Float>()
-                val values = valueY.map { it.value.toFloat()}.sortedByDescending { it }
+                val values = valueY.map { it.value.toFloat() }.sortedByDescending { it }
                 val max = values.max()!!.roundToNearest()
                 val min = values.min()!!
 
@@ -214,11 +220,11 @@ class ChartGridAxisY(
 
                 points.addAll(pointValues.sortedByDescending { it }.map { it.toString() })
 
-                return Triple<List<Any>,List<String>,Pair<Any,Any>>(values, points, Pair(max,min))
+                return Triple<List<Any>, List<String>, Pair<Any, Any>>(values, points, Pair(max, min))
             }
             is Int.Companion -> {
                 val pointValues = mutableListOf<Int>()
-                val values = valueY.map { it.value.toInt()}.sortedByDescending { it }
+                val values = valueY.map { it.value.toInt() }.sortedByDescending { it }
                 val max = values.max()!!.roundToNearest()
                 val min = values.min()!!
 
@@ -231,11 +237,11 @@ class ChartGridAxisY(
 
                 points.addAll(pointValues.sortedByDescending { it }.map { it.toString() })
 
-                return Triple<List<Any>,List<String>,Pair<Any,Any>>(values, points, Pair(max,min))
+                return Triple<List<Any>, List<String>, Pair<Any, Any>>(values, points, Pair(max, min))
             }
             is Double.Companion -> {
                 val pointValues = mutableListOf<Double>()
-                val values = valueY.map { it.value.toDouble()}.sortedByDescending { it }
+                val values = valueY.map { it.value.toDouble() }.sortedByDescending { it }
                 val max = values.max()!!.roundToNearest()
                 val min = values.min()!!
 
@@ -248,7 +254,7 @@ class ChartGridAxisY(
 
                 points.addAll(pointValues.sortedByDescending { it }.map { it.toString() })
 
-                return Triple<List<Any>,List<String>,Pair<Any,Any>>(values, points, Pair(max,min))
+                return Triple<List<Any>, List<String>, Pair<Any, Any>>(values, points, Pair(max, min))
             }
             else -> null
         }
