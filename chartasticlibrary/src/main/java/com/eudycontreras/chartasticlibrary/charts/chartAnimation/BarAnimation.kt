@@ -8,8 +8,8 @@ import androidx.core.math.MathUtils
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
 import com.eudycontreras.chartasticlibrary.charts.ChartView
-import com.eudycontreras.chartasticlibrary.extensions.asFloat
-import com.eudycontreras.chartasticlibrary.global.mapRange
+import com.eudycontreras.chartasticlibrary.utilities.extensions.asFloat
+import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 
 /**
  * Created by eudycontreras.

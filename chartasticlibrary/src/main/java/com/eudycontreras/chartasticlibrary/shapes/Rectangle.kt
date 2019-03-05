@@ -7,7 +7,7 @@ import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableShape
-import com.eudycontreras.chartasticlibrary.extensions.drawRoundRect
+import com.eudycontreras.chartasticlibrary.utilities.extensions.drawRoundRect
 
 /**
  * Created by eudycontreras.
@@ -27,6 +27,11 @@ class Rectangle: Shape(), TouchableShape {
 
     override fun render(path: Path, p: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
+            return
+        }
+
+        if (style != null) {
+            style?.invoke(canvas, p, path, coordinate.y, coordinate.y, dimension.width, dimension.height)
             return
         }
 

@@ -1,6 +1,6 @@
 package com.eudycontreras.chartasticlibrary.properties
 
-import com.eudycontreras.chartasticlibrary.global.AndroidColor
+import com.eudycontreras.chartasticlibrary.utilities.global.AndroidColor
 
 
 /**

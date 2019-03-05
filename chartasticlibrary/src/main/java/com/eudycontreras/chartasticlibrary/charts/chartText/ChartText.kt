@@ -5,7 +5,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
-import com.eudycontreras.chartasticlibrary.extensions.sp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.Dimension
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
 

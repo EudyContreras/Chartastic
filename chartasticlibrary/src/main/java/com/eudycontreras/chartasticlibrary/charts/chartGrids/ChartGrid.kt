@@ -6,8 +6,8 @@ import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chartText.ChartText
-import com.eudycontreras.chartasticlibrary.extensions.dp
-import com.eudycontreras.chartasticlibrary.extensions.sp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line

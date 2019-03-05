@@ -2,7 +2,8 @@ package com.eudycontreras.chartasticlibrary
 
 import android.graphics.*
 import android.view.MotionEvent
-import com.eudycontreras.chartasticlibrary.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.global.ShapeStyle
 import com.eudycontreras.chartasticlibrary.properties.*
 
 /**
@@ -25,6 +26,8 @@ abstract class Shape {
     var shadowPosition: LightSource.Position = LightSource.Position.BOTTOM_LEFT
 
     var touchProcessor: ((Shape, MotionEvent, Float, Float) -> Unit)? = null
+
+    var style: ShapeStyle? = null
 
     val left: Float
         get() = coordinate.x
@@ -97,9 +100,7 @@ abstract class Shape {
         shader = null
     }
 
-    fun update(delta: Float) {
-
-    }
+    fun update(delta: Float) {}
 
     abstract fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties)
 

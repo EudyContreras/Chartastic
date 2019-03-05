@@ -4,7 +4,7 @@ import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
-import com.eudycontreras.chartasticlibrary.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Circle
 import com.eudycontreras.chartasticlibrary.shapes.Line

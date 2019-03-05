@@ -14,11 +14,12 @@ import com.eudycontreras.chartasticlibrary.charts.chartGrids.ChartGrid
 import com.eudycontreras.chartasticlibrary.charts.chartGrids.ChartGridAxisY
 import com.eudycontreras.chartasticlibrary.charts.chartInterceptor.ValueInterceptor
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
-import com.eudycontreras.chartasticlibrary.extensions.dp
-import com.eudycontreras.chartasticlibrary.extensions.roundToNearest
-import com.eudycontreras.chartasticlibrary.global.mapRange
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.roundToNearest
+import com.eudycontreras.chartasticlibrary.utilities.global.HighlightCriteria
+import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 
 /**
  * Created by eudycontreras.
@@ -67,6 +68,8 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
     var showDataBarTooltips: Boolean = false
 
     var showGridBorder: ChartGrid.Border = ChartGrid.Border.NONE
+
+    var barHighlightCriteria: HighlightCriteria? = null
 
     var acrossGradient: Gradient? = null
 
@@ -159,7 +162,7 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
     }
 
     private fun buildInterceptor() {
-        interceptor.visible = true
+        interceptor.visible = false
         interceptor.lineColor = MutableColor.rgb(255, 255, 255)
         interceptor.markerFillColor = MutableColor.rgb(0, 150, 235)
         interceptor.markerStrokeColor = MutableColor.rgb(255, 255, 255)
@@ -221,6 +224,17 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
         view.onFullyVisible = {
             if (!barsRevealed) {
                 barsRevealed = true
+                barRevealAnimation?.onEnd = {
+                    data.getBarChartItems().forEach { bar ->
+                        barHighlightCriteria?.let {
+                            if (it.invoke(bar.data)) {
+                                if (bar.highlightable) {
+                                    bar.applyHighlight()
+                                }
+                            }
+                        }
+                    }
+                }
                 barRevealAnimation?.animate(view, data.getBarChartItems())
             }
         }

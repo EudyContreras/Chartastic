@@ -12,7 +12,7 @@ import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChartI
 import com.eudycontreras.chartasticlibrary.charts.data.DataTable
 import com.eudycontreras.chartasticlibrary.charts.data.DataTableMatrix
 import com.eudycontreras.chartasticlibrary.charts.data.MatrixProperties
-import com.eudycontreras.chartasticlibrary.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.Gradient
 import com.eudycontreras.chartasticlibrary.properties.LightSource
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
@@ -57,7 +57,6 @@ class MainActivity : AppCompatActivity() {
             Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
             Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
             Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
-
             Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
             Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
             Coder("Carlos", (1000..10_001).random(), color.adjust(1.2f)),
@@ -135,6 +134,9 @@ class MainActivity : AppCompatActivity() {
             item.activeColor = MutableColor.fromColor(color).subtractGreen(45).subtractBlue(45)
             item.hoverColor = MutableColor.fromColor(color).addGreen(55).addBlue(55)
             item.cornerRadius = BarChartItem.DEFAULT_ROUND_RADIUS
+            item.barStyle = { canvas, paint, path, x, y, width, height ->
+
+            }
             if (false == true){
                 item.gradient = Gradient(arrayOf(
                     MutableColor.fromColor(color),
@@ -160,6 +162,10 @@ class MainActivity : AppCompatActivity() {
             MutableColor(255, 40, 190, 100),
             MutableColor(255, 40, 100, 190)
         ), Gradient.LEFT_TO_RIGHT)
+
+        chart.barHighlightCriteria = { it as Coder
+            it.name.contentEquals("Jose")
+        }
 
         chart.barRevealAnimation = BarAnimation().apply {
             delay = 100

@@ -5,9 +5,9 @@ import android.graphics.Typeface
 import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chartText.ChartText
 import com.eudycontreras.chartasticlibrary.charts.data.DataTableValue
-import com.eudycontreras.chartasticlibrary.extensions.dp
-import com.eudycontreras.chartasticlibrary.extensions.roundToNearest
-import com.eudycontreras.chartasticlibrary.extensions.sp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.roundToNearest
+import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox

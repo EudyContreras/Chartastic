@@ -1,7 +1,7 @@
 package com.eudycontreras.chartasticlibrary.properties
 
 import androidx.annotation.ColorInt
-import com.eudycontreras.chartasticlibrary.global.AndroidColor
+import com.eudycontreras.chartasticlibrary.utilities.global.AndroidColor
 
 
 /**

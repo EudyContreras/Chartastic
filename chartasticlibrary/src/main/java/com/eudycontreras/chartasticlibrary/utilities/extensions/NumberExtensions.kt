@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.extensions
+package com.eudycontreras.chartasticlibrary.utilities.extensions
 
 import android.content.res.Resources
 

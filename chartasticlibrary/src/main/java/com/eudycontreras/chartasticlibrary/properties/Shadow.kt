@@ -5,8 +5,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
-import com.eudycontreras.chartasticlibrary.extensions.drawRoundRect
-import com.eudycontreras.chartasticlibrary.global.mapRange
+import com.eudycontreras.chartasticlibrary.utilities.extensions.drawRoundRect
+import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 import com.eudycontreras.chartasticlibrary.shapes.Circle
 
 

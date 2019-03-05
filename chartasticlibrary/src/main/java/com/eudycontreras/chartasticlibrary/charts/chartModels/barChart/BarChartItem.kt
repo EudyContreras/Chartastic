@@ -3,7 +3,8 @@ package com.eudycontreras.chartasticlibrary.charts.chartModels.barChart
 import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
-import com.eudycontreras.chartasticlibrary.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.global.ShapeStyle
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 
@@ -76,6 +77,10 @@ data class BarChartItem<Data>(
                 }
             }
         }
+
+    var barStyle: ShapeStyle? = null
+
+    var highlightable: Boolean = false
 
     var strokeColor: MutableColor?
         get() = shape.strokeColor
@@ -205,6 +210,7 @@ data class BarChartItem<Data>(
 
         shape.touchProcessor = touchProcessor
         shape.render = false
+        shape.style = barStyle
     }
 
     var savedState: Pair<Float, Float> = Pair(0f, 0f)
@@ -232,6 +238,10 @@ data class BarChartItem<Data>(
             shapes = arrayListOf(shape)
         }
         return shapes
+    }
+
+    fun applyHighlight() {
+        thickness = 30.dp
     }
 
     inner class BackgroundOptions {
