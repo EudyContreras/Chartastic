@@ -20,7 +20,20 @@ fun Canvas.drawRoundRect(
     corners: CornerRadii,
     paint: Paint
 ) {
-    this.drawRoundRect(path, left, top, right, bottom, corners.rx, corners.ry, corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, paint)
+    this.drawRoundRect(
+        path,
+        left,
+        top,
+        right,
+        bottom,
+        corners.rx,
+        corners.ry,
+        corners.topLeft,
+        corners.topRight,
+        corners.bottomLeft,
+        corners.bottomRight,
+        paint
+    )
 }
 
 fun Canvas.drawRoundRect(
@@ -37,7 +50,20 @@ fun Canvas.drawRoundRect(
     corners: CornerRadii,
     paint: Paint
 ) {
-    this.drawRoundRect(path, left, top, right, bottom, radiusX, radiusY, corners.topLeft, corners.topRight, corners.bottomLeft, corners.bottomRight, paint)
+    this.drawRoundRect(
+        path,
+        left,
+        top,
+        right,
+        bottom,
+        radiusX,
+        radiusY,
+        corners.topLeft,
+        corners.topRight,
+        corners.bottomLeft,
+        corners.bottomRight,
+        paint
+    )
 }
 
 fun Canvas.drawRoundRect(
@@ -57,19 +83,19 @@ fun Canvas.drawRoundRect(
     bottomRight: Boolean,
 
     paint: Paint
-){
+) {
     path.reset()
 
-    val tl = if (topLeft) Pair(radiusX, radiusY) else Pair(0f,0f)
-    val tr = if (topRight) Pair(radiusX, radiusY) else Pair(0f,0f)
-    val bl = if (bottomLeft) Pair(radiusX, radiusY) else Pair(0f,0f)
-    val br = if (bottomRight) Pair(radiusX, radiusY) else Pair(0f,0f)
+    val tl = if (topLeft) Pair(radiusX, radiusY) else Pair(0f, 0f)
+    val tr = if (topRight) Pair(radiusX, radiusY) else Pair(0f, 0f)
+    val bl = if (bottomLeft) Pair(radiusX, radiusY) else Pair(0f, 0f)
+    val br = if (bottomRight) Pair(radiusX, radiusY) else Pair(0f, 0f)
 
     val corners = arrayOf(
-        tl.first,tl.second,
-        tr.first,tr.second,
-        bl.first,bl.second,
-        br.first,br.second
+        tl.first, tl.second,
+        tr.first, tr.second,
+        bl.first, bl.second,
+        br.first, br.second
     )
 
     path.addRoundRect(left, top, right, bottom, corners.toFloatArray(), Path.Direction.CCW)

@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.charts.data
+package com.eudycontreras.chartasticlibrary.charts.chart_data
 
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
 

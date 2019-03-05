@@ -19,8 +19,6 @@ import com.eudycontreras.chartasticlibrary.charts.ChartView
 import com.eudycontreras.chartasticlibrary.properties.*
 
 
-
-
 /**
  * Created by eudycontreras.
  */
@@ -29,13 +27,14 @@ class RectangleView : View, ChartView {
     private var chartRenderer: ChartRenderer = ChartRenderer(this)
 
     constructor(context: Context, chart: Chart) : this(context) {
-         chartRenderer.addChart(chart)
+        chartRenderer.addChart(chart)
     }
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        val typedArray = context.obtainStyledAttributes(attrs, com.eudycontreras.chartasticlibrary.R.styleable.RectangleView)
+        val typedArray =
+            context.obtainStyledAttributes(attrs, com.eudycontreras.chartasticlibrary.R.styleable.RectangleView)
         try {
             setUpAttributes(typedArray)
         } finally {
@@ -71,10 +70,10 @@ class RectangleView : View, ChartView {
         val usableWidth = width - (paddingLeft + paddingRight).toFloat()
         val usableHeight = height - (paddingTop + paddingBottom).toFloat()
 
-        val bounds = Bounds(Coordinate(0f,0f), Dimension(usableWidth, usableHeight))
+        val bounds = Bounds(Coordinate(0f, 0f), Dimension(usableWidth, usableHeight))
 
         chartRenderer.shapeRenderer = ShapeRenderer(paint).apply {
-            properties.lightSource = LightSource(usableWidth/2 ,usableHeight,10f, 10f)
+            properties.lightSource = LightSource(usableWidth / 2, usableHeight, 10f, 10f)
         }
         chartRenderer.buildCharts(bounds)
 
@@ -97,7 +96,7 @@ class RectangleView : View, ChartView {
 
     private var fullyVisible: Boolean = false
 
-    override var onFullyVisible: ((ChartView)-> Unit)? = null
+    override var onFullyVisible: ((ChartView) -> Unit)? = null
 
     override fun fullyVisible(): Boolean = fullyVisible
 
@@ -142,7 +141,7 @@ class RectangleView : View, ChartView {
     private fun findScrollParent(parent: ViewGroup): ViewParent? {
         val property: Property<ViewGroup?> = Property(parent)
 
-       fun digOutParent(parent: ViewGroup?) {
+        fun digOutParent(parent: ViewGroup?) {
             if (parent != null) {
                 if (parent is ScrollView || parent is NestedScrollView) {
                     property.setValue(parent)
@@ -154,13 +153,13 @@ class RectangleView : View, ChartView {
             }
         }
 
-        return if(parent !is ScrollView && parent !is NestedScrollView) {
+        return if (parent !is ScrollView && parent !is NestedScrollView) {
 
             digOutParent(parent.parent as ViewGroup)
 
             property.getValue()
 
-        }else {
+        } else {
             parent
         }
     }

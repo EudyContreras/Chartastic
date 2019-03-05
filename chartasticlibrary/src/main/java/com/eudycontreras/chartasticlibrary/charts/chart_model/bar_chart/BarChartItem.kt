@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.charts.chartModels.barChart
+package com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart
 
 import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape

@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.charts.chartAnimation
+package com.eudycontreras.chartasticlibrary.charts.chart_animation
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -14,7 +14,7 @@ import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 /**
  * Created by eudycontreras.
  */
-class BarAnimation: ChartAnimation<List<ChartAnimation.Animateable>> {
+class BarAnimation : ChartAnimation<List<ChartAnimation.Animateable>> {
 
     override var interpolator: Interpolator = FastOutSlowInInterpolator()
 
@@ -64,7 +64,7 @@ class BarAnimation: ChartAnimation<List<ChartAnimation.Animateable>> {
         })
         valueAnimator.addUpdateListener {
             val animate = it.animatedValue.asFloat()
-            for(item in animateable) {
+            for (item in animateable) {
                 item.onAnimate(animate)
             }
             view.updateView()

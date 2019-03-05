@@ -5,8 +5,8 @@ import android.graphics.Paint
 import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
-import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 
 /**
  * Created by eudycontreras.
@@ -22,7 +22,12 @@ class BoundingBox : Shape() {
         render = true
     }
 
-    override fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
+    override fun render(
+        path: Path,
+        paint: Paint,
+        canvas: Canvas?,
+        renderingProperties: ShapeRenderer.RenderingProperties
+    ) {
         if (!render) {
             return
         }

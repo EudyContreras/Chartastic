@@ -17,7 +17,7 @@ class ShapeRenderer(
 ) {
     private val path: Path = Path()
 
-    private val mShapes =  ArrayList<Shape>()
+    private val mShapes = ArrayList<Shape>()
 
     private val shapePool = ArrayList<Shape>()
 
@@ -72,7 +72,7 @@ class ShapeRenderer(
         }
     }
 
-    class RenderingProperties{
+    class RenderingProperties {
 
         var useSystemShadow: Boolean = false
 

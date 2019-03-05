@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.charts.chartInterceptor
+package com.eudycontreras.chartasticlibrary.charts.chart_interceptor
 
 import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape

@@ -9,6 +9,7 @@ enum class Notation {
     LONG,
     CURRENCY
 }
+
 fun mapRange(value: Long, fromMin: Long, fromMax: Long, toMin: Long, toMax: Long): Long {
     return (value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin
 }

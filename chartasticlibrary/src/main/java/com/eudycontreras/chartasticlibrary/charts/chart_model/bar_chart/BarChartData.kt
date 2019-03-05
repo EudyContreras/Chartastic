@@ -1,10 +1,10 @@
-package com.eudycontreras.chartasticlibrary.charts.chartModels.barChart
+package com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart
 
 import com.eudycontreras.chartasticlibrary.charts.ChartData
-import com.eudycontreras.chartasticlibrary.charts.data.DataTable
-import com.eudycontreras.chartasticlibrary.charts.data.DataTableGroup
-import com.eudycontreras.chartasticlibrary.charts.data.DataTableGrouper
-import com.eudycontreras.chartasticlibrary.charts.data.DataTableValue
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTable
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableGroup
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableGrouper
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
 
 /**
  * Created by eudycontreras.

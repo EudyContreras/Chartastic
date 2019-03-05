@@ -2,9 +2,9 @@ package com.eudycontreras.chartasticlibrary
 
 import android.graphics.*
 import android.view.MotionEvent
+import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.utilities.global.ShapeStyle
-import com.eudycontreras.chartasticlibrary.properties.*
 
 /**
  * Created by eudycontreras.
@@ -14,7 +14,7 @@ abstract class Shape {
 
     var ownerId: Int = -1
 
-    val corners: CornerRadii by lazy { CornerRadii()}
+    val corners: CornerRadii by lazy { CornerRadii() }
 
     var render: Boolean = true
 
@@ -102,7 +102,12 @@ abstract class Shape {
 
     fun update(delta: Float) {}
 
-    abstract fun render(path: Path, paint: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties)
+    abstract fun render(
+        path: Path,
+        paint: Paint,
+        canvas: Canvas?,
+        renderingProperties: ShapeRenderer.RenderingProperties
+    )
 
     companion object {
         val MaxElevation = 50.dp
@@ -170,9 +175,9 @@ abstract class Shape {
             val array = ArrayList<Float>()
             var increase = value
             array.add(0f)
-            for (i in 0 until count-1) {
+            for (i in 0 until count - 1) {
                 array.add(increase)
-                increase += (value )
+                increase += (value)
             }
             return array.toFloatArray()
         }

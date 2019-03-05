@@ -5,9 +5,9 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
+import com.eudycontreras.chartasticlibrary.shapes.Circle
 import com.eudycontreras.chartasticlibrary.utilities.extensions.drawRoundRect
 import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
-import com.eudycontreras.chartasticlibrary.shapes.Circle
 
 
 /**
@@ -57,7 +57,7 @@ class Shadow {
         const val DEFAULT_MAX_STEP_COUNT = 20f
         const val DEFAULT_MIN_STEP_COUNT = 0f
 
-        val DefaultColor: Color = MutableColor.rgb(35,35,35)
+        val DefaultColor: Color = MutableColor.rgb(35, 35, 35)
     }
 
     private var shiftLeft: Float = 0f
@@ -78,31 +78,31 @@ class Shadow {
 
         when (position) {
             LightSource.Position.TOP_LEFT -> {
-                shiftLeft = -(elevation/2)
+                shiftLeft = -(elevation / 2)
                 shiftRight = 0f
-                shiftTop = -(elevation/2)
+                shiftTop = -(elevation / 2)
                 shiftBottom = 0f
             }
             LightSource.Position.TOP_RIGHT -> {
                 shiftLeft = 0f
-                shiftRight = -(elevation/2)
-                shiftTop = -(elevation/2)
+                shiftRight = -(elevation / 2)
+                shiftTop = -(elevation / 2)
                 shiftBottom = 0f
             }
             LightSource.Position.BOTTOM_LEFT -> {
                 shiftRight = 0f
-                shiftLeft = -(elevation/2)
-                shiftBottom = -(elevation/2)
+                shiftLeft = -(elevation / 2)
+                shiftBottom = -(elevation / 2)
                 shiftTop = 0f
             }
             LightSource.Position.BOTTOM_RIGHT -> {
-                shiftRight = -(elevation/2)
+                shiftRight = -(elevation / 2)
                 shiftLeft = 0f
-                shiftBottom = -(elevation/2)
+                shiftBottom = -(elevation / 2)
                 shiftTop = 0f
             }
             LightSource.Position.TOP_LEFT_RIGHT -> {
-                shiftTop = -(elevation/2)
+                shiftTop = -(elevation / 2)
                 shiftRight = 0f
                 shiftLeft = 0f
                 shiftBottom = 0f
@@ -111,17 +111,17 @@ class Shadow {
                 shiftTop = 0f
                 shiftRight = 0f
                 shiftLeft = 0f
-                shiftBottom = -(elevation/2)
+                shiftBottom = -(elevation / 2)
             }
             LightSource.Position.TOP_LEFT_BOTTOM -> {
                 shiftTop = 0f
                 shiftRight = 0f
-                shiftLeft = -(elevation/2)
+                shiftLeft = -(elevation / 2)
                 shiftBottom = 0f
             }
             LightSource.Position.TOP_RIGHT_BOTTOM -> {
                 shiftTop = 0f
-                shiftRight = -(elevation/2)
+                shiftRight = -(elevation / 2)
                 shiftLeft = 0f
                 shiftBottom = 0f
             }
@@ -149,13 +149,15 @@ class Shadow {
 
         val color: MutableColor = MutableColor.fromColor(shadowColorStart)
 
-        var steps = Math.round(mapRange(
-            shape.elevation,
-            Shape.MinElevation,
-            Shape.MaxElevation,
-            minStepCount,
-            maxStepCount
-        ))
+        var steps = Math.round(
+            mapRange(
+                shape.elevation,
+                Shape.MinElevation,
+                Shape.MaxElevation,
+                minStepCount,
+                maxStepCount
+            )
+        )
 
         if (steps <= 0) steps = 1
 
@@ -174,7 +176,7 @@ class Shadow {
             canvas.drawRoundRect(
                 path,
                 shiftedLeft - i,
-                shiftedTop - i ,
+                shiftedTop - i,
                 shiftedRight + i,
                 shiftedBottom + i,
                 shape.corners.rx + i,
@@ -210,7 +212,7 @@ class Shadow {
             maxStepCount
         ).toInt()
 
-        for(i: Int in 0..shape.elevation.toInt() step steps) {
+        for (i: Int in 0..shape.elevation.toInt() step steps) {
 
             val amount = mapRange(
                 i.toFloat(),
@@ -225,7 +227,7 @@ class Shadow {
 
             canvas.drawOval(
                 shiftedLeft - i,
-                shiftedTop - i ,
+                shiftedTop - i,
                 shiftedRight + i,
                 shiftedBottom + i,
                 paint
@@ -233,10 +235,10 @@ class Shadow {
         }
     }
 
-    private fun getDistance(fromX: Float, fromY: Float, toX: Float, toY: Float): Float{
+    private fun getDistance(fromX: Float, fromY: Float, toX: Float, toY: Float): Float {
         val distanceX = (toX - fromX) * (toX - fromX).toDouble()
         val distanceY = (toY - fromY) * (toY - fromY).toDouble()
 
-        return Math.sqrt( distanceY + distanceX).toFloat()
+        return Math.sqrt(distanceY + distanceX).toFloat()
     }
 }

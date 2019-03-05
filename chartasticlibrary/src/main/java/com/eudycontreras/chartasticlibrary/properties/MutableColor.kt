@@ -13,16 +13,16 @@ data class MutableColor(
     private var red: Int = 0,
     private var green: Int = 0,
     private var blue: Int = 0
-): Color() {
+) : Color() {
 
-    constructor(@ColorInt color: Int) : this(){
+    constructor(@ColorInt color: Int) : this() {
         this.alpha = AndroidColor.alpha(color)
         this.red = AndroidColor.red(color)
         this.green = AndroidColor.green(color)
         this.blue = AndroidColor.blue(color)
     }
 
-    constructor(color: MutableColor): this(){
+    constructor(color: MutableColor) : this() {
         this.alpha = color.alpha
         this.red = color.red
         this.green = color.green
@@ -44,7 +44,7 @@ data class MutableColor(
     }
 
     fun updateAlpha(alpha: Int): MutableColor {
-        if(alpha != this.alpha) {
+        if (alpha != this.alpha) {
             colorChanged = true
         }
         this.alpha = alpha
@@ -52,7 +52,7 @@ data class MutableColor(
     }
 
     fun updateAlpha(alpha: Float): MutableColor {
-        if((alpha * 255f).toInt() != this.alpha) {
+        if ((alpha * 255f).toInt() != this.alpha) {
             colorChanged = true
         }
         this.alpha = (alpha * 255f).toInt()
@@ -60,7 +60,7 @@ data class MutableColor(
     }
 
     override fun getOpacity(): Float {
-        return (alpha/255f)
+        return (alpha / 255f)
     }
 
     fun subtractAlpha(amount: Float): MutableColor {
@@ -117,7 +117,7 @@ data class MutableColor(
     }
 
     fun subtractGreen(amount: Int): MutableColor {
-        green = clamp( green - amount)
+        green = clamp(green - amount)
         return this
     }
 
@@ -175,7 +175,7 @@ data class MutableColor(
 
     companion object {
 
-        val White: Color  = MutableColor(255, 255, 255, 255)
+        val White: Color = MutableColor(255, 255, 255, 255)
         val Black: Color = MutableColor(255, 0, 0, 0)
         val Red: Color = MutableColor(255, 255, 0, 0)
         val Green: Color = MutableColor(255, 0, 255, 0)
@@ -205,7 +205,7 @@ data class MutableColor(
             )
         }
 
-        fun rgb(red: Int, green: Int, blue: Int): MutableColor{
+        fun rgb(red: Int, green: Int, blue: Int): MutableColor {
             return MutableColor(
                 alpha = 255,
                 red = red,
@@ -214,7 +214,7 @@ data class MutableColor(
             )
         }
 
-        fun rgba(red: Int, green: Int, blue: Int, alpha: Int): MutableColor{
+        fun rgba(red: Int, green: Int, blue: Int, alpha: Int): MutableColor {
             return MutableColor(
                 alpha = alpha,
                 red = red,
@@ -223,7 +223,7 @@ data class MutableColor(
             )
         }
 
-        fun rgba(red: Int, green: Int, blue: Int, alpha: Float): MutableColor{
+        fun rgba(red: Int, green: Int, blue: Int, alpha: Float): MutableColor {
             return MutableColor(
                 alpha = (alpha * 255).toInt(),
                 red = red,
@@ -236,11 +236,11 @@ data class MutableColor(
             return MutableColor(color)
         }
 
-        fun fromColor(color: Int) : MutableColor {
+        fun fromColor(color: Int): MutableColor {
             return MutableColor(color)
         }
 
-        fun fromColor(color: Color) : MutableColor {
+        fun fromColor(color: Color): MutableColor {
             return MutableColor(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue())
         }
 

@@ -31,9 +31,9 @@ data class LightSource(
         CENTER
     }
 
-    val centerPoint: Pair<Float,Float>
+    val centerPoint: Pair<Float, Float>
         get() {
-            return (x + (radius/2)) to (y + (radius/2))
+            return (x + (radius / 2)) to (y + (radius / 2))
         }
 
     fun computeShadow(shapes: List<Shape>) {
@@ -59,7 +59,9 @@ data class LightSource(
             Position.TOP_LEFT_BOTTOM -> shape.shadow?.computeShift(shape, Position.TOP_RIGHT_BOTTOM)
             Position.TOP_RIGHT_BOTTOM -> shape.shadow?.computeShift(shape, Position.TOP_LEFT_BOTTOM)
             Position.CENTER -> shape.shadow?.computeShift(shape, Position.CENTER)
-            else -> {shape.shadow?.computeShift(shape, computePosition(shape))}
+            else -> {
+                shape.shadow?.computeShift(shape, computePosition(shape))
+            }
         }
     }
 

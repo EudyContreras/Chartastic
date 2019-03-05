@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.charts.chartGrids
+package com.eudycontreras.chartasticlibrary.charts.chart_grid
 
 /**
  * Created by eudycontreras.

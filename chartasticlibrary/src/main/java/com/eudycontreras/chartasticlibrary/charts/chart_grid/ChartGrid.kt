@@ -1,11 +1,11 @@
-package com.eudycontreras.chartasticlibrary.charts.chartGrids
+package com.eudycontreras.chartasticlibrary.charts.chart_grid
 
 import android.graphics.Paint
 import android.graphics.Typeface
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
-import com.eudycontreras.chartasticlibrary.charts.chartModels.barChart.BarChartData
-import com.eudycontreras.chartasticlibrary.charts.chartText.ChartText
+import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
+import com.eudycontreras.chartasticlibrary.charts.chart_text.ChartText
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 import com.eudycontreras.chartasticlibrary.properties.*

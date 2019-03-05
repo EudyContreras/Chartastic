@@ -32,6 +32,7 @@ abstract class Color {
             else -> color
         }
     }
+
     companion object {
 
         fun colorDecToHex(r: Int, g: Int, b: Int): Int {

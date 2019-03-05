@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.charts.chartModels.barChart
+package com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart
 
 import android.content.Context
 import android.view.MotionEvent
@@ -10,9 +10,9 @@ import com.eudycontreras.chartasticlibrary.charts.Chart
 import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.ChartView
-import com.eudycontreras.chartasticlibrary.charts.chartGrids.ChartGrid
-import com.eudycontreras.chartasticlibrary.charts.chartGrids.ChartGridAxisY
-import com.eudycontreras.chartasticlibrary.charts.chartInterceptor.ValueInterceptor
+import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGrid
+import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridAxisY
+import com.eudycontreras.chartasticlibrary.charts.chart_interceptor.ValueInterceptor
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle

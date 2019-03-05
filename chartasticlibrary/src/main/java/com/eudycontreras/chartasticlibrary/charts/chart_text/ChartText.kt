@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.charts.chartText
+package com.eudycontreras.chartasticlibrary.charts.chart_text
 
 import android.graphics.Canvas
 import android.graphics.Paint

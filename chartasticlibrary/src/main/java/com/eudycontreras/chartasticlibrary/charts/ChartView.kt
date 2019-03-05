@@ -7,5 +7,4 @@ interface ChartView {
     var onFullyVisible: ((ChartView) -> Unit)?
     fun fullyVisible(): Boolean
     fun updateView()
-
 }
