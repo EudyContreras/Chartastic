@@ -9,6 +9,8 @@ This document contains information about what each element of of the bar chart s
  - [ ] The chart should support negative range values
  - [ ] The chart should be able to scrool to reveal more values.
  - [ ] The chart should be modular adaptive. Parst should be added or remove seamlessly
+ - [ ] The chart should be able to input a max and min positive range for any axis
+ - [ ] The chart should be able to input a max and min negative range for any axis
 
 Here is a list of all the element supported by the bar chart and their current status within development.
 
