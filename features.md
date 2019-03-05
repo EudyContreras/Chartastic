@@ -6,6 +6,9 @@ This document contains information about what each element of of the bar chart s
 
  - [x] The chart should be able to represent ranges from positive to negative
  - [x] The chart should be modular and allow for adding and removing elements while adapting seamlessly
+ - [ ] The chart should support negative range values
+ - [ ] The chart should be able to scrool to reveal more values.
+ - [ ] The chart should be modular adaptive. Parst should be added or remove seamlessly
 
 Here is a list of all the element supported by the bar chart and their current status within development.
 
@@ -22,6 +25,11 @@ Here is a list of all the element supported by the bar chart and their current s
         * The animations should be able to notify upon ending
    - [x] The bars should be able to have backgrounds of any color
    - [x] The bars should be able to have backgrounds with desired padding
+   - [ ] The bars backgrounds should be able to have inner shadow
+   - [ ] The bars should be able to suppor different effects
+     * **Possible effects**
+        * Ghosting: The bars have ghosted bars under
+        * The bars have animated glow around them
    - [x] The bars reveal/conceal should be able to be binded to scrolling
      * **Possible functionality**
         * The scroll bind should be controlled base on how much of the chart is visible
@@ -44,8 +52,15 @@ Here is a list of all the element supported by the bar chart and their current s
    - [ ] The bars should be able to have decorations set by the user
       * **Possible decorations:**
          * Glow at the top of the bar
+         * Drawable at the top, middle or bottom of the bar
+         * Othe options desired by the user
    - [ ] The bars should support listen types of listeners
-   
-   
+   - [ ] The bars should be able to support ordering. Ex: Highest to lowes, Highest in center, etc
+   - [ ] Allow the bars to overlap in any direction (left to right or right to left)
+   - [ ] A bar among all the bars should be highlightable with user specified high-lighting.
+       * **Possible functionality:**
+         * The highlighting should be based on user specified criteria.
+   - [ ] The user should be able to specify his/her own bar style 
+   - [ ] Each bar should be responsive to changes in neighbor bars
    
    
