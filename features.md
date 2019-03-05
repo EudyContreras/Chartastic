@@ -32,6 +32,7 @@ This document contains information about what each element of of the bar chart s
 * **Legend Element**
 * **Plot Area**
 * **Plot Area Border**
+* **Plot Area Scroller**
 * **Value Interceptor**
 * **Value Interceptor Tooltip**
 * **X Axis Label Top**
