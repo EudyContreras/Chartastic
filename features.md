@@ -11,6 +11,37 @@ This document contains information about what each element of of the bar chart s
  - [ ] The chart should be modular adaptive. Parst should be added or remove seamlessly
  - [ ] The chart should be able to input a max and min positive range for any axis
  - [ ] The chart should be able to input a max and min negative range for any axis
+ 
+## Bar Chart Elements
+
+* **Bar Series**
+* **Bar Series Dividers**
+* **Bar Cluster**
+* **Bar Cluster Dividers**
+* **Bar Tooltip**
+* **Bar Tooltip Connector**
+* **Bar Background**
+* **Bar Decoration**
+* **Data Point Marker**
+* **Data Point Label**
+* **Trend Line**
+* **Trend Line Point**
+* **Legend Area Top**
+* **Legend Area Top**
+* **Legend Area**
+* **Legend Element**
+* **Plot Area**
+* **Plot Area Border**
+* **Value Interceptor**
+* **Value Interceptor Tooltip**
+* **X Axis Label Top**
+* **X Axis label Bottom**
+* **Y Axis Label Left**
+* **Y Axis Label Right**
+* **Major Grid Lines**
+* **Minor Grid Lines**
+* **Major Tick Lines**
+* **Minor Tick Lines**
 
 Here is a list of all the element supported by the bar chart and their current status within development.
 
