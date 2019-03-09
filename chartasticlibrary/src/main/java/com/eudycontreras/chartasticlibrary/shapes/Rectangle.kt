@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableShape
+import com.eudycontreras.chartasticlibrary.properties.Shadow
 import com.eudycontreras.chartasticlibrary.utilities.extensions.drawRoundRect
 
 /**
@@ -23,26 +24,28 @@ class Rectangle: Shape(), TouchableShape {
 
     }
 
-    val paint = Paint()
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        isAntiAlias = true
+    }
 
-    override fun render(path: Path, p: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
+
+    override fun render(path: Path, p: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
 
         if (style != null) {
-            style?.invoke(canvas, p, path, coordinate.y, coordinate.y, dimension.width, dimension.height)
+            style?.invoke(canvas, paint, path, coordinate.y, coordinate.y, dimension.width, dimension.height)
             return
         }
 
-        paint.reset()
-
-        if (drawShadow) {
+        if (drawShadow && shadow?.shadowType == Shadow.Type.OUTER) {
+            paint.reset()
             if (renderingProperties.useSystemShadow) {
                 paint.setShadowLayer(elevation, 0f, 0f, shadow!!.shadowColor.updateAlpha(255).toColor())
             } else {
                 renderingProperties.lightSource?.computeShadow(this, shadowPosition)
-                shadow?.draw(this, path, paint, canvas!!)
+                shadow?.draw(this, path, paint, canvas)
             }
         }
 
@@ -53,7 +56,7 @@ class Rectangle: Shape(), TouchableShape {
             paint.shader = shader
         }
 
-        canvas?.drawRoundRect(path, left, top, right, bottom, corners, paint)
+        canvas.drawRoundRect(path, left, top, right, bottom, corners, paint)
 
         if (showStroke) {
 
@@ -62,7 +65,17 @@ class Rectangle: Shape(), TouchableShape {
                 paint.strokeWidth = strokeWidth
                 paint.color = it.toColor()
 
-                canvas?.drawRoundRect(path, left, top, right, bottom, corners, paint)
+                canvas.drawRoundRect(path, left, top, right, bottom, corners, paint)
+            }
+        }
+
+        if (drawShadow && shadow?.shadowType == Shadow.Type.INNER) {
+            paint.reset()
+            if (renderingProperties.useSystemShadow) {
+                paint.setShadowLayer(elevation, 0f, 0f, shadow!!.shadowColor.updateAlpha(255).toColor())
+            } else {
+                renderingProperties.lightSource?.computeShadow(this, shadowPosition)
+                shadow?.draw(this, path, paint, canvas)
             }
         }
     }

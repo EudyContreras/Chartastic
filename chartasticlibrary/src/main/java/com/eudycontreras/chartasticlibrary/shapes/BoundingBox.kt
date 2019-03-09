@@ -15,7 +15,7 @@ import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 class BoundingBox : Shape() {
 
     init {
-        color = MutableColor.rgba(200, 20, 20, 0.35f)
+        color = MutableColor.rgba(200, 20, 20, 0)
         strokeWidth = 1.dp
         strokeColor = MutableColor.rgba(200, 20, 20, 1f)
         showStroke = true
@@ -25,7 +25,7 @@ class BoundingBox : Shape() {
     override fun render(
         path: Path,
         paint: Paint,
-        canvas: Canvas?,
+        canvas: Canvas,
         renderingProperties: ShapeRenderer.RenderingProperties
     ) {
         if (!render) {
@@ -37,14 +37,14 @@ class BoundingBox : Shape() {
         paint.style = Paint.Style.FILL
         paint.color = color.toColor()
 
-        canvas?.drawRect(left, top, right, bottom, paint)
+        canvas.drawRect(left, top, right, bottom, paint)
 
         strokeColor?.let {
             paint.style = Paint.Style.STROKE
             paint.strokeWidth = strokeWidth
             paint.color = it.toColor()
 
-            canvas?.drawRect(left, top, right, bottom, paint)
+            canvas.drawRect(left, top, right, bottom, paint)
         }
     }
 }

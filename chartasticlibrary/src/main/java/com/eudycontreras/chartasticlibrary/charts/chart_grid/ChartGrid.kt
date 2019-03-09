@@ -1,8 +1,12 @@
 package com.eudycontreras.chartasticlibrary.charts.chart_grid
 
+import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.Typeface
 import com.eudycontreras.chartasticlibrary.Shape
+import com.eudycontreras.chartasticlibrary.ShapeRenderer
+import com.eudycontreras.chartasticlibrary.charts.ChartBoundsManager
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_text.ChartText
@@ -17,7 +21,15 @@ import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
  */
 
 
-class ChartGrid {
+class ChartGrid(private val boundsManager: ChartBoundsManager): ChartElement {
+
+    override var render: Boolean = true
+
+    private val boundsBox: Shape by lazy {
+        BoundingBox().apply {
+            this.bounds = this@ChartGrid.bounds
+        }
+    }
 
     enum class Border(var value: Int) {
         TOP(0),
@@ -35,7 +47,7 @@ class ChartGrid {
 
     lateinit var data: BarChartData
 
-    lateinit var bounds: Bounds
+    var bounds: Bounds = Bounds()
 
     lateinit var drawableZone: Bounds
 
@@ -82,14 +94,23 @@ class ChartGrid {
         valuesY[ChartGridAxisY.RIGHT] = ChartGridAxisY(Paint(), ChartGridAxisY.RIGHT, this)
     }
 
-    private fun buildBorders(
-        bounds: Bounds,
-        paddingTop: Float
+    override fun render(
+        path: Path,
+        paint: Paint,
+        canvas: Canvas,
+        renderingProperties: ShapeRenderer.RenderingProperties
     ) {
+        horizontalGridLines.forEach { it.render(path, paint, canvas, renderingProperties) }
+        borders.forEach { it.render(path, paint, canvas, renderingProperties) }
+        valuesY.getValue(ChartGridAxisY.LEFT).getElements().forEach { it.render(path, paint, canvas, renderingProperties) }
+    }
+
+    override fun build(bounds: Bounds) {
+        this.bounds.update(bounds)
+
         borders.forEach { it.shadowPosition = LightSource.Position.BOTTOM_LEFT }
 
-        val left =
-            valuesY[ChartGridAxisY.LEFT]!!.getValues().second + valuesY[ChartGridAxisY.RIGHT]!!.getValues().second
+        val left = valuesY[ChartGridAxisY.LEFT]!!.getValues().second + valuesY[ChartGridAxisY.RIGHT]!!.getValues().second
         val right = valuesY[ChartGridAxisY.RIGHT]!!.getValues().third + valuesY[ChartGridAxisY.LEFT]!!.getValues().third
 
         val top = bounds.coordinate.y
@@ -114,7 +135,7 @@ class ChartGrid {
 
         val coordinates = Coordinate().apply {
             x = borders[Border.LEFT.value].coordinate.x + borders[Border.LEFT.value].dimension.width
-            y = borders[Border.TOP.value].coordinate.y + borders[Border.TOP.value].dimension.height + paddingTop
+            y = borders[Border.TOP.value].coordinate.y + borders[Border.TOP.value].dimension.height
         }
 
         val dimension = Dimension().apply {
@@ -128,6 +149,7 @@ class ChartGrid {
 
     private fun buildLines(values: Triple<List<ChartText>, Float, Float>, placement: LinePlacement, value: Int) {
         horizontalGridLines.clear()
+
         for (index in 0 until values.first.size) {
             val text = values.first[index]
             val line = Line()
@@ -243,7 +265,7 @@ class ChartGrid {
 
     fun showYValues(
         bounds: Bounds,
-        paddingTop: Float,
+        data: BarChartData,
         paddingLeft: Float,
         paddingRight: Float,
         value: Int,
@@ -253,7 +275,7 @@ class ChartGrid {
         valuesY[value]?.let {
             it.paddingLeft = paddingLeft
             it.paddingRight = paddingRight
-            it.paddingTop = paddingTop
+            it.paddingTop = bounds.paddings?.top?:0f
             it.prepend = prepend
             it.append = append
             it.textSize = 9.sp
@@ -262,7 +284,7 @@ class ChartGrid {
             it.build(data, bounds, mValueYPointCount)
             it.showText(showYText)
 
-            buildBorders(bounds, paddingTop)
+            build(bounds)
             buildLines(it.getValues(), LinePlacement.ALIGNED, value)
         }
     }

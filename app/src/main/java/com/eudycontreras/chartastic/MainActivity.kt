@@ -13,6 +13,7 @@ import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChart
 import com.eudycontreras.chartasticlibrary.properties.Gradient
 import com.eudycontreras.chartasticlibrary.properties.LightSource
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
+import com.eudycontreras.chartasticlibrary.properties.Shadow
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.utilities.global.DataTableMatrix
 import com.eudycontreras.chartasticlibrary.utilities.global.MatrixProperties
@@ -29,11 +30,11 @@ class MainActivity : AppCompatActivity() {
 
 
         createChart(chartView1, "Chart One")
-        createChart(chartView2, "Chart Two")
+        /*createChart(chartView2, "Chart Two")
         createChart(chartView3, "Chart Three")
         createChart(chartView4, "Chart Four")
         createChart(chartView5, "Chart Five")
-        createChart(chartView6, "Chart Six")
+        createChart(chartView6, "Chart Six")*/
 
         Log.d("","")
     }
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
         val chartData = BarChartData(dataTable, "Coder", "LOC")
 
-        val range = ((coders.size * 0.7).toInt()..coders.size).random()
+        val range = ((dataTable.getRecords().size * 0.7).toInt()..dataTable.getRecords().size).random()
 
         for (i in 0 until range) {
             val coder = coders[i]
@@ -129,14 +130,12 @@ class MainActivity : AppCompatActivity() {
             item.color = color
             item.roundedTop = true
             item.roundedBottom = false
-            item.elevationShadowColor = MutableColor.fromColor(color)
+            item.elevationShadowColor = Shadow.DefaultColor
             item.elevationShadowPosition = LightSource.Position.TOP_LEFT_RIGHT
             item.activeColor = MutableColor.fromColor(color).subtractGreen(45).subtractBlue(45)
             item.hoverColor = MutableColor.fromColor(color).addGreen(55).addBlue(55)
             item.cornerRadius = BarChartItem.DEFAULT_ROUND_RADIUS
-            item.barStyle = { canvas, paint, path, x, y, width, height ->
 
-            }
             if (false == true){
                 item.gradient = Gradient(arrayOf(
                     MutableColor.fromColor(color),

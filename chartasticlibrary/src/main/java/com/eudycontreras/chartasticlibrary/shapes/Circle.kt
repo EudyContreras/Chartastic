@@ -33,7 +33,7 @@ class Circle: Shape() {
 
     val paint = Paint()
 
-    override fun render(path: Path, p: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
+    override fun render(path: Path, p: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
@@ -45,7 +45,7 @@ class Circle: Shape() {
                 paint.setShadowLayer(elevation, 0f, -elevation / 2, shadow!!.shadowColor.toColor())
             } else {
                 renderingProperties.lightSource?.computeShadow(this, shadowPosition)
-                shadow?.drawOval(this, paint, canvas!!)
+                shadow?.drawOval(this, paint, canvas)
             }
         }
 
@@ -56,7 +56,7 @@ class Circle: Shape() {
             paint.shader = shader
         }
 
-        canvas?.drawOval(left, top, right, bottom, paint)
+        canvas.drawOval(left, top, right, bottom, paint)
 
         if (showStroke) {
 
@@ -65,7 +65,7 @@ class Circle: Shape() {
                 paint.strokeWidth = strokeWidth
                 paint.color = it.toColor()
 
-                canvas?.drawOval(left, top, right, bottom, paint)
+                canvas.drawOval(left, top, right, bottom, paint)
             }
         }
     }

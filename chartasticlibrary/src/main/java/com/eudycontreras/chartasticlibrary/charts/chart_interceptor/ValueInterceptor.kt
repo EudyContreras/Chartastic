@@ -1,8 +1,11 @@
 package com.eudycontreras.chartasticlibrary.charts.chart_interceptor
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
 import android.view.MotionEvent
-import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
+import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Circle
@@ -12,7 +15,10 @@ import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 /**
  * Created by eudycontreras.
  */
-class ValueInterceptor : TouchableElement {
+class ValueInterceptor : ChartElement, TouchableElement {
+
+    override var render: Boolean = true
+
     enum class Style {
         STYLE_ONE,
         STYLE_TWO,
@@ -133,8 +139,8 @@ class ValueInterceptor : TouchableElement {
     var allowIntercept: Boolean = true
         get() = field && visible
         set(value) {
-            shouldRender = false
-            visible = false
+            shouldRender = value
+            visible = value
         }
 
     var shouldRender: Boolean = false
@@ -143,10 +149,16 @@ class ValueInterceptor : TouchableElement {
             if (showHorizontalLine) {
                 lineLeft.render = value
                 lineRight.render = value
+            } else {
+                lineLeft.render = false
+                lineRight.render = false
             }
             if (showVerticalLine) {
                 lineTop.render = value
                 lineBottom.render = value
+            } else {
+                lineTop.render = false
+                lineBottom.render = false
             }
             marker.render = value
         }
@@ -175,10 +187,10 @@ class ValueInterceptor : TouchableElement {
         private set(value) {
             field = value
             marker.centerX = (value - shiftOffsetX)
-            if (marker.centerX < bounds.left) {
-                marker.centerX = bounds.left
-            } else if (marker.centerX > bounds.right) {
-                marker.centerX = bounds.right
+            if (marker.centerX < (bounds.left + marker.radius / 2)) {
+                marker.centerX = (bounds.left + marker.radius / 2)
+            } else if (marker.centerX > (bounds.right - marker.radius / 2)) {
+                marker.centerX = (bounds.right - marker.radius / 2)
             }
 
             lineTop.coordinate.x = (marker.centerX - (lineTop.dimension.width / 2))
@@ -194,10 +206,10 @@ class ValueInterceptor : TouchableElement {
         private set(value) {
             field = value
             marker.centerY = (value - shiftOffsetY)
-            if (marker.centerY < bounds.top) {
-                marker.centerY = bounds.top
-            } else if (marker.centerY > bounds.bottom) {
-                marker.centerY = bounds.bottom
+            if (marker.centerY < (bounds.top + marker.radius / 2)) {
+                marker.centerY = (bounds.top + marker.radius / 2)
+            } else if (marker.centerY > (bounds.bottom - marker.radius / 2)) {
+                marker.centerY = (bounds.bottom - marker.radius / 2)
             }
 
             lineTop.dimension.height = (marker.centerY - (marker.radius / 2)) - bounds.top
@@ -223,8 +235,8 @@ class ValueInterceptor : TouchableElement {
 
     private var marker: Circle = Circle()
 
-    fun build(bounds: Bounds) {
-        this.bounds = bounds.copyProps()
+    override fun build(bounds: Bounds) {
+        this.bounds.update(bounds)
 
         lineTop.coordinate.y = bounds.coordinate.y
 
@@ -232,6 +244,24 @@ class ValueInterceptor : TouchableElement {
 
         marker.showStroke = true
         marker.strokeWidth = 1.5f.dp
+
+        lineRight.render = false
+        lineLeft.render = false
+        lineBottom.render = false
+        lineTop.render = false
+    }
+
+    override fun render(
+        path: Path,
+        paint: Paint,
+        canvas: Canvas,
+        renderingProperties: ShapeRenderer.RenderingProperties
+    ) {
+        lineLeft.render(path, paint, canvas, renderingProperties)
+        lineRight.render(path, paint, canvas, renderingProperties)
+        lineTop.render(path, paint, canvas, renderingProperties)
+        lineBottom.render(path, paint, canvas, renderingProperties)
+        marker.render(path, paint, canvas, renderingProperties)
     }
 
     override fun onTouch(event: MotionEvent, x: Float, y: Float, shapeRenderer: ShapeRenderer) {
@@ -246,9 +276,6 @@ class ValueInterceptor : TouchableElement {
                 shapeRenderer.delegateTouchEvent(event, x, y)
             }
             MotionEvent.ACTION_MOVE -> {
-                if (!shouldRender && visible) {
-                    shouldRender = true
-                }
                 if (visible) {
                     positionX = x
                     positionY = y
@@ -261,14 +288,13 @@ class ValueInterceptor : TouchableElement {
     }
 
     override fun onLongPressed(event: MotionEvent, x: Float, y: Float) {
-
+        if (!shouldRender && visible) {
+            shouldRender = true
+            positionX = x
+            positionY = y
+        }
     }
-
-    fun getElements(): Collection<Shape> {
-        return arrayListOf(lineLeft, lineRight, lineTop, lineBottom, marker)
-    }
-
     internal class ValueInterceptorTooltip {
-
+        var bounds: Bounds = Bounds()
     }
 }

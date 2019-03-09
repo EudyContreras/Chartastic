@@ -4,12 +4,10 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Typeface
-import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.ChartBoundsManager
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
-import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChart
 import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_text.ChartText
 import com.eudycontreras.chartasticlibrary.properties.Bounds
@@ -23,44 +21,50 @@ import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
  * Created by eudycontreras.
  */
 
-class ChartGridAxisY(
-    private val barChart: BarChart,
-    private val boundsManager: ChartBoundsManager
+class ChartGridAxisY2(
+    private val paint: Paint,
+    private val type: Int,
+    private val grid: ChartGrid
 ) : ChartBoundsManager.ChartBoundsOwner, ChartElement{
+    override var render: Boolean
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        set(value) {}
+
+    override fun build(bounds: Bounds) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override var computeBounds: Boolean
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        set(value) {}
+    override var drawBounds: Boolean
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        set(value) {}
+    override val anchor: ChartBoundsManager.BoundsAnchor
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val bounds: Bounds
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun notifyBoundsChange(bounds: Bounds) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun propagateNewBounds(bounds: Bounds) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun render(
+        path: Path,
+        paint: Paint,
+        canvas: Canvas,
+        renderingProperties: ShapeRenderer.RenderingProperties
+    ) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     companion object {
         const val LEFT = 0
         const val RIGHT = 1
-    }
-
-    override var render: Boolean = true
-
-    override var computeBounds: Boolean = true
-
-    override var drawBounds: Boolean = true
-
-    override val anchor: ChartBoundsManager.BoundsAnchor
-        get() {
-            return when (type) {
-                LEFT -> ChartBoundsManager.BoundsAnchor.LEFT
-                RIGHT -> ChartBoundsManager.BoundsAnchor.RIGHT
-                else ->  ChartBoundsManager.BoundsAnchor.LEFT
-            }
-        }
-
-    override val bounds: Bounds = Bounds(this)
-
-    private var type: Int = LEFT
-        set(value) {
-            boundsManager.removeBoundsOwner(this)
-            field = value
-            boundsManager.addBoundsOwner(this)
-        }
-
-    private val boundsBox: Shape by lazy {
-        BoundingBox().apply {
-            this.bounds.update(this@ChartGridAxisY.bounds.drawableArea)
-        }
     }
 
     private var values = Triple<List<ChartText>, Float, Float>(ArrayList(), 0f, 0f)
@@ -83,56 +87,18 @@ class ChartGridAxisY(
     lateinit var maxY: Any
     lateinit var minY: Any
 
-    init {
-        boundsManager.addBoundsOwner(this)
-        build()
-    }
-
-    override fun build(bounds: Bounds) {
-        this.bounds.update(bounds)
-    }
-
-    override fun notifyBoundsChange(bounds: Bounds) {
-        if(bounds != this.bounds) {
-            this.bounds.update(bounds, false)
-        }
-
-        boundsManager.notifyBoundsChange(this)
-    }
-
-    override fun propagateNewBounds(bounds: Bounds) {
-        this.bounds.update(bounds, false)
-        if (drawBounds) {
-            boundsBox.bounds.update(bounds.drawableArea, false)
-        }
-    }
-
-    override fun render(
-        path: Path,
-        paint: Paint,
-        canvas: Canvas,
-        renderingProperties: ShapeRenderer.RenderingProperties
-    ) {
-        if (drawBounds) {
-            boundsBox.render(path, paint, canvas, renderingProperties)
-        }
-    }
-
     fun build(
         data: BarChartData,
         bounds: Bounds,
         pointCount: Int
     ) {
         when (type) {
-            LEFT -> buildLeft(bounds, pointCount)
-            RIGHT -> buildRight(bounds, pointCount)
+            LEFT -> buildLeft(data, bounds, pointCount)
+            RIGHT -> buildRight(data, bounds, pointCount)
         }
     }
 
-    private fun buildLeft(bounds: Bounds, pointCount: Int) {
-        val grid = barChart.chartGridPlotArea.chartGrid
-        val data = barChart.data
-
+    private fun buildLeft(data: BarChartData, bounds: Bounds, pointCount: Int) {
         val values = data.valueY
         val type = data.valueTypeY
 
@@ -205,10 +171,7 @@ class ChartGridAxisY(
         this.values = Triple(chartTexts, margin, bounds.dimension.width)
     }
 
-    private fun buildRight(bounds: Bounds, pointCount: Int) {
-        val grid = barChart.chartGridPlotArea.chartGrid
-        val data = barChart.data
-
+    private fun buildRight(data: BarChartData, bounds: Bounds, pointCount: Int) {
         val values = data.valueY
         val type = data.valueTypeY
 
@@ -217,8 +180,6 @@ class ChartGridAxisY(
         val chartTexts = mutableListOf<ChartText>()
 
         var margin = 0f
-
-        val paint = Paint()
 
         valuesY?.let {
             var points = it.second
@@ -344,6 +305,11 @@ class ChartGridAxisY(
     fun getValues() = values
 
     fun getElements() = values.first
+
+    fun getBoundingBox() = BoundingBox().apply {
+        coordinate = valuesYBounds.coordinate
+        dimension = valuesYBounds.dimension
+    }
 
     fun showText(value: Boolean) {
         values.first.forEach { it.render = value }

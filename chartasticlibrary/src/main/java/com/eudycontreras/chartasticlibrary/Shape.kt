@@ -23,6 +23,8 @@ abstract class Shape {
     var showStroke: Boolean = false
         get() = field && strokeWidth > 0
 
+    var shadowType: Shadow.Type = Shadow.Type.OUTER;
+
     var shadowPosition: LightSource.Position = LightSource.Position.BOTTOM_LEFT
 
     var touchProcessor: ((Shape, MotionEvent, Float, Float) -> Unit)? = null
@@ -105,7 +107,7 @@ abstract class Shape {
     abstract fun render(
         path: Path,
         paint: Paint,
-        canvas: Canvas?,
+        canvas: Canvas,
         renderingProperties: ShapeRenderer.RenderingProperties
     )
 

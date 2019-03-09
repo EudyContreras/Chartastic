@@ -16,6 +16,14 @@ class BarChartData(
     private val keyY: String = "",
     private val grouper: DataTableGrouper? = null
 ) : ChartData {
+    var maxValueX: Any? = null
+
+    var maxValueY: Any? = null
+
+    var minValueX: Any? = null
+
+    var minValueY: Any? = null
+
     val valueX: List<DataTableValue>
         get() = dataTable.getValuesForColumn(keyX)
 
@@ -34,17 +42,19 @@ class BarChartData(
     val groupTarget: DataTableGroup.GroupPointer?
         get() = grouper?.second
 
-    private val mChartItems = ArrayList<BarChartItem<out Any>>()
+    val chartItems = ArrayList<BarChartItem<out Any>>()
+
+    val chartClusters = ArrayList<BarChartItemGroup<out Any>>()
 
     fun addBarChartItem(chartItem: BarChartItem<out Any>) {
-        mChartItems.add(chartItem)
+        chartItems.add(chartItem)
     }
 
     fun addBarChartItem(vararg chartItem: BarChartItem<Any>) {
-        mChartItems.addAll(chartItem)
+        chartItems.addAll(chartItem)
     }
 
     fun getBarChartItems(): List<BarChartItem<out Any>> {
-        return mChartItems
+        return chartItems
     }
 }

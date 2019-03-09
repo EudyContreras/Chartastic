@@ -17,7 +17,7 @@ class ToolTip: Shape(){
     override fun render(
         path: Path,
         paint: Paint,
-        canvas: Canvas?,
+        canvas: Canvas,
         renderingProperties: ShapeRenderer.RenderingProperties
     ) {
 

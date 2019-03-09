@@ -21,7 +21,7 @@ class ShapeRenderer(
 
     private val shapePool = ArrayList<Shape>()
 
-    var renderCapsule: ((Canvas?) -> Unit)? = null
+    var renderCapsule: ((Path, Paint, Canvas, RenderingProperties) -> Unit)? = null
 
     var rendering: Boolean = false
 
@@ -45,19 +45,19 @@ class ShapeRenderer(
         mShapes.removeAll(shape)
     }
 
-    fun renderShape(canvas: Canvas?) {
+    fun renderShape(canvas: Canvas) {
         mShapes.forEach { it.render(path, paint, canvas, properties) }
-        renderCapsule?.invoke(canvas)
+        renderCapsule?.invoke(path, paint, canvas, properties)
     }
 
-    fun renderShape(canvas: Canvas?, vararg shapes: Shape) {
+    fun renderShape(canvas: Canvas, vararg shapes: Shape) {
         shapes.forEach { it.render(path, paint, canvas, properties) }
         if (mShapes.isNotEmpty()) {
             renderShape(canvas)
         }
     }
 
-    fun renderShape(canvas: Canvas?, shapes: List<Shape>) {
+    fun renderShape(canvas: Canvas, shapes: List<Shape>) {
         shapes.forEach { it.render(path, paint, canvas, properties) }
         if (mShapes.isNotEmpty()) {
             renderShape(canvas)

@@ -19,10 +19,29 @@ class Shadow {
     private var shadowColorStart = MutableColor.fromColor(DefaultColor)
     private var shadowColorEnd = MutableColor.fromColor(DefaultColor)
 
+    enum class Type {
+        INNER,
+        OUTER
+    }
+
+    companion object {
+
+        private val shadowPaint = Paint(0).apply {
+            maskFilter = BlurMaskFilter(8f, BlurMaskFilter.Blur.NORMAL)
+        }
+
+        const val DEFAULT_MAX_STEP_COUNT = 20f
+        const val DEFAULT_MIN_STEP_COUNT = 1f
+
+        val DefaultColor: Color = MutableColor.rgb(35, 35, 35)
+    }
+
+    var shadowType: Type = Type.OUTER
+
     var shadowColor: MutableColor
         get() = shadowColorStart
         set(value) {
-            shadowColorStart.setColor(value).updateAlpha(85)
+            shadowColorStart.setColor(value).updateAlpha(55)
             shadowColorEnd.setColor(value).updateAlpha(0)
         }
 
@@ -44,65 +63,58 @@ class Shadow {
             }
         }
 
-    init {
-        shadowColor = MutableColor.fromColor(DefaultColor)
-    }
-
-    companion object {
-
-        private val shadowPaint = Paint(0).apply {
-            maskFilter = BlurMaskFilter(8f, BlurMaskFilter.Blur.NORMAL)
-        }
-
-        const val DEFAULT_MAX_STEP_COUNT = 20f
-        const val DEFAULT_MIN_STEP_COUNT = 0f
-
-        val DefaultColor: Color = MutableColor.rgb(35, 35, 35)
-    }
+    private var color: MutableColor = MutableColor.fromColor(shadowColorStart)
 
     private var shiftLeft: Float = 0f
     private var shiftRight: Float = 0f
     private var shiftTop: Float = 0f
     private var shiftBottom: Float = 0f
 
-    private var elevation = -1f
+    private var shift = -1f
+
+    private var steps = 0
 
     private var position: LightSource.Position = LightSource.Position.CENTER
 
+    init {
+        shadowColor = MutableColor.fromColor(DefaultColor)
+    }
+
     fun computeShift(shape: Shape, position: LightSource.Position) {
-        if (elevation == shape.elevation && this.position == position) {
+        if (shift == shape.elevation && this.position == position) {
             return
         }
-        this.elevation = shape.elevation
+
+        this.shift = shape.elevation
         this.position = position
 
         when (position) {
             LightSource.Position.TOP_LEFT -> {
-                shiftLeft = -(elevation / 2)
+                shiftLeft = -(shift / 2)
                 shiftRight = 0f
-                shiftTop = -(elevation / 2)
+                shiftTop = -(shift / 2)
                 shiftBottom = 0f
             }
             LightSource.Position.TOP_RIGHT -> {
                 shiftLeft = 0f
-                shiftRight = -(elevation / 2)
-                shiftTop = -(elevation / 2)
+                shiftRight = -(shift / 2)
+                shiftTop = -(shift / 2)
                 shiftBottom = 0f
             }
             LightSource.Position.BOTTOM_LEFT -> {
                 shiftRight = 0f
-                shiftLeft = -(elevation / 2)
-                shiftBottom = -(elevation / 2)
+                shiftLeft = -(shift / 2)
+                shiftBottom = -(shift / 2)
                 shiftTop = 0f
             }
             LightSource.Position.BOTTOM_RIGHT -> {
-                shiftRight = -(elevation / 2)
+                shiftRight = -(shift / 2)
                 shiftLeft = 0f
-                shiftBottom = -(elevation / 2)
+                shiftBottom = -(shift / 2)
                 shiftTop = 0f
             }
             LightSource.Position.TOP_LEFT_RIGHT -> {
-                shiftTop = -(elevation / 2)
+                shiftTop = -(shift / 2)
                 shiftRight = 0f
                 shiftLeft = 0f
                 shiftBottom = 0f
@@ -111,17 +123,17 @@ class Shadow {
                 shiftTop = 0f
                 shiftRight = 0f
                 shiftLeft = 0f
-                shiftBottom = -(elevation / 2)
+                shiftBottom = -(shift / 2)
             }
             LightSource.Position.TOP_LEFT_BOTTOM -> {
                 shiftTop = 0f
                 shiftRight = 0f
-                shiftLeft = -(elevation / 2)
+                shiftLeft = -(shift / 2)
                 shiftBottom = 0f
             }
             LightSource.Position.TOP_RIGHT_BOTTOM -> {
                 shiftTop = 0f
-                shiftRight = -(elevation / 2)
+                shiftRight = -(shift / 2)
                 shiftLeft = 0f
                 shiftBottom = 0f
             }
@@ -132,24 +144,10 @@ class Shadow {
                 shiftBottom = 0f
             }
         }
-    }
 
-    fun draw(shape: Shape, path: Path, paint: Paint, canvas: Canvas) {
-        path.reset()
+        color = MutableColor.fromColor(shadowColorStart)
 
-        val left = shape.coordinate.x
-        val right = shape.coordinate.x + shape.dimension.width
-        val top = shape.coordinate.y
-        val bottom = shape.coordinate.y + shape.dimension.height
-
-        val shiftedLeft = left - shiftLeft
-        val shiftedTop = top - shiftTop
-        val shiftedRight = right + shiftRight
-        val shiftedBottom = bottom + shiftBottom
-
-        val color: MutableColor = MutableColor.fromColor(shadowColorStart)
-
-        var steps = Math.round(
+        steps = Math.round(
             mapRange(
                 shape.elevation,
                 Shape.MinElevation,
@@ -160,6 +158,27 @@ class Shadow {
         )
 
         if (steps <= 0) steps = 1
+    }
+
+    fun draw(shape: Shape, path: Path, paint: Paint, canvas: Canvas) {
+        path.reset()
+
+        if (shadowType == Type.INNER) {
+            drawInnerShadow(shape, path, paint, canvas)
+        }
+        else {
+            drawOuterShadow(shape, path, paint, canvas)
+        }
+    }
+
+    private fun drawInnerShadow(shape: Shape, path: Path, paint: Paint, canvas: Canvas) {
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 1f + steps
+
+        val left = shape.coordinate.x
+        val right = shape.coordinate.x + shape.dimension.width
+        val top = shape.coordinate.y
+        val bottom = shape.coordinate.y + shape.dimension.height
 
         for (i in 0..shape.elevation.toInt() step steps) {
             val amount = mapRange(
@@ -175,16 +194,50 @@ class Shadow {
 
             canvas.drawRoundRect(
                 path,
-                shiftedLeft - i,
-                shiftedTop - i,
-                shiftedRight + i,
-                shiftedBottom + i,
-                shape.corners.rx + i,
-                shape.corners.ry + i,
+                left + if (shiftBottom != 0f) i else 0,
+                top + if (shiftBottom != 0f) i else 0,
+                right - if (shiftLeft != 0f) i else 0,
+                bottom - if (shiftTop != 0f) i else 0,
+                shape.corners.rx,
+                shape.corners.ry,
                 shape.corners,
                 paint
             )
         }
+    }
+
+   private fun drawOuterShadow(shape: Shape, path: Path, paint: Paint, canvas: Canvas) {
+       path.reset()
+
+       val shiftedLeft = shape.coordinate.x - shiftLeft
+       val shiftedTop = shape.coordinate.y - shiftTop
+       val shiftedRight = (shape.coordinate.x + shape.dimension.width) + shiftRight
+       val shiftedBottom = (shape.coordinate.y + shape.dimension.height) + shiftBottom
+
+       for (i in 0..shape.elevation.toInt() step steps) {
+           val amount = mapRange(
+               i.toFloat(),
+               0f,
+               shape.elevation,
+               shadowColorStart.getOpacity(),
+               shadowColorEnd.getOpacity()
+           )
+
+           color.updateAlpha(amount)
+           paint.color = color.toColor()
+
+           canvas.drawRoundRect(
+               path,
+               shiftedLeft - i,
+               shiftedTop - i,
+               shiftedRight + i,
+               shiftedBottom + i,
+               shape.corners.rx + i,
+               shape.corners.ry + i,
+               shape.corners,
+               paint
+           )
+       }
     }
 
     fun draw(shape: Shape, paint: Paint, canvas: Canvas) {
@@ -192,6 +245,10 @@ class Shadow {
     }
 
     fun drawOval(shape: Circle, paint: Paint, canvas: Canvas) {
+        if (shadowType == Type.INNER) {
+            paint.style = Paint.Style.STROKE
+        }
+
         val left = shape.coordinate.x
         val right = shape.coordinate.x + shape.dimension.width
         val top = shape.coordinate.y
@@ -204,13 +261,17 @@ class Shadow {
 
         val color: MutableColor = MutableColor.fromColor(shadowColorStart)
 
-        val steps = mapRange(
+        var steps = mapRange(
             shape.elevation,
             Shape.MinElevation,
             Shape.MaxElevation,
             minStepCount,
             maxStepCount
         ).toInt()
+
+        if (steps <= 0) steps = 1
+
+        paint.strokeWidth = steps.toFloat()
 
         for (i: Int in 0..shape.elevation.toInt() step steps) {
 
@@ -225,13 +286,26 @@ class Shadow {
             color.updateAlpha(amount)
             paint.color = color.toColor()
 
-            canvas.drawOval(
-                shiftedLeft - i,
-                shiftedTop - i,
-                shiftedRight + i,
-                shiftedBottom + i,
-                paint
-            )
+            when (shadowType) {
+                Type.INNER -> {
+                    canvas.drawOval(
+                        shiftedLeft + i,
+                        shiftedTop + i,
+                        shiftedRight - i,
+                        shiftedBottom - i,
+                        paint
+                    )
+                }
+                Type.OUTER -> {
+                    canvas.drawOval(
+                        shiftedLeft - i,
+                        shiftedTop - i,
+                        shiftedRight + i,
+                        shiftedBottom + i,
+                        paint
+                    )
+                }
+            }
         }
     }
 

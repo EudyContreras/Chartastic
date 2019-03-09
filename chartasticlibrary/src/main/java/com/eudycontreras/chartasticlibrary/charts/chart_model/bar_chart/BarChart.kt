@@ -6,13 +6,11 @@ import androidx.core.content.ContextCompat
 import com.eudycontreras.chartasticlibrary.R
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
-import com.eudycontreras.chartasticlibrary.charts.Chart
-import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
-import com.eudycontreras.chartasticlibrary.charts.ChartElement
-import com.eudycontreras.chartasticlibrary.charts.ChartView
+import com.eudycontreras.chartasticlibrary.charts.*
 import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGrid
 import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridAxisY
-import com.eudycontreras.chartasticlibrary.charts.chart_interceptor.ValueInterceptor
+import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridPlotArea
+import com.eudycontreras.chartasticlibrary.charts.chart_legend.LegendArea
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
@@ -24,10 +22,8 @@ import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 /**
  * Created by eudycontreras.
  */
-class BarChart(private val context: Context, private var data: BarChartData) : Chart(), TouchableElement {
+class BarChart(private val context: Context, var data: BarChartData) : Chart(), TouchableElement {
 
-    private val chartGrid: ChartGrid = ChartGrid()
-    private val interceptor: ValueInterceptor = ValueInterceptor()
     private val rectangle: Rectangle = Rectangle()
 
     private val mShapes = ArrayList<Shape>()
@@ -79,6 +75,14 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
 
     private lateinit var view: ChartView
 
+    private lateinit var chartBoundsManager: ChartBoundsManager
+
+    lateinit var chartLegendArea: LegendArea
+
+    lateinit var chartGridPlotArea: ChartGridPlotArea
+
+    lateinit var chartAxisY: ChartGridAxisY
+
     override fun build(view: ChartView, bounds: Bounds) {
         this.view = view
 
@@ -92,17 +96,16 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
             height = (bounds.dimension.height * heightMultiplier)
         )
 
-        buildGrid(16.dp, rectBounds.subtract(10.dp))
+        chartBoundsManager = ChartBoundsManager(rectBounds.add(-(12.dp)))
 
-        if (data.getBarChartItems().isEmpty()) {
+        chartLegendArea =  LegendArea(this, chartBoundsManager)
+        chartGridPlotArea = ChartGridPlotArea(this, chartBoundsManager)
+        chartAxisY = ChartGridAxisY(this, chartBoundsManager)
 
-        }
 
-        val spacingMultiplier = 0.35f
+        val spacingMultiplier = 0.45f
 
-        buildBars(mYValue, spacingMultiplier)
-
-        buildInterceptor()
+      //  buildBars(mYValue, spacingMultiplier)
     }
 
     override fun getBackground(): Shape {
@@ -111,22 +114,17 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
 
     override fun getShapes(): List<Shape> {
         if (mShapes.isEmpty()) {
-            mShapes.addAll(chartGrid.getLines())
             mShapes.addAll(data.getBarChartItems().flatMap { it.getShapes() })
-            mShapes.addAll(interceptor.getElements())
-            mShapes.addAll(chartGrid.getBorders())
 
-            if (showBoundingBoxes) {
-                mShapes.add(chartGrid.getBoundingBox(mYValue))
-                mShapes.add(chartGrid.getBoundingBox())
-            }
         }
         return mShapes
     }
 
     override fun getElements(): List<ChartElement> {
         if (mElements.isEmpty()) {
-            mElements.addAll(chartGrid.getElements(mYValue))
+            mElements.add(chartLegendArea)
+            mElements.add(chartGridPlotArea)
+           // mElements.addAll(chartGrid.getElements(mYValue))
         }
         return mElements
     }
@@ -140,41 +138,9 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
         return rectangle.bounds
     }
 
-    private fun buildGrid(padding: Float, bounds: Bounds) {
-        chartGrid.valueYPointCount = 16
-        chartGrid.pointLineColor = MutableColor.rgba(130, 130, 130, 0.35f)
-        chartGrid.pointLineThickness = 0.8f.dp
-        chartGrid.bounds = bounds
-        chartGrid.setDataSource(data)
-        chartGrid.setBorderColor(MutableColor.rgb(255, 255, 255), ChartGrid.Border.ALL)
-        chartGrid.showBorder(false, ChartGrid.Border.TOP)
-        chartGrid.showBorder(false, ChartGrid.Border.RIGHT)
-        chartGrid.showBorder(false, ChartGrid.Border.LEFT)
-        chartGrid.showBorder(true, ChartGrid.Border.BOTTOM)
-        chartGrid.setBorderElevation(1.dp, ChartGrid.Border.ALL)
-        chartGrid.setBorderThickness(1.dp, ChartGrid.Border.TOP)
-        chartGrid.setBorderThickness(1.dp, ChartGrid.Border.LEFT)
-        chartGrid.setBorderThickness(1.dp, ChartGrid.Border.RIGHT)
-        chartGrid.setBorderThickness(6.dp, ChartGrid.Border.BOTTOM)
-        chartGrid.showGridLines(true)
-        chartGrid.showYTextValues(true, ChartGridAxisY.LEFT)
-        chartGrid.showYValues(bounds, padding, 6.dp, 6.dp, mYValue, " LOC")
-    }
 
-    private fun buildInterceptor() {
-        interceptor.visible = false
-        interceptor.lineColor = MutableColor.rgb(255, 255, 255)
-        interceptor.markerFillColor = MutableColor.rgb(0, 150, 235)
-        interceptor.markerStrokeColor = MutableColor.rgb(255, 255, 255)
-        interceptor.lineThickness = 0.75f.dp
-        interceptor.markerRadius = 20.dp
-        interceptor.showShadows = true
-        interceptor.showHorizontalLine = true
-        interceptor.showVerticalLine = true
-        interceptor.build(chartGrid.drawableZone)
-    }
 
-    private fun buildBars(value: Int, spacingMultiplier: Float) {
+    private fun buildBars(value: Int, spacingMultiplier: Float, chartGrid: ChartGrid) {
         val bounds = chartGrid.drawableZone.copyProps()
 
         var lastBarX = bounds.coordinate.x
@@ -241,10 +207,10 @@ class BarChart(private val context: Context, private var data: BarChartData) : C
     }
 
     override fun onTouch(event: MotionEvent, x: Float, y: Float, shapeRenderer: ShapeRenderer) {
-        interceptor.onTouch(event, x, y, shapeRenderer)
+        chartGridPlotArea.onTouch(event, x, y, shapeRenderer)
     }
 
     override fun onLongPressed(event: MotionEvent, x: Float, y: Float) {
-
+        chartGridPlotArea.onLongPressed(event, x, y)
     }
 }

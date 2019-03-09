@@ -15,7 +15,7 @@ class Line : Shape() {
 
     val paint = Paint()
 
-    override fun render(path: Path, p: Paint, canvas: Canvas?, renderingProperties: ShapeRenderer.RenderingProperties) {
+    override fun render(path: Path, p: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
@@ -27,7 +27,7 @@ class Line : Shape() {
                 paint.setShadowLayer(elevation, 0f, 0f, shadow!!.shadowColor.updateAlpha(1f).toColor())
             } else {
                 renderingProperties.lightSource?.computeShadow(this, shadowPosition)
-                shadow?.draw(this, path, paint, canvas!!)
+                shadow?.draw(this, path, paint, canvas)
             }
         }
 
@@ -38,7 +38,7 @@ class Line : Shape() {
             paint.shader = shader
         }
 
-        canvas?.drawRoundRect(path, left, top, right, bottom, corners, paint)
+        canvas.drawRoundRect(path, left, top, right, bottom, corners, paint)
 
         if (showStroke) {
 
@@ -47,7 +47,7 @@ class Line : Shape() {
                 paint.strokeWidth = strokeWidth
                 paint.color = it.toColor()
 
-                canvas?.drawRoundRect(path, left, top, right, bottom, corners, paint)
+                canvas.drawRoundRect(path, left, top, right, bottom, corners, paint)
             }
         }
     }

@@ -1,13 +1,12 @@
 package com.eudycontreras.chartasticlibrary.charts.chart_text
 
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.Typeface
+import android.graphics.*
+import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
-import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
+import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.Dimension
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
+import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 
 /**
  * Created by eudycontreras.
@@ -44,22 +43,24 @@ class ChartText(
 
     lateinit var dimension: Dimension
 
-    override fun build() {
+    override fun build(bounds: Bounds) {
         paint.reset()
         paint.typeface = typeFace
         paint.textSize = textSize
         paint.color = textColor.toColor()
         paint.textAlign = if (alignment == Alignment.LEFT) Paint.Align.LEFT else Paint.Align.RIGHT
-        paint.getTextBounds(text, 0, text.length, bounds)
-        dimension = Dimension(
-            width = bounds.width().toFloat(),
-            height = bounds.height().toFloat()
-        )
+        paint.getTextBounds(text, 0, text.length, this.bounds)
+        dimension = Dimension(this.bounds.width().toFloat(), this.bounds.height().toFloat())
     }
 
-    override fun render(canvas: Canvas?) {
+    override fun render(
+        path: Path,
+        p: Paint,
+        canvas: Canvas,
+        renderingProperties: ShapeRenderer.RenderingProperties
+    ) {
         if (mRender) {
-            canvas?.drawText(text, x, y, paint)
+            canvas.drawText(text, x, y, paint)
         }
     }
 

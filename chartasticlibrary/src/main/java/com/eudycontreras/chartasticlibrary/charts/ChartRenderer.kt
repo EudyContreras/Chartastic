@@ -46,12 +46,12 @@ class ChartRenderer(private var view: ChartView) {
 
         val elements = charts.flatMap { it.getElements() }
 
-        shapeRenderer.renderCapsule = { canvas ->
-            elements.forEach { it.render(canvas) }
+        shapeRenderer.renderCapsule = { path, paint, canvas, properties ->
+            elements.forEach { it.render(path, paint, canvas, properties) }
         }
     }
 
-    fun renderCharts(canvas: Canvas?) {
+    fun renderCharts(canvas: Canvas) {
         shapeRenderer.renderShape(canvas)
     }
 
@@ -59,6 +59,14 @@ class ChartRenderer(private var view: ChartView) {
         charts.forEach {
             if (it is TouchableElement) {
                 it.onTouch(motionEvent, x, y, shapeRenderer)
+            }
+        }
+    }
+
+    fun delegateLongPressEvent(motionEvent: MotionEvent, x: Float, y: Float) {
+        charts.forEach {
+            if (it is TouchableElement) {
+                it.onLongPressed(motionEvent, x, y)
             }
         }
     }

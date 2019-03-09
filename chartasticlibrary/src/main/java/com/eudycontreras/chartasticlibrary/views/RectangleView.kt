@@ -6,10 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewParent
+import android.view.*
 import android.widget.ScrollView
 import androidx.core.widget.NestedScrollView
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
@@ -25,6 +22,8 @@ import com.eudycontreras.chartasticlibrary.properties.*
 class RectangleView : View, ChartView {
 
     private var chartRenderer: ChartRenderer = ChartRenderer(this)
+
+    private var scrollingParent: ViewParent? = null
 
     constructor(context: Context, chart: Chart) : this(context) {
         chartRenderer.addChart(chart)
@@ -80,7 +79,7 @@ class RectangleView : View, ChartView {
         initialized = true
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         if (!initialized) {
@@ -102,9 +101,9 @@ class RectangleView : View, ChartView {
 
     fun observeVisibility() {
         val scrollBounds = Rect()
-        val parent = findScrollParent(this.parent as ViewGroup)
+        scrollingParent = findScrollParent(this.parent as ViewGroup)
 
-        if (parent != null) {
+        scrollingParent?.let { parent ->
             if (parent is ScrollView) {
                 parent.getDrawingRect(scrollBounds)
 
@@ -137,7 +136,6 @@ class RectangleView : View, ChartView {
         }
     }
 
-
     private fun findScrollParent(parent: ViewGroup): ViewParent? {
         val property: Property<ViewGroup?> = Property(parent)
 
@@ -164,18 +162,39 @@ class RectangleView : View, ChartView {
         }
     }
 
-    override fun onTouchEvent(motionEvent: MotionEvent?): Boolean {
-        motionEvent?.let { event ->
-            val x = event.x
-            val y = event.y
+    private val myListener =  object : GestureDetector.SimpleOnGestureListener() {
+        override fun onDown(event: MotionEvent): Boolean {
+            return true
+        }
 
-            chartRenderer.delegateTouchEvent(motionEvent, x, y)
+        override fun onLongPress(event: MotionEvent) {
+            super.onLongPress(event)
+            parent.requestDisallowInterceptTouchEvent(true)
+            chartRenderer.delegateLongPressEvent(event, event.x, event.y)
 
             invalidate()
         }
+    }
 
-        return true
+    private val detector: GestureDetector = GestureDetector(context, myListener)
 
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        return detector.onTouchEvent(event).let { result ->
+            val x = event.x
+            val y = event.y
+
+            chartRenderer.delegateTouchEvent(event, x, y)
+
+            when (event.action) {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
+                    parent.requestDisallowInterceptTouchEvent(false)
+                }
+            }
+
+            invalidate()
+
+            result
+        }
     }
 
     override fun updateView() {
