@@ -59,8 +59,8 @@ Here is a list of all the element supported by the bar chart and their current s
         * The animations should be able to notify upon ending
    - [x] The bars should be able to have backgrounds of any color
    - [x] The bars should be able to have backgrounds with desired padding
-   - [ ] The bars backgrounds should be able to have inner shadow
-   - [ ] The bars should be able to suppor different effects
+   - [x] The bars backgrounds should be able to have inner shadow
+   - [ ] The bars should be able to support different effects
      * **Possible effects**
         * Ghosting: The bars have ghosted bars under
         * The bars have animated glow around them
@@ -72,14 +72,14 @@ Here is a list of all the element supported by the bar chart and their current s
    - [x] The bars should be able to have gradient shaders with any colors or direction
    - [x] The bars should be able to interpolate color accross themselves
    - [x] The bars should be be able to able to have elevation produced shadows
-   - [x] The bars should be able to have shadows in any directions
-   - [x] The bars should be able to have shadows of any color (Glow or shadow)
+   - [x] The bars should be able to have outer and inner shadows in any directions
+   - [x] The bars should be able to have outer and inner shadows of any color (Glow or shadow)
    - [x] The bars should be able to have rounded corners at any end.
    - [x] The bars should have a controllable rounded corner radius for both ends
    - [x] The bars should be able to have stroke/border of any width and color
    - [ ] The bars should be able to have labels with their respective values
    - [ ] The bars should be able to show tooltips at a desired location upon touch 
-   - [ ] The bars should be able to handle long press events
+   - [x] The bars should be able to handle long press events
    - [x] The bars should be able to handle hovers events
    - [ ] The bars should be able to listen and adapt to live data changes
    - [x] The bars should be able to have desireable opacity levels
@@ -94,7 +94,9 @@ Here is a list of all the element supported by the bar chart and their current s
    - [ ] A bar among all the bars should be highlightable with user specified high-lighting.
        * **Possible functionality:**
          * The highlighting should be based on user specified criteria.
-   - [ ] The user should be able to specify his/her own bar style 
+   - [x] The user should be able to specify his/her own bar style 
    - [ ] Each bar should be responsive to changes in neighbor bars
-   
+   - [ ] The bars should be able to be segmented with desired segmentation spacing and shape (Circle, Rect)
+   - [ ] The bars should be able to be grouped or clusterd by a desired key value
+   - [ ] The bar cluster should support parallel and sequential group animations
    
