@@ -1,8 +1,13 @@
 package com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
 import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.Shape
+import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.ChartAnimation
+import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
@@ -17,17 +22,21 @@ data class BarChartItem<Data>(
     var value: Any,
     var data: Data,
     var action: ((Data) -> Unit)? = null
-) : ChartAnimation.Animateable {
+) : ChartAnimation.Animateable, ChartElement {
 
     companion object {
         const val DEFAULT_ROUND_RADIUS = -1f
     }
 
+    override var render: Boolean = true
+
     private val cornerRadiiMultiplier = 0.75f
 
-    val shape: Rectangle = Rectangle()
+    private var savedState: Pair<Float, Float> = Pair(0f, 0f)
 
     private var shapes: ArrayList<Shape> = ArrayList()
+
+    val shape: Rectangle = Rectangle()
 
     var activeColor: MutableColor = MutableColor()
 
@@ -192,8 +201,7 @@ data class BarChartItem<Data>(
         }
     }
 
-
-    fun build() {
+    fun build(bounds: Bounds = Bounds()) {
         shape.color = color
         shape.coordinate.x = x
         shape.coordinate.y = y
@@ -213,7 +221,20 @@ data class BarChartItem<Data>(
         shape.style = barStyle
     }
 
-    var savedState: Pair<Float, Float> = Pair(0f, 0f)
+    override fun render(
+        path: Path,
+        paint: Paint,
+        canvas: Canvas,
+        renderingProperties: ShapeRenderer.RenderingProperties
+    ) {
+        if (!render) {
+            return
+        }
+        if (backgroundOptions.showBackground) {
+            backgroundOptions.background.render(path, paint, canvas, renderingProperties)
+        }
+        shape.render(path, paint, canvas, renderingProperties)
+    }
 
     override fun onPreAnimation() {
         savedState = Pair(y, length)

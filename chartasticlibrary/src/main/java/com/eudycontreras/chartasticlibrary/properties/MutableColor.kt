@@ -214,12 +214,30 @@ data class MutableColor(
             )
         }
 
+        fun rgb(rgb: Int): MutableColor {
+            return MutableColor(
+                alpha = 255,
+                red = rgb,
+                green = rgb,
+                blue = rgb
+            )
+        }
+
         fun rgba(red: Int, green: Int, blue: Int, alpha: Int): MutableColor {
             return MutableColor(
                 alpha = alpha,
                 red = red,
                 green = green,
                 blue = blue
+            )
+        }
+
+        fun rgba(rgb: Int, alpha: Float): MutableColor {
+            return MutableColor(
+                alpha = (alpha * 255).toInt(),
+                red = rgb,
+                green = rgb,
+                blue = rgb
             )
         }
 

@@ -40,14 +40,8 @@ class ChartRenderer(private var view: ChartView) {
 
     fun buildCharts(bounds: Bounds) {
         charts.forEach { it.build(view, bounds) }
-
-        shapeRenderer.addShape(charts.map { it.getBackground() })
-        shapeRenderer.addShape(charts.flatMap { it.getShapes() })
-
-        val elements = charts.flatMap { it.getElements() }
-
         shapeRenderer.renderCapsule = { path, paint, canvas, properties ->
-            elements.forEach { it.render(path, paint, canvas, properties) }
+            charts.forEach { it.render(path, paint, canvas, properties) }
         }
     }
 

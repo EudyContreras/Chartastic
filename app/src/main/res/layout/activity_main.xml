@@ -1,46 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+   <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
         tools:context=".MainActivity">
-
-   <LinearLayout
-           android:orientation="vertical"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content">
        <com.eudycontreras.chartasticlibrary.views.RectangleView
                android:id="@+id/chartView1"
                android:layout_width="match_parent"
-               android:layout_height="450dp"
+               android:layout_height="match_parent"
        />
-       <com.eudycontreras.chartasticlibrary.views.RectangleView
-               android:id="@+id/chartView2"
-               android:layout_width="match_parent"
-               android:layout_height="450dp"
-       />
-       <com.eudycontreras.chartasticlibrary.views.RectangleView
-               android:id="@+id/chartView3"
-               android:layout_width="match_parent"
-               android:layout_height="450dp"
-       />
-       <com.eudycontreras.chartasticlibrary.views.RectangleView
-               android:id="@+id/chartView4"
-               android:layout_width="match_parent"
-               android:layout_height="450dp"
-       />
-       <com.eudycontreras.chartasticlibrary.views.RectangleView
-               android:id="@+id/chartView5"
-               android:layout_width="match_parent"
-               android:layout_height="450dp"
-       />
-       <com.eudycontreras.chartasticlibrary.views.RectangleView
-               android:id="@+id/chartView6"
-               android:layout_width="match_parent"
-               android:layout_height="450dp"
-       />
-   </LinearLayout>
 
-</ScrollView>
+   </LinearLayout>

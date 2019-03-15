@@ -35,12 +35,17 @@ class ChartBoundsManager(private val parentBounds: Bounds){
     }
 
     fun removeBoundsOwner(boundsOwner: ChartBoundsOwner) {
-        boundsOwner.computeBounds = false
         boundsOwners.remove(boundsOwner.anchor)
         computeRemovedBoundsConstraints(boundsOwner.anchor)
     }
 
+    fun updateBoundsOwner(boundsOwner: ChartBoundsOwner) {
+        removeBoundsOwner(boundsOwner)
+        addBoundsOwner(boundsOwner)
+    }
+
     fun notifyBoundsChange(boundsOwner: ChartBoundsOwner){
+        if (boundsOwner.computeBounds)
         computeBoundsConstraints(boundsOwner.anchor)
     }
 

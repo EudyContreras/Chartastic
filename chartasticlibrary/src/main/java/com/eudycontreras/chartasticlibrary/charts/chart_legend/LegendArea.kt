@@ -37,9 +37,17 @@ class LegendArea(private val barChart: BarChart, private val boundsManager: Char
 
     override var render: Boolean = true
 
-    override var drawBounds: Boolean = true
+    override var drawBounds: Boolean = false
 
     override var computeBounds: Boolean = true
+        set(value) {
+            field = value
+            if (!value) {
+                boundsManager.removeBoundsOwner(this)
+            } else {
+                boundsManager.addBoundsOwner(this)
+            }
+        }
 
     override val bounds: Bounds = Bounds(this)
 
@@ -53,10 +61,10 @@ class LegendArea(private val barChart: BarChart, private val boundsManager: Char
 
     init {
         boundsManager.addBoundsOwner(this)
-        build(this.bounds.addDimension(0f, 80.dp))
+        build(this.bounds.addDimension(0f, 50.dp))
     }
 
-    override fun build(bounds: Bounds) {
+    fun build(bounds: Bounds = Bounds()) {
         this.bounds.update(bounds)
     }
 
@@ -66,10 +74,11 @@ class LegendArea(private val barChart: BarChart, private val boundsManager: Char
         canvas: Canvas,
         renderingProperties: ShapeRenderer.RenderingProperties
     ){
-        if (computeBounds) {
-            if (drawBounds) {
-                boundsBox.render(path, paint, canvas, renderingProperties)
-            }
+        if (!render || !computeBounds) {
+            return
+        }
+        if (drawBounds) {
+            boundsBox.render(path, paint, canvas, renderingProperties)
         }
     }
 

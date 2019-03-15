@@ -29,6 +29,12 @@ data class Bounds(
     val bottom: Float
         get() = coordinate.y + dimension.height
 
+    val height: Float
+        get() = bottom - top
+
+    val width: Float
+        get() = right - left
+
     var paddings: Padding? = null
 
     var margins: Margin? = null
@@ -147,6 +153,16 @@ data class Bounds(
         if (notifyChange) {
             boundsOwner?.notifyBoundsChange(this)
         }
+    }
+
+    fun addPadding(padding: Padding?): Bounds {
+        padding?.let {
+            coordinate.x = coordinate.x + it.start
+            coordinate.y = coordinate.y + it.top
+            dimension.width = dimension.width - (it.start + it.end)
+            dimension.height = dimension.height - (it.top + it.bottom)
+        }
+        return this
     }
 }
 

@@ -235,7 +235,7 @@ class ValueInterceptor : ChartElement, TouchableElement {
 
     private var marker: Circle = Circle()
 
-    override fun build(bounds: Bounds) {
+    fun build(bounds: Bounds = Bounds()) {
         this.bounds.update(bounds)
 
         lineTop.coordinate.y = bounds.coordinate.y

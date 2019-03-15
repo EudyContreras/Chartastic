@@ -17,55 +17,61 @@ class ShapeRenderer(
 ) {
     private val path: Path = Path()
 
-    private val mShapes = ArrayList<Shape>()
+    private val shapes = ArrayList<Shape>()
 
     private val shapePool = ArrayList<Shape>()
 
     var renderCapsule: ((Path, Paint, Canvas, RenderingProperties) -> Unit)? = null
 
-    var rendering: Boolean = false
+    var renderShapes: Boolean = true
 
     fun <T : Shape> addShape(shape: T) {
-        mShapes.add(shape)
+        shapes.add(shape)
     }
 
     fun <T : Shape> addShape(shape: Array<T>) {
-        mShapes.addAll(shape)
+        shapes.addAll(shape)
     }
 
     fun <T : Shape> addShape(shape: List<T>) {
-        mShapes.addAll(shape)
+        shapes.addAll(shape)
     }
 
     fun <T : Shape> removeShape(shape: T) {
-        mShapes.remove(shape)
+        shapes.remove(shape)
     }
 
     fun <T : Shape> removeShape(vararg shape: T) {
-        mShapes.removeAll(shape)
+        shapes.removeAll(shape)
     }
 
     fun renderShape(canvas: Canvas) {
-        mShapes.forEach { it.render(path, paint, canvas, properties) }
+        if(!renderShapes)
+            return
+        shapes.forEach { it.render(path, paint, canvas, properties) }
         renderCapsule?.invoke(path, paint, canvas, properties)
     }
 
     fun renderShape(canvas: Canvas, vararg shapes: Shape) {
+        if(!renderShapes)
+            return
         shapes.forEach { it.render(path, paint, canvas, properties) }
-        if (mShapes.isNotEmpty()) {
+        if (this.shapes.isNotEmpty()) {
             renderShape(canvas)
         }
     }
 
     fun renderShape(canvas: Canvas, shapes: List<Shape>) {
+        if(!renderShapes)
+            return
         shapes.forEach { it.render(path, paint, canvas, properties) }
-        if (mShapes.isNotEmpty()) {
+        if (this.shapes.isNotEmpty()) {
             renderShape(canvas)
         }
     }
 
     fun delegateTouchEvent(motionEvent: MotionEvent, x: Float, y: Float) {
-        mShapes.forEach {
+        shapes.forEach {
             if (it is TouchableShape && it.touchProcessor != null) {
                 it.onTouch(motionEvent, x, y)
             }

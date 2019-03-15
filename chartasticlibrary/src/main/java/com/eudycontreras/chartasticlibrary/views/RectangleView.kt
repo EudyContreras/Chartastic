@@ -21,9 +21,18 @@ import com.eudycontreras.chartasticlibrary.properties.*
  */
 class RectangleView : View, ChartView {
 
+    private var sizeRatio = 0.5f
+
+    private var fullyVisible: Boolean = false
+    private var initialized: Boolean = false
+
+    private var paint: Paint = Paint()
+
     private var chartRenderer: ChartRenderer = ChartRenderer(this)
 
     private var scrollingParent: ViewParent? = null
+
+    override var onFullyVisible: ((ChartView) -> Unit)? = null
 
     constructor(context: Context, chart: Chart) : this(context) {
         chartRenderer.addChart(chart)
@@ -40,11 +49,6 @@ class RectangleView : View, ChartView {
             typedArray.recycle()
         }
     }
-
-    private var initialized: Boolean = false
-
-    private var paint: Paint = Paint()
-
     init {
         setLayerType(LAYER_TYPE_SOFTWARE, paint)
     }
@@ -58,6 +62,7 @@ class RectangleView : View, ChartView {
     }
 
     private fun initializeValues() {
+
         val width = width
         val height = height
 
@@ -72,11 +77,18 @@ class RectangleView : View, ChartView {
         val bounds = Bounds(Coordinate(0f, 0f), Dimension(usableWidth, usableHeight))
 
         chartRenderer.shapeRenderer = ShapeRenderer(paint).apply {
-            properties.lightSource = LightSource(usableWidth / 2, usableHeight, 10f, 10f)
+            properties.lightSource = LightSource(usableWidth / 2, usableHeight)
         }
+
         chartRenderer.buildCharts(bounds)
 
         initialized = true
+
+        if(scrollingParent == null){
+            fullyVisible = true
+            onFullyVisible?.invoke(this)
+            return
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -90,12 +102,6 @@ class RectangleView : View, ChartView {
             chartRenderer.renderCharts(canvas)
         }
     }
-
-    private var sizeRatio = 0.5f
-
-    private var fullyVisible: Boolean = false
-
-    override var onFullyVisible: ((ChartView) -> Unit)? = null
 
     override fun fullyVisible(): Boolean = fullyVisible
 
@@ -116,10 +122,33 @@ class RectangleView : View, ChartView {
                         onFullyVisible?.invoke(this)
                     }
                 }
-                parent.viewTreeObserver.addOnScrollChangedListener {
-                    val scrollY = parent.scrollY
-                    val scrollX = parent.scrollX
 
+                parent.viewTreeObserver.addOnScrollChangedListener {
+                    parent.getDrawingRect(scrollBounds)
+
+                    top = this.y
+                    bottom = top + this.height
+
+                    if (scrollBounds.top < (top + ((bottom - top) * sizeRatio)) && scrollBounds.bottom > (bottom - ((bottom - top) * sizeRatio))) {
+                        if (!fullyVisible) {
+                            fullyVisible = true
+                            onFullyVisible?.invoke(this)
+                        }
+                    }
+                }
+            } else if (parent is NestedScrollView){
+                parent.getDrawingRect(scrollBounds)
+
+                var top = this.y
+                var bottom = top + this.height
+
+                if (scrollBounds.top < (top + ((bottom - top) * sizeRatio)) && scrollBounds.bottom > (bottom - ((bottom - top) * sizeRatio))) {
+                    if (!fullyVisible) {
+                        fullyVisible = true
+                        onFullyVisible?.invoke(this)
+                    }
+                }
+                parent.setOnScrollChangeListener { v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
                     parent.getDrawingRect(scrollBounds)
 
                     top = this.y
@@ -144,7 +173,11 @@ class RectangleView : View, ChartView {
                 if (parent is ScrollView || parent is NestedScrollView) {
                     property.setValue(parent)
                 } else {
-                    digOutParent(parent.parent as ViewGroup)
+                    if (parent.parent != null) {
+                        digOutParent(parent.parent as ViewGroup)
+                    } else {
+                        property.setValue(null)
+                    }
                 }
             } else {
                 property.setValue(null)
@@ -156,7 +189,6 @@ class RectangleView : View, ChartView {
             digOutParent(parent.parent as ViewGroup)
 
             property.getValue()
-
         } else {
             parent
         }
@@ -180,6 +212,9 @@ class RectangleView : View, ChartView {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return detector.onTouchEvent(event).let { result ->
+
+            invalidate()
+
             val x = event.x
             val y = event.y
 
@@ -191,47 +226,11 @@ class RectangleView : View, ChartView {
                 }
             }
 
-            invalidate()
-
             result
         }
     }
 
     override fun updateView() {
         invalidate()
-    }
-
-    private fun getCalculatedOffsetY(parent: ViewGroup): Int {
-        val property = Property(parent.top)
-
-        getCalculatedOffsetY(parent.parent, property)
-
-        return property.getValue()
-    }
-
-    private fun getCalculatedOffsetX(parent: ViewGroup): Int {
-        val property = Property(parent.left)
-
-        getCalculatedOffsetX(parent.parent, property)
-
-        return property.getValue()
-    }
-
-    private fun getCalculatedOffsetY(parent: ViewParent, offset: Property<Int>) {
-        if (parent is ViewGroup) {
-            offset.setValue(offset.getValue() + parent.top)
-            if (parent.parent != null) {
-                getCalculatedOffsetY(parent.parent, offset)
-            }
-        }
-    }
-
-    private fun getCalculatedOffsetX(parent: ViewParent, offset: Property<Int>) {
-        if (parent is ViewGroup) {
-            offset.setValue(offset.getValue() + parent.left)
-            if (parent.parent != null) {
-                getCalculatedOffsetX(parent.parent, offset)
-            }
-        }
     }
 }

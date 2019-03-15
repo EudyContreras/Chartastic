@@ -43,7 +43,7 @@ class ChartText(
 
     lateinit var dimension: Dimension
 
-    override fun build(bounds: Bounds) {
+    fun build(bounds: Bounds = Bounds()) {
         paint.reset()
         paint.typeface = typeFace
         paint.textSize = textSize

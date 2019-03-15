@@ -13,7 +13,6 @@ import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChart
 import com.eudycontreras.chartasticlibrary.properties.Gradient
 import com.eudycontreras.chartasticlibrary.properties.LightSource
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
-import com.eudycontreras.chartasticlibrary.properties.Shadow
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.utilities.global.DataTableMatrix
 import com.eudycontreras.chartasticlibrary.utilities.global.MatrixProperties
@@ -27,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
 
         createChart(chartView1, "Chart One")
         /*createChart(chartView2, "Chart Two")
@@ -121,7 +119,7 @@ class MainActivity : AppCompatActivity() {
 
         val chartData = BarChartData(dataTable, "Coder", "LOC")
 
-        val range = ((dataTable.getRecords().size * 0.7).toInt()..dataTable.getRecords().size).random()
+        val range = ((dataTable.getRecords().size * 0.3).toInt()..dataTable.getRecords().size).random()
 
         for (i in 0 until range) {
             val coder = coders[i]
@@ -129,13 +127,12 @@ class MainActivity : AppCompatActivity() {
             item.elevation = 0.dp
             item.color = color
             item.roundedTop = true
-            item.roundedBottom = false
-            item.elevationShadowColor = Shadow.DefaultColor
+            item.roundedBottom = true
+            item.elevationShadowColor = MutableColor.fromColor(color)
             item.elevationShadowPosition = LightSource.Position.TOP_LEFT_RIGHT
             item.activeColor = MutableColor.fromColor(color).subtractGreen(45).subtractBlue(45)
             item.hoverColor = MutableColor.fromColor(color).addGreen(55).addBlue(55)
             item.cornerRadius = BarChartItem.DEFAULT_ROUND_RADIUS
-
             if (false == true){
                 item.gradient = Gradient(arrayOf(
                     MutableColor.fromColor(color),

@@ -60,6 +60,10 @@ abstract class Shape {
     var color: MutableColor = MutableColor()
 
     var elevation: Float = 0f
+        set(value) {
+            field = value
+            drawShadow = value > 0f
+        }
 
     var drawShadow: Boolean = false
         get() = field && elevation > 0

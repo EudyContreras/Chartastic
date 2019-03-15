@@ -24,3 +24,7 @@ typealias DataTableMatrix = Array<Array<out Any>>
 typealias DataTableGrouper = Pair<String?, DataTableGroup.GroupPointer>
 
 typealias DataChangeListener = (DataTableValue) -> Unit
+
+typealias ValueChangeListener <T> = (old: T, new: T) -> Unit
+
+typealias PropertyChangeListener <T> = (oldValue: T, newValue: T, name: String) -> Unit
