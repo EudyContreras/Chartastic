@@ -44,6 +44,16 @@ This document contains information about what each element of of the bar chart s
 * **Major Tick Lines**
 * **Minor Tick Lines**
 
+## Bar Chart Bugs & Issues
+
+**Problem:**
+* If the the point count is close to the record count it can result on repeated values.
+
+**Possible fixes:**
+1. Clamp the point count to a number that does not produce repeated values
+2. Decrease the rounding scale of the values.
+3. Get rid of the rounding when creating the values
+
 Here is a list of all the element supported by the bar chart and their current status within development.
 
 * **Bars or Series**
