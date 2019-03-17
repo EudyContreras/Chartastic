@@ -34,7 +34,11 @@ data class BarChartItem<Data>(
 
     private var savedState: Pair<Float, Float> = Pair(0f, 0f)
 
-    private var shapes: ArrayList<Shape> = ArrayList()
+    var negativeOrientation: Boolean = false
+        set(value) {
+            field = value
+            applyLazyFlip()
+        }
 
     val shape: Rectangle = Rectangle()
 
@@ -214,7 +218,9 @@ data class BarChartItem<Data>(
             it.minStepCount = 0f
             it.maxStepCount = 18f
         }
-        backgroundOptions.showBackground = backgroundOptions.showBackground
+        if (backgroundOptions.showBackground) {
+            backgroundOptions.buildBackground()
+        }
 
         shape.touchProcessor = touchProcessor
         shape.render = false
@@ -250,25 +256,47 @@ data class BarChartItem<Data>(
         length = savedState.second * delta
     }
 
-    fun getShapes(): ArrayList<Shape> {
-        if (shapes.isEmpty()) {
-            if (backgroundOptions.showBackground) {
-                shapes = arrayListOf(backgroundOptions.background, shape)
-                return shapes
-            }
-            shapes = arrayListOf(shape)
-        }
-        return shapes
-    }
-
     fun applyHighlight() {
         thickness = 30.dp
+    }
+
+    private fun applyLazyFlip() {
+        if(negativeOrientation && (roundedBottom && !roundedTop)) {
+            shape.corners.topLeft = true
+            shape.corners.topRight = true
+            shape.corners.bottomLeft = false
+            shape.corners.bottomRight = false
+        }
+
+        if(negativeOrientation && (roundedTop && !roundedBottom)) {
+            shape.corners.topLeft = false
+            shape.corners.topRight = false
+            shape.corners.bottomLeft = true
+            shape.corners.bottomRight = true
+        }
+
+        if(backgroundOptions.showBackground) {
+            backgroundOptions.background.corners.copyProps(shape.corners)
+        }
     }
 
     inner class BackgroundOptions {
 
         internal val background: Rectangle by lazy {
             Rectangle()
+        }
+
+        fun buildBackground() {
+            background.render = showBackground
+            background.coordinate.x = x
+            background.coordinate.y = y
+            background.dimension.height = height
+            background.dimension.width = thickness
+            background.corners.copyProps(shape.corners)
+            background.coordinate.x -= padding
+            background.coordinate.y -= padding
+            background.dimension.width += (padding * 2)
+            background.dimension.height += (padding * 2)
         }
 
         var padding: Float = 0f
@@ -314,18 +342,5 @@ data class BarChartItem<Data>(
             }
 
         var showBackground: Boolean = false
-            set(value) {
-                field = value
-                background.render = field
-                background.coordinate.x = x
-                background.coordinate.y = y
-                background.dimension.height = height
-                background.dimension.width = thickness
-                background.corners.copyProps(shape.corners)
-                background.coordinate.x -= padding
-                background.coordinate.y -= padding
-                background.dimension.width += (padding * 2)
-                background.dimension.height += (padding * 2)
-            }
     }
 }

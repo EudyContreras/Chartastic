@@ -2,10 +2,12 @@ package com.eudycontreras.chartasticlibrary.charts.chart_options
 
 import android.graphics.Typeface
 import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridAxisY
+import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
 import com.eudycontreras.chartasticlibrary.listeners.ObservableProperty
 import com.eudycontreras.chartasticlibrary.listeners.PropertyChangeObservable
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.properties.Padding
+import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.utilities.global.from
 
 /**
@@ -79,6 +81,20 @@ class AxisYOptions: PropertyChangeObservable() {
         set(value) {
             _labelValueAppend.set(value)
         }
+
+    var tickWidth = 1.dp
+        get() = if(showTickLines) field else 0f
+
+    var tickLength = 8.dp
+        get() = if(showTickLines) field else 0f
+
+    var tickElevation = 0.dp
+
+    var tickColor= MutableColor.rgb(255)
+
+    var dataReady: Boolean = false
+
+    var chartData: BarChartData? = null
 
     private val _valuePointCount: ObservableProperty<Int> by lazy { from(10, ::valuePointCount, this) }
     private val _render: ObservableProperty<Boolean> by lazy {  from(true, ::render, this) }

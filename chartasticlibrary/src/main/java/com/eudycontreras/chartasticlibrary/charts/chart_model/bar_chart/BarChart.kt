@@ -10,10 +10,11 @@ import com.eudycontreras.chartasticlibrary.R
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.*
-import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGrid
+import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridAxisX
 import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridAxisY
 import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridPlotArea
 import com.eudycontreras.chartasticlibrary.charts.chart_legend.LegendArea
+import com.eudycontreras.chartasticlibrary.charts.chart_options.AxisYOptions
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Rectangle
@@ -64,7 +65,7 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
 
     var showDataBarTooltips: Boolean = false
 
-    var showGridBorder: ChartGrid.Border = ChartGrid.Border.NONE
+    var showGridBorder: ChartGridPlotArea.Border = ChartGridPlotArea.Border.NONE
 
     var barHighlightCriteria: HighlightCriteria? = null
 
@@ -77,11 +78,16 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
     lateinit var view: ChartView
         private set
 
-    private lateinit var chartBoundsManager: ChartBoundsManager
-
-    lateinit var chartLegendArea: LegendArea
+    private lateinit var chartLayoutManagerOuter: ChartLayoutManager
+    private lateinit var chartLayoutManagerInner: ChartLayoutManager
 
     lateinit var chartGridPlotArea: ChartGridPlotArea
+
+    lateinit var chartLegendTop: LegendArea
+    lateinit var chartLegendBottom: LegendArea
+
+    lateinit var chartAxisXTop: ChartGridAxisX
+    lateinit var chartAxisXBottom: ChartGridAxisX
 
     lateinit var chartAxisYLeft: ChartGridAxisY
     lateinit var chartAxisYRight: ChartGridAxisY
@@ -99,28 +105,71 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
             height = (bounds.dimension.height * heightMultiplier)
         )
 
-        chartBoundsManager = ChartBoundsManager(rectBounds.subtract((12.dp)))
+        val drawBoundingBoxes = false
 
-        chartLegendArea =  LegendArea(this, chartBoundsManager)
-        chartGridPlotArea = ChartGridPlotArea(this, chartBoundsManager)
+        chartLayoutManagerOuter = ChartLayoutManager(rectBounds.subtract((12.dp)))
+        chartLayoutManagerOuter.type = ChartLayoutManager.Type.OUTER
 
-        chartAxisYLeft = ChartGridAxisY(this, chartBoundsManager, ChartGridAxisY.Type.LEFT)
+        chartLayoutManagerInner = ChartLayoutManager(chartLayoutManagerOuter)
+        chartLayoutManagerInner.type = ChartLayoutManager.Type.INNER
+        chartLayoutManagerOuter.drawBounds = drawBoundingBoxes
 
-      /*chartAxisYRight = ChartGridAxisY(this, chartBoundsManager, ChartGridAxisY.Type.RIGHT)
-        chartAxisYRight.prepend = ""
-        chartAxisYRight.append = ""
-        chartAxisYRight.pointCount = 8
-        chartAxisYRight.padding = Padding(6.dp, 6.dp, 10.dp, 0.dp)
-        chartAxisYRight.textSize = 9.sp
-        chartAxisYRight.typeFace = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-        chartAxisYRight.textColor = MutableColor.rgba(255, 255, 255, 0.95f)
-        chartAxisYRight.showLabels = true
-        chartAxisYRight.build()*/
+        chartGridPlotArea = ChartGridPlotArea(this, chartLayoutManagerInner)
+        chartGridPlotArea.drawBounds = drawBoundingBoxes
 
-        chartLegendArea.computeBounds = false
-        chartAxisYLeft.computeBounds = true
-        chartGridPlotArea.chartGrid.buildMajorLines(chartAxisYLeft)
-        chartGridPlotArea.setUpBars(chartGridPlotArea.chartGrid)
+        val optionsLeft = AxisYOptions().apply {
+            labelValueAppend = " LOC"
+            padding = Padding(0.dp, 8.dp, 0.dp, 0.dp)
+            valuePointCount = 10
+            showLabels = true
+            showTickLines = true
+            chartData = data
+        }
+
+        chartAxisYLeft = ChartGridAxisY(chartLayoutManagerInner, ChartGridAxisY.Type.LEFT)
+        chartAxisYLeft.options = optionsLeft
+        chartAxisYLeft.drawBounds = drawBoundingBoxes
+        chartAxisYLeft.build()
+
+        val optionsRight = AxisYOptions().apply {
+            labelValueAppend = ""
+            valuePointCount = 6
+            padding = Padding(8.dp, 0.dp, 0.dp, 0.dp)
+            showLabels = true
+            showTickLines = true
+            chartData = data
+        }
+
+        chartAxisYRight = ChartGridAxisY(chartLayoutManagerInner, ChartGridAxisY.Type.RIGHT)
+        chartAxisYRight.options = optionsRight
+        chartAxisYRight.drawBounds = drawBoundingBoxes
+        chartAxisYRight.build()
+
+        chartAxisXTop = ChartGridAxisX(this, chartLayoutManagerInner,ChartGridAxisX.Type.TOP)
+        chartAxisXTop.drawBounds = drawBoundingBoxes
+        chartAxisXTop.bounds.updateDimensions(0f, 40.dp)
+
+        chartAxisXBottom = ChartGridAxisX(this, chartLayoutManagerInner,ChartGridAxisX.Type.BOTTOM)
+        chartAxisXBottom.drawBounds = drawBoundingBoxes
+        chartAxisXBottom.bounds.updateDimensions(0f, 40.dp)
+
+        chartLegendTop = LegendArea(this, chartLayoutManagerOuter, LegendArea.Position.TOP)
+        chartLegendTop.drawBounds = drawBoundingBoxes
+        chartLegendTop.bounds.updateDimensions(0f, 50.dp)
+
+        chartLegendBottom =  LegendArea(this, chartLayoutManagerOuter,LegendArea.Position.BOTTOM)
+        chartLegendBottom.drawBounds = drawBoundingBoxes
+        chartLegendBottom.bounds.updateDimensions(0f, 50.dp)
+
+        chartGridPlotArea.chartGrid.gridAxisY = chartAxisYLeft
+        chartGridPlotArea.chartGrid.gridAxisX = chartAxisXBottom
+
+        chartGridPlotArea.setUpBars()
+
+        chartAxisXBottom.computeBounds = false
+        chartAxisXTop.computeBounds = false
+        chartLegendTop.computeBounds = false
+        chartLegendBottom.computeBounds = false
     }
 
     override fun render(
@@ -133,10 +182,14 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
             return
         }
 
-        chartLegendArea.render(path, paint, canvas, renderingProperties)
+        chartAxisXTop.render(path, paint, canvas, renderingProperties)
+        chartAxisXBottom.render(path, paint, canvas, renderingProperties)
         chartGridPlotArea.render(path, paint, canvas, renderingProperties)
         chartAxisYLeft.render(path, paint, canvas, renderingProperties)
-        //chartAxisYRight.render(path, paint, canvas, renderingProperties)
+        chartAxisYRight.render(path, paint, canvas, renderingProperties)
+        chartLegendTop.render(path, paint, canvas, renderingProperties)
+        chartLegendBottom.render(path, paint, canvas, renderingProperties)
+        chartLayoutManagerInner.render(path, paint, canvas, renderingProperties)
     }
 
     override fun getBackground(): Shape {
@@ -144,21 +197,18 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
     }
 
     override fun getShapes(): List<Shape> {
-        if (mShapes.isEmpty()) {
-            mShapes.addAll(data.getBarChartItems().flatMap { it.getShapes() })
-
-        }
         return mShapes
     }
 
     override fun getElements(): List<ChartElement> {
         if (mElements.isEmpty()) {
-            mElements.add(chartLegendArea)
+            mElements.add(chartAxisXTop)
+            mElements.add(chartAxisXBottom)
             mElements.add(chartGridPlotArea)
             mElements.add(chartAxisYLeft)
             mElements.add(chartAxisYRight)
-            mElements.addAll(chartAxisYLeft.getElements())
-            mElements.addAll(chartAxisYRight.getElements())
+            mElements.addAll(chartAxisYLeft.getElements()!!)
+            mElements.addAll(chartAxisYRight.getElements()!!)
         }
         return mElements
     }

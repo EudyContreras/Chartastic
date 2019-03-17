@@ -53,8 +53,4 @@ class BarChartData(
     fun addBarChartItem(vararg chartItem: BarChartItem<Any>) {
         chartItems.addAll(chartItem)
     }
-
-    fun getBarChartItems(): List<BarChartItem<out Any>> {
-        return chartItems
-    }
 }

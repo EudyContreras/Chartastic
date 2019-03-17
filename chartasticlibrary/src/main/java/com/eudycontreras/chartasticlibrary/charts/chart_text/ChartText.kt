@@ -13,8 +13,8 @@ import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
  */
 
 class ChartText(
-    var text: String,
-    var paint: Paint
+    var text: String = "",
+    var paint: Paint = Paint()
 ) : ChartElement {
 
     private var mRender: Boolean = true

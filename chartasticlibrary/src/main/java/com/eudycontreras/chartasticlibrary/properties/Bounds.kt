@@ -1,6 +1,6 @@
 package com.eudycontreras.chartasticlibrary.properties
 
-import com.eudycontreras.chartasticlibrary.charts.ChartBoundsManager
+import com.eudycontreras.chartasticlibrary.charts.interfaces.ChartBoundsOwner
 
 /**
  * Created by eudycontreras.
@@ -11,10 +11,16 @@ data class Bounds(
     var dimension: Dimension = Dimension()
 ) {
 
-    private var boundsOwner: ChartBoundsManager.ChartBoundsOwner? = null
+    private var layoutOwner: ChartBoundsOwner? = null
 
-    constructor(boundsOwner: ChartBoundsManager.ChartBoundsOwner) : this() {
-        this.boundsOwner = boundsOwner
+    constructor(layoutOwner: ChartBoundsOwner) : this() {
+        this.layoutOwner = layoutOwner
+    }
+
+    constructor(bounds: Bounds, layoutOwner: ChartBoundsOwner) : this() {
+        this.coordinate = bounds.coordinate.copyProps()
+        this.dimension = bounds.dimension.copyProps()
+        this.layoutOwner = layoutOwner
     }
 
     val left: Float
@@ -36,17 +42,26 @@ data class Bounds(
         get() = right - left
 
     var paddings: Padding? = null
+        set(value) {
+            field = value
+            layoutOwner?.notifyBoundsChange(this)
+        }
 
     var margins: Margin? = null
         set(value) {
             field = value
-            boundsOwner?.notifyBoundsChange(this)
+            field?.let {
+                val new = add(it)
+                coordinate = new.coordinate
+                dimension = new.dimension
+                layoutOwner?.notifyBoundsChange(this)
+            }
         }
 
     val drawableArea: Bounds
         get() {
-            return if (margins != null) {
-                this.subtract(margins!!)
+            return if (paddings != null) {
+                this.subtract(paddings!!)
             } else {
                 this
             }
@@ -95,11 +110,35 @@ data class Bounds(
         return Bounds(Coordinate(newX, newY), Dimension(newWidth, newHeight))
     }
 
+    fun add(margin: Margin): Bounds {
+        val newX = coordinate.x - margin.start
+        val newY = coordinate.y - margin.top
+        val newWidth = dimension.width + (margin.end + margin.start)
+        val newHeight = dimension.height + (margin.bottom + margin.top)
+        return Bounds(Coordinate(newX, newY), Dimension(newWidth, newHeight))
+    }
+
     fun subtract(margin: Margin): Bounds {
         val newX = coordinate.x + margin.start
         val newY = coordinate.y + margin.top
         val newWidth = dimension.width - (margin.end + margin.start)
         val newHeight = dimension.height - (margin.bottom + margin.top)
+        return Bounds(Coordinate(newX, newY), Dimension(newWidth, newHeight))
+    }
+
+    fun add(padding: Padding): Bounds {
+        val newX = coordinate.x - padding.start
+        val newY = coordinate.y - padding.top
+        val newWidth = dimension.width + (padding.end + padding.start)
+        val newHeight = dimension.height + (padding.bottom + padding.top)
+        return Bounds(Coordinate(newX, newY), Dimension(newWidth, newHeight))
+    }
+
+    fun subtract(padding: Padding): Bounds {
+        val newX = coordinate.x + padding.start
+        val newY = coordinate.y + padding.top
+        val newWidth = dimension.width - (padding.end + padding.start)
+        val newHeight = dimension.height - (padding.bottom + padding.top)
         return Bounds(Coordinate(newX, newY), Dimension(newWidth, newHeight))
     }
 
@@ -128,20 +167,20 @@ data class Bounds(
     }
 
     fun updateCoordinates(x: Float, y: Float, notifyChange: Boolean = true) {
-        boundsOwner?.notifyBoundsChange(this)
+        layoutOwner?.notifyBoundsChange(this)
         coordinate.x = x
         coordinate.y = y
         if (notifyChange) {
-            boundsOwner?.notifyBoundsChange(this)
+            layoutOwner?.notifyBoundsChange(this)
         }
     }
 
-    fun updateDimensions(width: Float, height: Float, notifyChange: Boolean = true) {
-        boundsOwner?.notifyBoundsChange(this)
+    fun updateDimensions(width: Float = this.width, height: Float = this.height, notifyChange: Boolean = true) {
+        layoutOwner?.notifyBoundsChange(this)
         dimension.width = width
         dimension.height = height
         if (notifyChange) {
-            boundsOwner?.notifyBoundsChange(this)
+            layoutOwner?.notifyBoundsChange(this)
         }
     }
 
@@ -151,7 +190,7 @@ data class Bounds(
         this.dimension.width = bounds.dimension.width
         this.dimension.height = bounds.dimension.height
         if (notifyChange) {
-            boundsOwner?.notifyBoundsChange(this)
+            layoutOwner?.notifyBoundsChange(this)
         }
     }
 
