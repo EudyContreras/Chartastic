@@ -16,10 +16,23 @@ import com.eudycontreras.chartasticlibrary.utilities.global.from
 
 class AxisYOptions: PropertyChangeObservable() {
 
-    var valuePointCount: Int
-        get() = _valuePointCount.value
+    var valuePointCount: Int = 0
         set(value) {
-            _valuePointCount.set(value)
+            field = value
+            negativeValuePointCount = value
+            positiveValuePointCount = value
+        }
+
+    var negativeValuePointCount: Int
+        get() = _nValuePointCount.value
+        set(value) {
+            _nValuePointCount.set(value)
+        }
+
+    var positiveValuePointCount: Int
+        get() = _pValuePointCount.value
+        set(value) {
+            _pValuePointCount.set(value)
         }
 
     var render: Boolean
@@ -96,7 +109,8 @@ class AxisYOptions: PropertyChangeObservable() {
 
     var chartData: BarChartData? = null
 
-    private val _valuePointCount: ObservableProperty<Int> by lazy { from(10, ::valuePointCount, this) }
+    private val _pValuePointCount: ObservableProperty<Int> by lazy { from(10, ::positiveValuePointCount, this) }
+    private val _nValuePointCount: ObservableProperty<Int> by lazy { from(10, ::negativeValuePointCount, this) }
     private val _render: ObservableProperty<Boolean> by lazy {  from(true, ::render, this) }
     private val _padding: ObservableProperty<Padding> by lazy {  from(ChartGridAxisY.DEFAULT_PADDING, ::padding, this) }
     private val _labelTextColor: ObservableProperty<MutableColor> by lazy {  from(ChartGridAxisY.DEFAULT_LABEL_COLOR, ::labelTextColor, this) }

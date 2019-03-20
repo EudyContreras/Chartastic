@@ -4,7 +4,7 @@ package com.eudycontreras.chartasticlibrary.charts.chart_data
  * Created by eudycontreras.
  */
 
-data class DataTableAttribute(var name: String, var type: Any) {
+data class DataTableAttribute(var name: String, var type: DataType) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

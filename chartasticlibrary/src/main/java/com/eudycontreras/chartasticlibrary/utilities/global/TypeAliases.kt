@@ -7,6 +7,7 @@ import android.graphics.Path
 import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableGroup
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataType
 
 
 typealias AndroidColor = Color
@@ -17,7 +18,7 @@ typealias InterceptHandler = (MotionEvent, Float, Float) -> Unit
 
 typealias HighlightCriteria = (item:Any) -> Boolean
 
-typealias MatrixProperties = Array<Triple<String, Any, Any>>
+typealias MatrixProperties = Array<Triple<String, DataType, Any>>
 
 typealias DataTableMatrix = Array<Array<out Any>>
 

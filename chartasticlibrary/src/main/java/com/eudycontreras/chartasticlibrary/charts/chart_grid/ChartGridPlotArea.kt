@@ -67,7 +67,7 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
 
     var spacingMultiplier: Float = 0.45f
 
-    val zeroPadding: Float = 10.dp
+    val zeroPadding: Float = 0.dp
 
     var barsRevealed: Boolean = false
         private set
@@ -86,15 +86,11 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
 
         setBorderColor(MutableColor.rgb(255, 255, 255), Border.ALL)
 
-        showBorder(false, Border.TOP)
-        showBorder(false, Border.RIGHT)
-        showBorder(false, Border.LEFT)
-        showBorder(false, Border.BOTTOM)
+        showBorder(false, Border.ALL)
 
-        setBorderElevation(1.dp, Border.ALL)
+        setBorderElevation(0f, Border.ALL)
 
-        setBorderThickness(1.dp, Border.LEFT)
-        setBorderThickness(1.dp, Border.BOTTOM)
+        setBorderThickness(1.5f.dp, Border.ALL)
 
         setUpGridArea(this.bounds.drawableArea)
         setUpInterceptor(this.bounds.drawableArea)
@@ -105,7 +101,7 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
         chartGrid.data = barChart.data
         chartGrid.minorGridLineCount = 0
         chartGrid.minorGridLineColor = MutableColor.rgba(100, 100, 110, 0.10f)
-        chartGrid.majorGridLineColor = MutableColor.rgba(100, 100, 110, 0.25f)
+        chartGrid.majorGridLineColor = MutableColor.rgba(0, 0, 0, 0.30f)
         chartGrid.majorGridLineThickness = 1.5f.dp
         chartGrid.minorGridLineThickness = 0.7f.dp
 
@@ -174,7 +170,7 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
                 val offset = thicknessDelta - ((thicknessDelta * spacingMultiplier) / barChart.data.chartItems.size)
 
                 val zeroValue = 0f
-                val zeroPoint = axisValuesY.valuesBuildData.zeroPoint.y - (axisValuesY.valuesBuildData.zeroPoint.dimension.height / 2)
+                val zeroPoint = axisValuesY.valuesBuildData.zeroPoint.y
 
                 fun handlePositiveValues(bar: BarChartItem<out Any>, value: Float) {
 
@@ -211,12 +207,12 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
 
                     bar.thickness = thickness
                     bar.x = lastBarX + (thicknessDelta * spacingMultiplier)
-                    bar.y = ((bounds.top + maxHeight) - bar.length) + zeroPadding
+                    bar.y = (zeroPoint - bar.length) + zeroPadding
                     bar.build()
 
                     lastBarX += offset
 
-                    bar.backgroundOptions.height = (zeroPoint - bounds.top) - zeroPadding
+                    bar.backgroundOptions.height = (bounds.bottom - zeroPoint) - zeroPadding
                     bar.backgroundOptions.y = zeroPoint + zeroPadding
                 }
 

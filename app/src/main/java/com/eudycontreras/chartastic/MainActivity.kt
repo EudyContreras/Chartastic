@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.eudycontreras.chartasticlibrary.charts.chart_animation.BarAnimation
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTable
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataType
 import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChart
 import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartItem
@@ -42,45 +43,45 @@ class MainActivity : AppCompatActivity() {
         val color = MutableColor(ContextCompat.getColor(this, R.color.colorAccent))
 
         val coders = arrayOf(
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10_001..10_001).random(), color.adjust(1.2f))
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f))
 
         )
 
         val data = Pair<MatrixProperties, DataTableMatrix>(
             arrayOf(
-                Triple("Year", Int, 2015)
+                Triple("Year", DataType.NUMERIC_WHOLE, 2015)
             ),
             arrayOf(
-                arrayOf(String, Int, Int, Int, Int, Int, Double, Boolean),
+                arrayOf(DataType.ALPHABETIC, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_DECIMAL, DataType.BINARY),
                 arrayOf("Coder", "LOC", "Repos Owned", "Projects", "Age", "Contributions", "Hourly Rate", "Married"),
                 createRecord(coders[0]),
                 createRecord(coders[1]),
@@ -118,6 +119,7 @@ class MainActivity : AppCompatActivity() {
         val dataTable = DataTable.parseWith(data)
 
         val chartData = BarChartData(dataTable, "Coder", "LOC")
+        chartData.zeroPoint = 10001
 
         coders.sortByDescending { it.loc }
 
@@ -137,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             item.cornerRadius = BarChartItem.DEFAULT_ROUND_RADIUS
             item.backgroundOptions.padding = 0.dp
             item.backgroundOptions.color = MutableColor.rgba(90, 96, 98, 0.15f)
-            item.backgroundOptions.showBackground = true
+            item.backgroundOptions.showBackground = false
             item.gradient = Gradient(arrayOf(
                 MutableColor.fromColor(color),
                 MutableColor.fromColor(color).subtractGreen(95).subtractBlue(95),
@@ -179,14 +181,14 @@ class MainActivity : AppCompatActivity() {
         view.observeVisibility()
     }
 
-    private fun createRecord(coder: Coder): Array<String> {
-        val reposOwned = (12..45).random().toString()
-        val projects = (4..12).random().toString()
-        val age = (24..50).random().toString()
-        val contributions = (230..530).random().toString()
-        val hourlyRate = (120..240).random().toString()
-        val married = Random.nextBoolean().toString()
+    private fun createRecord(coder: Coder): Array<Any> {
+        val reposOwned = (12..45).random()
+        val projects = (4..12).random()
+        val age = (24..50).random()
+        val contributions = (230..530).random()
+        val hourlyRate = (120..240).random()
+        val married = Random.nextBoolean()
 
-        return arrayOf(coder.name, coder.loc.toString(), reposOwned, projects, age, contributions, hourlyRate, married)
+        return arrayOf(coder.name, coder.loc, reposOwned, projects, age, contributions, hourlyRate, married)
     }
 }

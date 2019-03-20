@@ -4,6 +4,7 @@ import com.eudycontreras.chartasticlibrary.charts.ChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTable
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableGroup
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataType
 import com.eudycontreras.chartasticlibrary.utilities.global.DataTableGrouper
 
 /**
@@ -27,13 +28,13 @@ class BarChartData(
     val valueX: List<DataTableValue>
         get() = dataTable.getValuesForColumn(keyX)
 
-    val valueTypeX: Any
+    val valueTypeX: DataType
         get() = dataTable.getTypeForColumn(keyX)
 
     val valueY: List<DataTableValue>
         get() = dataTable.getValuesForColumn(keyY)
 
-    val valueTypeY: Any
+    val valueTypeY: DataType
         get() = dataTable.getTypeForColumn(keyY)
 
     val groupBy: DataTableValue?
@@ -41,6 +42,8 @@ class BarChartData(
 
     val groupTarget: DataTableGroup.GroupPointer?
         get() = grouper?.second
+
+    var zeroPoint: Any? = null
 
     val chartItems = ArrayList<BarChartItem<out Any>>()
 

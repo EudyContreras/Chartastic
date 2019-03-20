@@ -9,17 +9,19 @@ import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.ChartLayoutManager
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
+import com.eudycontreras.chartasticlibrary.charts.chart_data.DataType
+import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_options.AxisYOptions
 import com.eudycontreras.chartasticlibrary.charts.chart_text.ChartText
 import com.eudycontreras.chartasticlibrary.charts.interfaces.ChartBoundsOwner
 import com.eudycontreras.chartasticlibrary.properties.Bounds
+import com.eudycontreras.chartasticlibrary.properties.Coordinate
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.properties.Padding
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line
-import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
-import com.eudycontreras.chartasticlibrary.utilities.extensions.roundToNearest
-import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.*
+import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 
 /**
  * Created by eudycontreras.
@@ -95,13 +97,13 @@ class ChartGridAxisY(
         options.addPropertyChangeListener { _, _, _ ->
             when (type) {
                 Type.LEFT -> {
-                    buildLeft(bounds.drawableArea, options.valuePointCount)
+                    buildLeft(bounds.drawableArea)
                     values?.valuesBuildData?.let {
                         buildLeftTicks(it.textElements)
                     }
                 }
                 Type.RIGHT -> {
-                    buildRight(bounds.drawableArea, options.valuePointCount)
+                    buildRight(bounds.drawableArea)
                     values?.valuesBuildData?.let {
                         buildRightTicks(it.textElements)
                     }
@@ -111,13 +113,13 @@ class ChartGridAxisY(
         }
         when (type) {
             Type.LEFT -> {
-                buildLeft(bounds.drawableArea, options.valuePointCount)
+                buildLeft(bounds.drawableArea)
                 values?.valuesBuildData?.let {
                     buildLeftTicks(it.textElements)
                 }
             }
             Type.RIGHT -> {
-                buildRight(bounds.drawableArea, options.valuePointCount)
+                buildRight(bounds.drawableArea)
                 values?.valuesBuildData?.let {
                     buildRightTicks(it.textElements)
                 }
@@ -137,13 +139,13 @@ class ChartGridAxisY(
         this.bounds.update(bounds, false)
         when (type) {
             Type.LEFT -> {
-                buildLeft(bounds.drawableArea, options.valuePointCount)
+                buildLeft(bounds.drawableArea)
                 values?.valuesBuildData?.let {
                     buildLeftTicks(it.textElements)
                 }
             }
             Type.RIGHT -> {
-                buildRight(bounds.drawableArea, options.valuePointCount)
+                buildRight(bounds.drawableArea)
                 values?.valuesBuildData?.let {
                     buildRightTicks(it.textElements)
                 }
@@ -177,40 +179,39 @@ class ChartGridAxisY(
         }
     }
 
-    private fun buildLeft(bounds: Bounds, pointCount: Int) {
+    private fun buildLeft(bounds: Bounds) {
         if(options.chartData == null){
             return
         }
         val data = options.chartData!!
 
-        val valuesY = computeValues(data.valueY, data.valueTypeY, pointCount)
+        val valuesY = computeValues(data.valueY, data.valueTypeY, options.positiveValuePointCount, options.negativeValuePointCount)
 
         val chartTexts = mutableListOf<ChartText>()
 
-        var zeroPoint = ChartText()
+        val zeroPoint = Coordinate()
 
         val paint = Paint()
 
         var margin = 0f
 
         valuesY?.let {
-            val referenceTextUpper = "${options.labelValuePrepend}${ it.maxValueRounded }${options.labelValueAppend}"
-            val referenceTextLower = "${options.labelValuePrepend}${ it.minValueRounded }${options.labelValueAppend}"
-
-            val referenceUpper = ChartText(referenceTextUpper, paint)
+            val referenceUpper = ChartText(it.maxValueRounded, options.labelValuePrepend, options.labelValueAppend)
             referenceUpper.alignment = ChartText.Alignment.RIGHT
             referenceUpper.textColor = options.labelTextColor
             referenceUpper.textSize = options.labelTextSize
             referenceUpper.typeFace = options.labelTypeFace
+            referenceUpper.paint = paint
             referenceUpper.build()
 
             referenceUpper.y = (bounds.top + (referenceUpper.dimension.height))
 
-            val referenceLower = ChartText(referenceTextLower, paint)
+            val referenceLower = ChartText(it.minValueRounded, options.labelValuePrepend, options.labelValueAppend)
             referenceLower.alignment = ChartText.Alignment.RIGHT
             referenceLower.textColor = options.labelTextColor
             referenceLower.textSize = options.labelTextSize
             referenceLower.typeFace = options.labelTypeFace
+            referenceUpper.paint = paint
             referenceLower.build()
 
             referenceLower.y = (bounds.top + (referenceLower.dimension.height))
@@ -245,8 +246,9 @@ class ChartGridAxisY(
 
                 paint.reset()
 
-                val chartText = ChartText("${options.labelValuePrepend}$value${options.labelValueAppend}", paint)
+                val chartText = ChartText(value, options.labelValuePrepend, options.labelValueAppend)
                 chartText.copyStyle(reference)
+                chartText.paint = paint
                 chartText.build()
 
                 chartText.x = reference.x
@@ -257,14 +259,21 @@ class ChartGridAxisY(
                 chartTexts.add(chartText)
             }
 
-           zeroPoint = chartTexts[chartTexts.size - 1]
+            zeroPoint.y = chartTexts[chartTexts.size - 1].y  - (chartTexts[chartTexts.size - 1].dimension.height / 2)
+
+            data.zeroPoint?.let { point ->
+                findZeroPointPosition(point, data, chartTexts)?.let {
+                    zeroPoint.y = it
+                }
+            }
 
             for (value in it.lowerPoints) {
 
                 paint.reset()
 
-                val chartText = ChartText("${options.labelValuePrepend}$value${options.labelValueAppend}", paint)
+                val chartText = ChartText(value, options.labelValuePrepend, options.labelValueAppend)
                 chartText.copyStyle(reference)
+                chartText.paint = paint
                 chartText.build()
 
                 chartText.x = reference.x
@@ -278,6 +287,103 @@ class ChartGridAxisY(
 
         valuesY?.valuesBuildData = AxisBuildData(chartTexts, margin, axisLabelBounds.dimension.width).apply { this.zeroPoint = zeroPoint }
         values = valuesY
+    }
+
+    private fun findZeroPointPosition(
+        point: Any,
+        data: BarChartData,
+        chartTexts: MutableList<ChartText>
+    ): Float? {
+        if (point.isNumeric(data.valueTypeY)) {
+            if (!point.isZero(data.valueTypeY)) {
+                if (point.isPositive(data.valueTypeY)) {
+                    if (data.valueTypeY == DataType.NUMERIC_WHOLE) {
+                        if (point is Long) {
+
+                            val highest: Int = chartTexts[0].value.restored()
+
+                            if (point >= highest) {
+                                return null
+                            }
+
+                            val match = chartTexts.find { it.value.restored<Long>() == point }
+
+                            if (match == null) {
+
+                                val upperElement = chartTexts
+                                    .sortedBy { it.value.restored<Long>() }
+                                    .first { it.value.restored<Long>() > point }
+                                val lowerElement = chartTexts.first { it.value.restored<Long>() < point }
+
+                                val upperYCoordinate = (upperElement.y - upperElement.dimension.height / 2)
+                                val lowerYCoordinate = (lowerElement.y - lowerElement.dimension.height / 2)
+
+                                val upperYValue: Long = upperElement.value.restored()
+                                val lowerYValue: Long = upperElement.value.restored()
+
+                                return mapRange(
+                                    point.toFloat(),
+                                    lowerYValue.toFloat(),
+                                    upperYValue.toFloat(),
+                                    lowerYCoordinate,
+                                    upperYCoordinate
+                                )
+
+                            } else {
+                               return match.y - (match.dimension.height / 2)
+                            }
+
+                        } else if (point is Int) {
+
+                            val highest: Int = chartTexts[0].value.restored()
+
+                            if (point >= highest) {
+                                return null
+                            }
+
+                            val match = chartTexts.find { it.value.restored<Int>() == point }
+
+                            if (match == null) {
+
+                                val upperElement = chartTexts
+                                    .sortedBy { it.value.restored<Int>() }
+                                    .first { it.value.restored<Int>() > point }
+                                val lowerElement = chartTexts.first { it.value.restored<Int>() < point }
+
+                                val upperYCoordinate = (upperElement.y - upperElement.dimension.height / 2)
+                                val lowerYCoordinate = (lowerElement.y - lowerElement.dimension.height / 2)
+
+                                val upperYValue: Int = upperElement.value.restored()
+                                val lowerYValue: Int = lowerElement.value.restored()
+
+                                return mapRange(
+                                    point.toFloat(),
+                                    lowerYValue.toFloat(),
+                                    upperYValue.toFloat(),
+                                    lowerYCoordinate,
+                                    upperYCoordinate
+                                )
+
+                            } else {
+                                return match.y - (match.dimension.height / 2)
+                            }
+                        }
+                    } else {
+                        if (point is Double) {
+
+                        } else if (point is Float) {
+
+                        }
+                    }
+                }
+            } else {
+                return null
+            }
+        } else {
+            return null
+        }
+
+        return null
     }
 
     private fun buildLeftTicks(chartTexts: List<ChartText>) {
@@ -322,17 +428,17 @@ class ChartGridAxisY(
         tickLines.add(line)
     }
 
-    private fun buildRight(bounds: Bounds, pointCount: Int) {
+    private fun buildRight(bounds: Bounds) {
         if(options.chartData == null){
             return
         }
         val data = options.chartData!!
 
-        val valuesY = computeValues(data.valueY, data.valueTypeY, pointCount)
+        val valuesY = computeValues(data.valueY, data.valueTypeY, options.positiveValuePointCount, options.negativeValuePointCount)
 
         val chartTexts = mutableListOf<ChartText>()
 
-        var zeroPoint = ChartText()
+        var zeroPoint = Coordinate()
 
         var margin = 0f
 
@@ -341,13 +447,12 @@ class ChartGridAxisY(
         valuesY?.let {
             val points = it.upperPoints
 
-            var text = "${options.labelValuePrepend}${it.maxValueRounded}${options.labelValueAppend}"
-
-            val reference = ChartText(text, paint)
+            val reference = ChartText(it.maxValueRounded, options.labelValuePrepend, options.labelValueAppend)
             reference.alignment = ChartText.Alignment.LEFT
             reference.textColor = options.labelTextColor
             reference.textSize = options.labelTextSize
             reference.typeFace = options.labelTypeFace
+            reference.paint = paint
             reference.build()
 
             reference.x = (bounds.coordinate.x + bounds.dimension.width) - (reference.dimension.width + options.padding.end)
@@ -373,12 +478,11 @@ class ChartGridAxisY(
 
             for (value in points) {
 
-                text = "${options.labelValuePrepend}$value${options.labelValueAppend}"
-
                 paint.reset()
 
-                val chartText = ChartText(text, paint)
+                val chartText = ChartText(value, options.labelValuePrepend, options.labelValueAppend)
                 chartText.copyStyle(reference)
+                chartText.paint = paint
                 chartText.build()
 
                 chartText.x = reference.x
@@ -389,7 +493,7 @@ class ChartGridAxisY(
                 chartTexts.add(chartText)
             }
 
-            zeroPoint = chartTexts[chartTexts.size - 1]
+            zeroPoint = Coordinate(chartTexts[chartTexts.size - 1].x, chartTexts[chartTexts.size - 1].y)
         }
 
         valuesY?.valuesBuildData = AxisBuildData(chartTexts, margin, axisLabelBounds.dimension.width).apply { this.zeroPoint = zeroPoint }
@@ -439,38 +543,44 @@ class ChartGridAxisY(
 
     private fun computeValues(
         valueY: List<DataTableValue>,
-        type: Any,
-        pointCount: Int
+        dataType: DataType,
+        positivePointCount: Int,
+        negativePointCount: Int
     ): ValueCalculation? {
-        val pointsUpper = mutableListOf<String>()
-        val pointsLower = mutableListOf<String>()
-
-        return when (type) {
-            is Float.Companion -> {
-                val values = valueY.map { it.value.toFloat() }.sortedByDescending { it }
-                return handleFloatType(values, pointCount, pointsUpper, pointsLower)
+        return when (dataType) {
+            DataType.ALPHABETIC -> {
+                val values = valueY.map { it.value.restored<String>() }.sortedByDescending { it }
+                handleStringType(values, positivePointCount, negativePointCount)
             }
-            is Int.Companion -> {
-                val values = valueY.map { it.value.toInt() }.sortedByDescending { it }
-                return handleIntegerType(values, pointCount, pointsUpper, pointsLower)
+            DataType.NUMERIC_DECIMAL -> {
+                if(valueY[0].value is Double) {
+                    val values = valueY.map { it.value.restored<Double>() }.sortedByDescending { it }
+                    handleDoubleType(values, positivePointCount, negativePointCount)
+                } else {
+                    val values = valueY.map { it.value.restored<Float>() }.sortedByDescending { it }
+                    handleFloatType(values, positivePointCount, negativePointCount)
+                }
             }
-            is Double.Companion -> {
-                val values = valueY.map { it.value.toDouble() }.sortedByDescending { it }
-                return handleDoubleType(values, pointCount, pointsUpper, pointsLower)
+            DataType.NUMERIC_WHOLE -> {
+                if(valueY[0].value is Long) {
+                    val values = valueY.map { it.value.restored<Long>() }.sortedByDescending { it }
+                    handleLongType(values, positivePointCount, negativePointCount)
+                } else {
+                    val values = valueY.map { it.value.restored<Int>() }.sortedByDescending { it }
+                    handleIntegerType(values, positivePointCount, negativePointCount)
+                }
             }
-            is Long.Companion -> {
-                val values = valueY.map { it.value.toLong() }.sortedByDescending { it }
-                return handleLongType(values, pointCount, pointsUpper, pointsLower)
+            DataType.BINARY -> {
+                val values = valueY.map { it.value.restored<Boolean>() }.sortedByDescending { it }
+                handleBooleanType(values, positivePointCount, negativePointCount)
             }
-            else -> null
         }
     }
 
     private fun handleDoubleType(
         values: List<Double>,
-        pointCount: Int,
-        pointsUpper: MutableList<String>,
-        pointsLower: MutableList<String>
+        positivePointCount: Int,
+        negativePointCount: Int
     ): ValueCalculation {
         val valuesUpper = mutableListOf<Double>()
         val valuesLower = mutableListOf<Double>()
@@ -483,135 +593,34 @@ class ChartGridAxisY(
 
         if (min < 0) {
 
-            val upperCount = if (pointCount % 2 == 0) (pointCount / 2) else (pointCount / 2) + 1
-            val lowerCount = (pointCount / 2)
-
-            for (count in upperCount-1 downTo  0) {
-                val value = max / upperCount.toDouble()
+            for (count in positivePointCount-1 downTo  0) {
+                val value = max / positivePointCount.toDouble()
                 val point = value * count.toDouble()
                 valuesUpper.add(point.roundToNearest())
             }
 
-            for (count in 1 until lowerCount) {
-                val value = min / lowerCount.toDouble()
+            for (count in 1 until negativePointCount) {
+                val value = min / negativePointCount.toDouble()
                 val point = value * count.toDouble()
                 valuesLower.add(point.roundToNearest())
             }
 
             valuesLower.add(minRounded)
         } else {
-            for (count in pointCount-1 downTo  0) {
-                val value = max / pointCount.toDouble()
+            for (count in positivePointCount-1 downTo  0) {
+                val value = max / positivePointCount.toDouble()
                 val point = value * count.toDouble()
                 valuesUpper.add(point.roundToNearest())
             }
         }
 
-        pointsUpper.addAll(valuesUpper.map { it.toString() })
-        pointsLower.addAll(valuesLower.map { it.toString() })
-
-        return ValueCalculation(values, pointsUpper, pointsLower, max, maxRounded, min, minRounded)
-    }
-
-    private fun handleIntegerType(
-        values: List<Int>,
-        pointCount: Int,
-        pointsUpper: MutableList<String>,
-        pointsLower: MutableList<String>
-    ): ValueCalculation {
-        val valuesUpper = mutableListOf<Int>()
-        val valuesLower = mutableListOf<Int>()
-
-        val max = values.max()!!
-        val min = values.min()!!
-
-        val maxRounded = max.roundToNearest()
-        val minRounded = min.roundToNearest()
-
-        if (min < 0) {
-
-            val upperCount = if (pointCount % 2 == 0) (pointCount / 2) else (pointCount / 2) + 1
-            val lowerCount = (pointCount / 2)
-
-            for (count in upperCount-1 downTo  0) {
-                val value = max / upperCount
-                val point = value * count
-                valuesUpper.add(point.roundToNearest())
-            }
-
-            for (count in 1 until lowerCount) {
-                val value = min / lowerCount
-                val point = value * count
-                valuesLower.add(point.roundToNearest())
-            }
-
-            valuesLower.add(minRounded)
-        } else {
-            for (count in pointCount-1 downTo  0) {
-                val value = max / pointCount
-                val point = value * count
-                valuesUpper.add(point.roundToNearest())
-            }
-        }
-
-        pointsUpper.addAll(valuesUpper.map { it.toString() })
-        pointsLower.addAll(valuesLower.map { it.toString() })
-
-        return ValueCalculation(values, pointsUpper, pointsLower, max, maxRounded, min, minRounded)
-    }
-
-    private fun handleFloatType(
-        values: List<Float>,
-        pointCount: Int,
-        pointsUpper: MutableList<String>,
-        pointsLower: MutableList<String>
-    ): ValueCalculation {
-        val valuesUpper = mutableListOf<Float>()
-        val valuesLower = mutableListOf<Float>()
-
-        val max = values.max()!!
-        val min = values.min()!!
-
-        val maxRounded = max.roundToNearest()
-        val minRounded = min.roundToNearest()
-
-        if (min < 0) {
-
-            val upperCount = if (pointCount % 2 == 0) (pointCount / 2) else (pointCount / 2) + 1
-            val lowerCount = (pointCount / 2)
-
-            for (count in upperCount-1 downTo  0) {
-                val value = max / upperCount.toFloat()
-                val point = value * count.toFloat()
-                valuesUpper.add(point.roundToNearest())
-            }
-
-            for (count in 1 until lowerCount) {
-                val value = min / lowerCount.toFloat()
-                val point = value * count.toFloat()
-                valuesLower.add(point.roundToNearest())
-            }
-
-            valuesLower.add(minRounded)
-        } else {
-            for (count in pointCount-1 downTo  0) {
-                val value = max / pointCount.toFloat()
-                val point = value * count.toFloat()
-                valuesUpper.add(point.roundToNearest())
-            }
-        }
-
-        pointsUpper.addAll(valuesUpper.map { it.toString() })
-        pointsLower.addAll(valuesLower.map { it.toString() })
-
-        return ValueCalculation(values, pointsUpper, pointsLower, max, maxRounded, min, minRounded)
+        return ValueCalculation(values, valuesUpper, valuesLower, max, maxRounded, min, minRounded)
     }
 
     private fun handleLongType(
         values: List<Long>,
-        pointCount: Int,
-        pointsUpper: MutableList<String>,
-        pointsLower: MutableList<String>
+        positivePointCount: Int,
+        negativePointCount: Int
     ): ValueCalculation {
         val valuesUpper = mutableListOf<Long>()
         val valuesLower = mutableListOf<Long>()
@@ -624,42 +633,151 @@ class ChartGridAxisY(
 
         if (min < 0) {
 
-            val upperCount = if (pointCount % 2 == 0) (pointCount / 2) else (pointCount / 2) + 1
-            val lowerCount = (pointCount / 2)
-
-            for (count in upperCount-1 downTo  0) {
-                val value = max / upperCount.toLong()
+            for (count in positivePointCount-1 downTo  0) {
+                val value = max / positivePointCount.toLong()
                 val point = value * count.toLong()
                 valuesUpper.add(point.roundToNearest())
             }
 
-            for (count in 1 until lowerCount) {
-                val value = min / lowerCount.toLong()
+            for (count in 1 until negativePointCount) {
+                val value = min / negativePointCount.toLong()
                 val point = value * count.toLong()
                 valuesLower.add(point.roundToNearest())
             }
 
             valuesLower.add(minRounded)
         } else {
-            for (count in pointCount-1 downTo  0) {
-                val value = max / pointCount.toLong()
+            for (count in positivePointCount-1 downTo  0) {
+                val value = max / positivePointCount.toLong()
                 val point = value * count.toLong()
                 valuesUpper.add(point.roundToNearest())
             }
         }
 
-        pointsUpper.addAll(valuesUpper.map { it.toString() })
-        pointsLower.addAll(valuesLower.map { it.toString() })
+        return ValueCalculation(values, valuesUpper, valuesLower, max, maxRounded, min, minRounded)
+    }
 
-        return ValueCalculation(values, pointsUpper, pointsLower, max, maxRounded, min, minRounded)
+    private fun handleIntegerType(
+        values: List<Int>,
+        _positivePointCount: Int,
+        _negativePointCount: Int
+    ): ValueCalculation {
+        val valuesUpper = mutableListOf<Int>()
+        val valuesLower = mutableListOf<Int>()
+
+        val max = values.max()!!
+        val min = values.min()!!
+
+        val threshold = 0.5f
+
+        val maxRounded = max.normalize(threshold)
+        val minRounded = min.normalize(threshold)
+
+        if (min < 0) {
+            val positivePointCount = _positivePointCount.clamp(max,threshold, 10)
+            val negativePointCount = _negativePointCount.clamp(-min, threshold, 10)
+
+            val minPositiveScale = (maxRounded.toFloat() / positivePointCount.toFloat()) / 10f
+            val minNegativeScale = (-minRounded.toFloat() / negativePointCount.toFloat()) / 10f
+
+            for (count in positivePointCount-1 downTo  0) {
+                val value = (max / positivePointCount)
+                val point = value * count
+                valuesUpper.add(point.normalize(minPositiveScale))
+            }
+
+            for (count in 1 until negativePointCount) {
+                val value = (min / negativePointCount)
+                val point = value * count
+                valuesLower.add(point.normalize(minNegativeScale))
+            }
+
+            valuesLower.add(minRounded)
+        } else {
+            val positivePointCount = _positivePointCount.clamp(max,threshold, 10)
+
+            val minPositiveScale = (max.toFloat() / positivePointCount.toFloat()) / 10f
+
+            for (count in positivePointCount-1 downTo  0) {
+                val value = (maxRounded / positivePointCount)
+                val point = value * count
+                valuesUpper.add(point.normalize(minPositiveScale))
+            }
+        }
+
+        return ValueCalculation(values, valuesUpper, valuesLower, max, maxRounded, min, minRounded)
+    }
+
+    private fun handleFloatType(
+        values: List<Float>,
+        positivePointCount: Int,
+        negativePointCount: Int
+    ): ValueCalculation {
+        val valuesUpper = mutableListOf<Float>()
+        val valuesLower = mutableListOf<Float>()
+
+        val max = values.max()!!
+        val min = values.min()!!
+
+        val maxRounded = max.roundToNearest()
+        val minRounded = min.roundToNearest()
+
+        if (min < 0) {
+
+            for (count in positivePointCount-1 downTo  0) {
+                val value = max / positivePointCount.toFloat()
+                val point = value * count.toFloat()
+                valuesUpper.add(point.roundToNearest())
+            }
+
+            for (count in 1 until negativePointCount) {
+                val value = min / negativePointCount.toFloat()
+                val point = value * count.toFloat()
+                valuesLower.add(point.roundToNearest())
+            }
+
+            valuesLower.add(minRounded)
+        } else {
+            for (count in positivePointCount-1 downTo  0) {
+                val value = max / positivePointCount.toFloat()
+                val point = value * count.toFloat()
+                valuesUpper.add(point.roundToNearest())
+            }
+        }
+
+        return ValueCalculation(values, valuesUpper, valuesLower, max, maxRounded, min, minRounded)
+    }
+
+    private fun handleStringType(
+        values: List<String>,
+        positivePointCount: Int,
+        negativePointCount: Int
+    ): ValueCalculation {
+
+        val valuesUpper = mutableListOf<String>()
+        val valuesLower = mutableListOf<String>()
+
+        return ValueCalculation(values, valuesUpper, valuesLower, 0, 0, 0, 0)
+    }
+
+    private fun handleBooleanType(
+        values: List<Boolean>,
+        positivePointCount: Int,
+        negativePointCount: Int
+    ): ValueCalculation {
+
+        val valuesUpper = mutableListOf<Boolean>()
+        val valuesLower = mutableListOf<Boolean>()
+
+        return ValueCalculation(values, valuesUpper, valuesLower, 0, 0, 0, 0)
     }
 
     fun getElements() = values?.valuesBuildData?.textElements
 
     data class ValueCalculation(
         val values: List<Any>,
-        val upperPoints: List<String> = ArrayList(),
-        val lowerPoints: List<String> = ArrayList(),
+        val upperPoints: List<Any> = ArrayList(),
+        val lowerPoints: List<Any> = ArrayList(),
         val maxValue: Any,
         val maxValueRounded: Any,
         val minValue: Any,
@@ -672,6 +790,6 @@ class ChartGridAxisY(
         val start: Float = 0f,
         val margin: Float = 0f
     ) {
-        lateinit var zeroPoint: ChartText
+        lateinit var zeroPoint: Coordinate
     }
 }

@@ -1,5 +1,6 @@
 package com.eudycontreras.chartasticlibrary.charts.chart_data
 
+import com.eudycontreras.chartasticlibrary.utilities.extensions.cast
 import com.eudycontreras.chartasticlibrary.utilities.global.DataChangeListener
 import com.eudycontreras.chartasticlibrary.utilities.global.DataTableMatrix
 import com.eudycontreras.chartasticlibrary.utilities.global.MatrixProperties
@@ -102,7 +103,7 @@ class DataTable(var name: String? = "DataTable") {
         return getValuesForColumn(column.name)
     }
 
-    fun getTypeForColumn(column: String): Any {
+    fun getTypeForColumn(column: String): DataType {
         if (columns.containsKey(column)) {
             return columns[column]?.type!!
         }
@@ -142,7 +143,7 @@ class DataTable(var name: String? = "DataTable") {
             data.first.forEach {
                 val attribute = Pair(
                     DataTableAttribute(it.first, it.second),
-                    DataTableValue(it.first, it.third.toString())
+                    DataTableValue(it.first, it.third)
                 )
                 dataTable.addAttribute(attribute)
             }
@@ -153,7 +154,7 @@ class DataTable(var name: String? = "DataTable") {
             val dataTable = if (name == null) DataTable() else DataTable(name)
 
             val columns = matrix[COL_INDEX].mapIndexed { index, col ->
-                DataTableAttribute(col.toString(), matrix[TYPE_INDEX][index])
+                DataTableAttribute(col.toString(), matrix[TYPE_INDEX][index].cast())
             }
 
             val records = ArrayList<DataTableRow>()
@@ -163,7 +164,7 @@ class DataTable(var name: String? = "DataTable") {
                 val record = DataTableRow()
                 for ((index, rec) in row.withIndex()) {
                     record.recordValues.add(
-                        DataTableValue(columns[index].name, rec.toString())
+                        DataTableValue(columns[index].name, rec)
                     )
                 }
                 records.add(record)

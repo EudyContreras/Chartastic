@@ -13,8 +13,9 @@ import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
  */
 
 class ChartText(
-    var text: String = "",
-    var paint: Paint = Paint()
+    var value: Any,
+    var prefix: String = "",
+    var suffix: String = ""
 ) : ChartElement {
 
     private var mRender: Boolean = true
@@ -30,6 +31,9 @@ class ChartText(
         RIGHT
     }
 
+    val text: String
+        get() = "$prefix$value$suffix"
+
     var bounds: Rect = Rect()
 
     var textSize: Float = 12.sp
@@ -37,6 +41,8 @@ class ChartText(
     var typeFace: Typeface = Typeface.DEFAULT
 
     var alignment: Alignment = Alignment.LEFT
+
+    var paint: Paint = Paint()
 
     var x: Float = 0f
     var y: Float = 0f
