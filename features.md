@@ -35,10 +35,8 @@ This document contains information about what each element of of the bar chart s
 * **Plot Area Scroller**
 * **Value Interceptor**
 * **Value Interceptor Tooltip**
-* **X Axis Label Top**
-* **X Axis label Bottom**
-* **Y Axis Label Left**
-* **Y Axis Label Right**
+* **X Axis**
+* **Y Axis**
 * **Major Grid Lines**
 * **Minor Grid Lines**
 * **Major Tick Lines**
@@ -110,3 +108,16 @@ Here is a list of all the element supported by the bar chart and their current s
    - [ ] The bars should be able to be grouped or clusterd by a desired key value
    - [ ] The bar cluster should support parallel and sequential group animations
    
+* **Y Axis**
+
+   - [x] The y axis should be able to show a desired number of value/label points
+   - [x] The y axis should be able to feature any desired font of any style, size and color
+   - [x] The y axis module visiblility should be able to be toggled
+   - [x] The y axis labels should support left and right paddings
+   - [x] The y axis labels should support ticks of any desired color, thickness and lenght
+   - [x] The y axis labels should be able to support any type of value (integers, doubles, etc)
+   - [x] The y axis labels should support preffix and suffix appenditures to the values
+   - [x] The y axis labels should be properly rounded based on magnitude
+   - [ ] The y axis labels should minor ticks
+   - [x]
+ 
