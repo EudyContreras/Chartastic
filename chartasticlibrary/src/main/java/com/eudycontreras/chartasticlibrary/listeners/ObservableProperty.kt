@@ -11,7 +11,9 @@ data class ObservableProperty<T>(private val _value: T, val name: String, privat
            if (value != field) {
                val old = field
                field = value
-               changeObservable.onPropertyChange(old!!, value!!, name)
+               if (changeObservable.processChanges) {
+                   changeObservable.onPropertyChange(old!!, value!!, name)
+               }
            }
         }
 

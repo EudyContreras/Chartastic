@@ -106,377 +106,65 @@ fun Int.normalize(ratio: Float = 1.0f): Int{
     return this
 }
 
-fun Int.roundToNearest(scale: Float = 1.0f): Int {
-    if (this >= 0) {
-        return when {
-            this <= 10 -> {
-                this
-            }
-            this <= 100 -> {
-                val ratio = (10 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 1_000 -> {
-                val ratio = (100 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 10_000 -> {
-                val ratio = (1_000 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 100_000 -> {
-                val ratio = (10_000 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 1_000_000 -> {
-                val ratio = (100_000 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 10_000_000 -> {
-                val ratio = (1_000_000 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 100_000_000 -> {
-                val ratio = (10_000_000 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 1_000_000_000 -> {
-                val ratio = (100_000_000 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 10_000_000_000 -> {
-                val ratio = (1_000_000_000 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            this <= 100_000_000_000 -> {
-                val ratio = (10_000_000_000 * scale).toInt()
-                (this + ratio) / ratio * ratio
-            }
-            else -> {
-                this
-            }
-        }
+enum class RoundMethod {
+    UP,
+    DOWN
+}
+fun Int.roundToNearest(ratio: Float = 1.0f, shift: Int = 2, multiple: Int? = null, method: RoundMethod = RoundMethod.UP): Int {
+    if(this == 0) {
+        return this
+    }
+    val scaleDivider = 2f
+    val min = positiveScale[0] /  2
+    val multiplier = 0.75f
+
+    if (this > 0 && this <= positiveScale[0]) {
+        return  getRounding(this, min, method)
+    } else if (this < 0 && this >= negativeScale[0]){
+        return  getRounding(this, min, method)
     } else {
-        return when {
-            this >= -10 -> {
-                this
-            }
-            this >= -100 -> {
-                val ratio = (10 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -1_000 -> {
-                val ratio = (100 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -10_000 -> {
-                val ratio = (1_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -100_000 -> {
-                val ratio = (10_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -1_000_000 -> {
-                val ratio = (100_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -10_000_000 -> {
-                val ratio = (1_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -100_000_000 -> {
-                val ratio = (10_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -1_000_000_000 -> {
-                val ratio = (100_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -10_000_000_000 -> {
-                val ratio = (1_000_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -100_000_000_000 -> {
-                val ratio = (10_000_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -1_000_000_000_000 -> {
-                val ratio = (100_000_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -10_000_000_000_000 -> {
-                val ratio = (1_000_000_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -100_000_000_000_000 -> {
-                val ratio = (10_000_000_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -1_000_000_000_000_000 -> {
-                val ratio = (100_000_000_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -10_000_000_000_000_000 -> {
-                val ratio = (1_000_000_000_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            this >= -100_000_000_000_000_000 -> {
-                val ratio = (10_000_000_000_000_000 * scale).toInt()
-                (this + -ratio) / ratio * ratio
-            }
-            else -> {
-                this
+        for(i in shift until positiveScale.size) {
+            var actual = (positiveScale[i - shift] * ratio).toInt()
+
+            if(this >= 0) {
+                if(this <= multiple?:positiveScale[i]) {
+                    val value = getRounding(this, actual, method)
+                    if(this < value * multiplier) {
+                        actual = (positiveScale[i - shift] * ratio / scaleDivider).toInt()
+                        return getRounding(this, actual, method)
+                    }
+                    return  value
+                }
+            } else {
+                if(this >= if (multiple != null) -multiple else negativeScale[i]) {
+                    val value = getRounding(this, actual, method)
+                    if(this > value * multiplier) {
+                        actual = (positiveScale[i - shift] * ratio / scaleDivider).toInt()
+                        return getRounding(this, actual, method)
+                    }
+                    return value
+                }
             }
         }
+    }
+    return this
+}
+
+private fun getRounding(value: Int, scale: Int, method: RoundMethod): Int {
+    return when (method) {
+        RoundMethod.UP ->  (value + if (value < 0) -scale else scale) / scale * scale
+        RoundMethod.DOWN -> (value - if (value < 0) -scale else scale) / scale * scale
     }
 }
 
 fun Long.roundToNearest(): Long {
-    if (this >= 0) {
-        when {
-            this < 10 -> {
-                return this
-            }
-            this < 100 -> {
-                return (this + 10) / 10 * 10
-            }
-            this < 1_000 -> {
-                return (this + 100) / 100 * 100
-            }
-            this < 10_000 -> {
-                return (this + 1_000) / 1_000 * 1_000
-            }
-            this < 100_000 -> {
-                return (this + 10_000) / 10_000 * 10_000
-            }
-            this < 1_000_000 -> {
-                return (this + 100_000) / 100_000 * 100_000
-            }
-            this < 10_000_000 -> {
-                return (this + 1_000_000) / 1_000_000 * 1_000_000
-            }
-            this < 100_000_000 -> {
-                return (this + 10_000_000) / 10_000_000 * 10_000_000
-            }
-            this < 1_000_000_000 -> {
-                return (this + 100_000_000) / 100_000_000 * 100_000_000
-            }
-            this < 10_000_000_000 -> {
-                return (this + 1_000_000_000) / 1_000_000_000 * 1_000_000_000
-            }
-            this < 100_000_000_000 -> {
-                return (this + 10_000_000_000) / 10_000_000_000 * 10_000_000_000
-            }
-            this < 1_000_000_000_000 -> {
-                return (this + 100_000_000_000) / 100_000_000_000 * 100_000_000_000
-            }
-        }
-    } else {
-        when {
-            this > -10-1 -> {
-                return this
-            }
-            this > -100-1 -> {
-                return (this + -10) / 10 * 10
-            }
-            this > -1_000-1 -> {
-                return (this + -100) / 100 * 100
-            }
-            this > -10_000-1 -> {
-                return (this + -1_000) / 1_000 * 1_000
-            }
-            this > -100_000-1 -> {
-                return (this + -10_000) / 10_000 * 10_000
-            }
-            this > -1_000_000-1 -> {
-                return (this + -100_000) / 100_000 * 100_000
-            }
-            this > -10_000_000-1 -> {
-                return (this + -1_000_000) / 1_000_000 * 1_000_000
-            }
-            this < -100_000_000-1 -> {
-                return (this + 10_000_000) / 10_000_000 * 10_000_000
-            }
-            this < 1_000_000_000-1 -> {
-                return (this + 100_000_000) / 100_000_000 * 100_000_000
-            }
-            this < 10_000_000_000-1 -> {
-                return (this + 1_000_000_000) / 1_000_000_000 * 1_000_000_000
-            }
-            this < 100_000_000_000-1 -> {
-                return (this + 10_000_000_000) / 10_000_000_000 * 10_000_000_000
-            }
-            this < 1_000_000_000_000-1 -> {
-                return (this + -100_000_000_000) / 100_000_000_000 * 100_000_000_000
-            }
-        }
-    }
     return this
 }
 
 fun Double.roundToNearest(): Double {
-    if (this > 0.0) {
-        when {
-            this < 10.0 -> {
-                return this
-            }
-            this < 100.0 -> {
-                return (this + 1) / 1 * 1
-            }
-            this < 1_000.0 -> {
-                return (this + 10.0) / 10.0 * 10.0
-            }
-            this < 10_000.0 -> {
-                return (this + 100.0) / 100.0 * 100.0
-            }
-            this < 100_000.0 -> {
-                return (this + 1_000.0) / 1_000.0 * 1_000.0
-            }
-            this < 1_000_000.0 -> {
-                return (this + 10_000.0) / 10_000.0 * 10_000.0
-            }
-            this < 10_000_000.0 -> {
-                return (this + 100_000.0) / 100_000.0 * 100_000.0
-            }
-            this < 100_000_000.0 -> {
-                return (this + 1_000_000.0) / 1_000_000.0 * 1_000_000.0
-            }
-            this < 1_000_000_000.0 -> {
-                return (this + 10_000_000.0) / 10_000_000.0 * 10_000_000.0
-            }
-            this < 10_000_000_000.0 -> {
-                return (this + 100_000_000.0) / 100_000_000.0 * 100_000_000.0
-            }
-            this < 100_000_000_000.0 -> {
-                return (this + 1_000_000_000.0) / 1_000_000_000.0 * 1_000_000_000.0
-            }
-            this < 1_000_000_000_000.0 -> {
-                return (this + 10_000_000_000.0) / 10_000_000_000.0 * 10_000_000_000.0
-            }
-        }
-    } else {
-        when {
-            this < -10.0-1 -> {
-                return this
-            }
-            this < -100.0-1 -> {
-                return (this - 1) / -1 * -1
-            }
-            this < -1_000.0-1 -> {
-                return (this - 10.0) / -10.0 * -10.0
-            }
-            this < -10_000.0-1 -> {
-                return (this - 100.0) / -100.0 * -100.0
-            }
-            this < -100_000.0-1 -> {
-                return (this - 1_000.0) / -1_000.0 * -1_000.0
-            }
-            this < -1_000_000.0-1 -> {
-                return (this + 10_000.0) / 10_000.0 * 10_000.0
-            }
-            this < -10_000_000.0-1 -> {
-                return (this + 100_000.0) / 100_000.0 * 100_000.0
-            }
-            this < 100_000_000.0-1 -> {
-                return (this + 1_000_000.0) / 1_000_000.0 * 1_000_000.0
-            }
-            this < 1_000_000_000.0-1 -> {
-                return (this + 10_000_000.0) / 10_000_000.0 * 10_000_000.0
-            }
-            this < 10_000_000_000.0-1 -> {
-                return (this + 100_000_000.0) / 100_000_000.0 * 100_000_000.0
-            }
-            this < 100_000_000_000.0-1 -> {
-                return (this + 1_000_000_000.0) / 1_000_000_000.0 * 1_000_000_000.0
-            }
-            this < 1_000_000_000_000.0-1 -> {
-                return (this + 10_000_000_000.0) / 10_000_000_000.0 * 10_000_000_000.0
-            }
-        }
-    }
     return this
 }
 
 fun Float.roundToNearest(): Float {
-    if (this >= 0) {
-        when {
-            this < 10 -> {
-                return this
-            }
-            this < 100 -> {
-                return (this + 10) / 10 * 10
-            }
-            this < 1_000 -> {
-                return (this + 100) / 100 * 100
-            }
-            this < 10_000 -> {
-                return (this + 1_000) / 1_000 * 1_000
-            }
-            this < 100_000 -> {
-                return (this + 10_000) / 10_000 * 10_000
-            }
-            this < 1_000_000 -> {
-                return (this + 100_000) / 100_000 * 100_000
-            }
-            this < 10_000_000 -> {
-                return (this + 1_000_000) / 1_000_000 * 1_000_000
-            }
-            this < 100_000_000 -> {
-                return (this + 10_000_000) / 10_000_000 * 10_000_000
-            }
-            this < 1_000_000_000 -> {
-                return (this + 100_000_000) / 100_000_000 * 100_000_000
-            }
-            this < 10_000_000_000 -> {
-                return (this + 1_000_000_000) / 1_000_000_000 * 1_000_000_000
-            }
-            this < 100_000_000_000 -> {
-                return (this + 10_000_000_000) / 10_000_000_000 * 10_000_000_000
-            }
-            this < 1_000_000_000_000 -> {
-                return (this + 100_000_000_000) / 100_000_000_000 * 100_000_000_000
-            }
-        }
-    } else {
-        when {
-            this > -10-1 -> {
-                return this
-            }
-            this > -100-1 -> {
-                return (this + -10) / 10 * 10
-            }
-            this > -1_000-1 -> {
-                return (this + -100) / 100 * 100
-            }
-            this > -10_000-1 -> {
-                return (this + -1_000) / 1_000 * 1_000
-            }
-            this > -100_000-1 -> {
-                return (this + -10_000) / 10_000 * 10_000
-            }
-            this > -1_000_000-1 -> {
-                return (this + -100_000) / 100_000 * 100_000
-            }
-            this > -10_000_000-1 -> {
-                return (this + -1_000_000) / 1_000_000 * 1_000_000
-            }
-            this < -100_000_000-1 -> {
-                return (this + 10_000_000) / 10_000_000 * 10_000_000
-            }
-            this < 1_000_000_000-1 -> {
-                return (this + 100_000_000) / 100_000_000 * 100_000_000
-            }
-            this < 10_000_000_000-1 -> {
-                return (this + 1_000_000_000) / 1_000_000_000 * 1_000_000_000
-            }
-            this < 100_000_000_000-1 -> {
-                return (this + 10_000_000_000) / 10_000_000_000 * 10_000_000_000
-            }
-            this < 1_000_000_000_000-1 -> {
-                return (this + -100_000_000_000) / 100_000_000_000 * 100_000_000_000
-            }
-        }
-    }
     return this
 }

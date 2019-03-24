@@ -43,36 +43,36 @@ class MainActivity : AppCompatActivity() {
         val color = MutableColor(ContextCompat.getColor(this, R.color.colorAccent))
 
         val coders = arrayOf(
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-14500..14500).random(), color.adjust(1.2f))
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f))
 
         )
 
@@ -119,13 +119,13 @@ class MainActivity : AppCompatActivity() {
         val dataTable = DataTable.parseWith(data)
 
         val chartData = BarChartData(dataTable, "Coder", "LOC")
-        chartData.zeroPoint = 10001
+        chartData.zeroPoint = 0
 
-        coders.sortByDescending { it.loc }
+        coders.sortBy { it.loc }
 
-        val range = ((dataTable.getRecords().size * 0.3).toInt()..dataTable.getRecords().size).random()
+        val range = 0 until ((dataTable.getRecords().size * 0.3).toInt()..dataTable.getRecords().size).random()
 
-        for (i in 0 until coders.size) {
+        for (i in range) {
             val coder = coders[i]
             val item = BarChartItem(coder.name, coder.loc, coder)
             item.elevation = 0.dp
@@ -155,10 +155,7 @@ class MainActivity : AppCompatActivity() {
             MutableColor(255, 40, 100, 190),
             MutableColor(255, 40, 190, 100),
             MutableColor(255, 190, 190, 30),
-            MutableColor(255, 190, 40, 40),
-            MutableColor(255, 190, 190, 30),
-            MutableColor(255, 40, 190, 100),
-            MutableColor(255, 40, 100, 190)
+            MutableColor(255, 190, 40, 40)
         ), Gradient.LEFT_TO_RIGHT)
 
         chart.barHighlightCriteria = { it as Coder
@@ -167,10 +164,10 @@ class MainActivity : AppCompatActivity() {
 
         chart.barRevealAnimation = BarAnimation().apply {
             delay = 100
-            duration = 350
-            stagger = 80
+            duration = 450
+            stagger = 30
             sequential = true
-            type = BarAnimation.AnimationType.CENTER_TO_EDGE
+            type = BarAnimation.AnimationType.LEFT_TO_RIGHT
             interpolator = OvershootInterpolator()
             onEnd = {
                 Log.d(name, "Animation done")

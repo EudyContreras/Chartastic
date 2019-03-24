@@ -109,6 +109,10 @@ class AxisYOptions: PropertyChangeObservable() {
 
     var chartData: BarChartData? = null
 
+    fun build() {
+        processChanges = true
+    }
+
     private val _pValuePointCount: ObservableProperty<Int> by lazy { from(10, ::positiveValuePointCount, this) }
     private val _nValuePointCount: ObservableProperty<Int> by lazy { from(10, ::negativeValuePointCount, this) }
     private val _render: ObservableProperty<Boolean> by lazy {  from(true, ::render, this) }

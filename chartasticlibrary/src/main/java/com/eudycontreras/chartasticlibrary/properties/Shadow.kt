@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
-import com.eudycontreras.chartasticlibrary.shapes.Circle
 import com.eudycontreras.chartasticlibrary.utilities.extensions.drawRoundRect
 import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 
@@ -244,15 +243,14 @@ class Shadow {
         paint.setShadowLayer(shape.elevation, -shape.elevation, -shape.elevation, shadowColorStart.toColor())
     }
 
-    fun drawOval(shape: Circle, paint: Paint, canvas: Canvas) {
+    fun drawShadow(shape: Shape, paint: Paint, canvas: Canvas) {
+        draw(shape.left, shape.top, shape.right, shape.bottom, shape.elevation, paint, canvas)
+    }
+
+    fun draw(left: Float, top: Float, right: Float, bottom: Float, elevation: Float, paint: Paint, canvas: Canvas) {
         if (shadowType == Type.INNER) {
             paint.style = Paint.Style.STROKE
         }
-
-        val left = shape.coordinate.x
-        val right = shape.coordinate.x + shape.dimension.width
-        val top = shape.coordinate.y
-        val bottom = shape.coordinate.y + shape.dimension.height
 
         val shiftedLeft = left - shiftLeft
         val shiftedTop = top - shiftTop
@@ -262,7 +260,7 @@ class Shadow {
         val color: MutableColor = MutableColor.fromColor(shadowColorStart)
 
         var steps = mapRange(
-            shape.elevation,
+            elevation,
             Shape.MinElevation,
             Shape.MaxElevation,
             minStepCount,
@@ -273,12 +271,12 @@ class Shadow {
 
         paint.strokeWidth = steps.toFloat()
 
-        for (i: Int in 0..shape.elevation.toInt() step steps) {
+        for (i: Int in 0..elevation.toInt() step steps) {
 
             val amount = mapRange(
                 i.toFloat(),
                 0f,
-                shape.elevation,
+                elevation,
                 shadowColorStart.getOpacity(),
                 shadowColorEnd.getOpacity()
             )

@@ -120,11 +120,12 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
         val optionsLeft = AxisYOptions().apply {
             labelValueAppend = " LOC"
             padding = Padding(0.dp, 8.dp, 0.dp, 0.dp)
-            positiveValuePointCount = 20
-            negativeValuePointCount = 7
+            positiveValuePointCount = 6
+            negativeValuePointCount = 6
             showLabels = true
             showTickLines = true
             chartData = data
+            build()
         }
 
         chartAxisYLeft = ChartGridAxisY(chartLayoutManagerInner, ChartGridAxisY.Type.LEFT)
@@ -139,6 +140,7 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
             showLabels = true
             showTickLines = true
             chartData = data
+            build()
         }
 
         chartAxisYRight = ChartGridAxisY(chartLayoutManagerInner, ChartGridAxisY.Type.RIGHT)

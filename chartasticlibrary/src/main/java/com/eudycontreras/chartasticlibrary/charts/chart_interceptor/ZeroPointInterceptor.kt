@@ -8,9 +8,10 @@ import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.*
-import com.eudycontreras.chartasticlibrary.shapes.Circle
 import com.eudycontreras.chartasticlibrary.shapes.Line
+import com.eudycontreras.chartasticlibrary.shapes.custom.InterceptorMarkerShape
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 
 /**
  * Created by eudycontreras.
@@ -52,6 +53,12 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
             marker.radius = value
         }
 
+    var markerPaddingMultiplier: Float = 1.dp
+        set(value) {
+            field = value
+            marker.paddingMultiplier = value
+        }
+
     var lineThickness: Float = 0f
         set(value) {
             field = value
@@ -69,20 +76,21 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
     var markerColor: MutableColor
         get() = marker.color
         set(value) {
-            marker.color = MutableColor(value).updateAlpha(0.4f)
-            marker.strokeColor = MutableColor(value).updateAlpha(0.8f)
+            marker.color = value
         }
 
-    var markerFillColor: MutableColor
-        get() = marker.color
+    var markerOuterColor: MutableColor?
+        get() = marker.outerColor
         set(value) {
-            marker.color = MutableColor(value).updateAlpha(0.4f)
+            value?.let {
+                marker.outerColor = value
+            }
         }
 
     var markerStrokeColor: MutableColor
         get() = marker.color
         set(value) {
-            marker.strokeColor = MutableColor(value).updateAlpha(0.8f)
+            marker.strokeColor = value
         }
 
     var showShadows: Boolean = false
@@ -126,8 +134,6 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
     var shouldRender: Boolean = false
         private set(value) {
             field = value
-            lineLeft.render = value
-            lineRight.render = value
             marker.render = value
         }
 
@@ -138,7 +144,7 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
         }
 
     var positionX: Float = 0f
-        private set(value) {
+        set(value) {
             field = value
             marker.centerX = (value - shiftOffsetX)
             if (marker.centerX < (bounds.left + marker.radius / 2)) {
@@ -154,16 +160,10 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
         }
 
     var positionY: Float = 0f
-        private set(value) {
+        set(value) {
             field = value
-            marker.centerY = (value - shiftOffsetY)
-            if (marker.centerY < (bounds.top + marker.radius / 2)) {
-                marker.centerY = (bounds.top + marker.radius / 2)
-            } else if (marker.centerY > (bounds.bottom - marker.radius / 2)) {
-                marker.centerY = (bounds.bottom - marker.radius / 2)
-            }
-
-            lineLeft.coordinate.y = (marker.centerY)
+            marker.centerY = value
+            lineLeft.coordinate.y = (marker.centerY) - (lineThickness / 2)
             lineRight.coordinate.y = lineLeft.coordinate.y
 
         }
@@ -171,13 +171,10 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
     var shiftOffsetX: Float = Float.MAX_VALUE
         get() = if (field == Float.MAX_VALUE) (marker.radius) else field
 
-    var shiftOffsetY: Float = Float.MAX_VALUE
-        get() = if (field == Float.MAX_VALUE) (marker.radius) else field
-
     private var lineLeft: Line = Line()
     private var lineRight: Line = Line()
 
-    private var marker: Circle = Circle()
+    private var marker: InterceptorMarkerShape = InterceptorMarkerShape()
 
     fun build(bounds: Bounds = Bounds()) {
         this.bounds.update(bounds)
@@ -186,8 +183,10 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
         marker.showStroke = true
         marker.strokeWidth = 1.5f.dp
 
+        shouldRender = true
         lineRight.render = true
         lineLeft.render = true
+        marker.render = true
     }
 
     override fun render(
@@ -204,18 +203,16 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
     override fun onTouch(event: MotionEvent, x: Float, y: Float, shapeRenderer: ShapeRenderer) {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
+                positionX = x
                 shapeRenderer.delegateTouchEvent(event, x, y)
             }
             MotionEvent.ACTION_UP -> {
-                if (shouldRender && visible) {
-                    shouldRender = false
-                }
                 shapeRenderer.delegateTouchEvent(event, x, y)
             }
             MotionEvent.ACTION_MOVE -> {
+                shiftOffsetX = mapRange(x, bounds.left + (marker.radius), bounds.right - marker.radius, (marker.radius * 2), -(marker.radius * 2))
                 if (visible) {
                     positionX = x
-                    positionY = y
                     shapeRenderer.delegateTouchEvent(event, marker.centerX, marker.centerY)
                 } else {
                     shapeRenderer.delegateTouchEvent(event, x, y)
@@ -228,7 +225,6 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
         if (!shouldRender && visible) {
             shouldRender = true
             positionX = x
-            positionY = y
         }
     }
     internal class ValueInterceptorTooltip {

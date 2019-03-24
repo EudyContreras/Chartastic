@@ -1,16 +1,22 @@
-package com.eudycontreras.chartasticlibrary.shapes
+package com.eudycontreras.chartasticlibrary.shapes.custom
 
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
+import com.eudycontreras.chartasticlibrary.properties.MutableColor
 
 /**
  * Created by eudycontreras.
  */
 
-class Circle: Shape() {
+class InterceptorMarkerShape: Shape() {
+
+    var paddingMultiplier: Float = 0f
+        get() = radius * field
+
+    var outerColor: MutableColor? = null
 
     var radius: Float = Math.min(dimension.width, dimension.height)
         set(value) {
@@ -45,16 +51,16 @@ class Circle: Shape() {
                 paint.setShadowLayer(elevation, 0f, -elevation / 2, shadow!!.shadowColor.toColor())
             } else {
                 renderingProperties.lightSource?.computeShadow(this, shadowPosition)
-                shadow?.drawShadow(this, paint, canvas)
+                shadow?.draw(left - paddingMultiplier, top - paddingMultiplier, right + paddingMultiplier, bottom + paddingMultiplier, elevation, paint, canvas)
             }
         }
 
         paint.style = Paint.Style.FILL
-        paint.color = color.toColor()
+        paint.color = outerColor?.toColor()?:color.toColor()
 
-        if (shader != null) {
-            paint.shader = shader
-        }
+        canvas.drawOval(left - paddingMultiplier, top - paddingMultiplier, right + paddingMultiplier, bottom + paddingMultiplier, paint)
+
+        paint.color = color.toColor()
 
         canvas.drawOval(left, top, right, bottom, paint)
 
@@ -65,7 +71,7 @@ class Circle: Shape() {
                 paint.strokeWidth = strokeWidth
                 paint.color = it.toColor()
 
-                canvas.drawOval(left, top, right, bottom, paint)
+                canvas.drawOval(left - paddingMultiplier, top - paddingMultiplier, right + paddingMultiplier, bottom + paddingMultiplier, paint)
             }
         }
     }

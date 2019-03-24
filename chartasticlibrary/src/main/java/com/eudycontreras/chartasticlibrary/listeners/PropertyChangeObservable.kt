@@ -10,6 +10,8 @@ import com.eudycontreras.chartasticlibrary.utilities.global.PropertyChangeListen
 abstract class PropertyChangeObservable: ChartOptions {
     protected var listeners = ArrayList<PropertyChangeListener<Any>>()
 
+    internal var processChanges = false
+
     fun addPropertyChangeListener(changeListener: PropertyChangeListener<Any>){
         listeners.add(changeListener)
     }

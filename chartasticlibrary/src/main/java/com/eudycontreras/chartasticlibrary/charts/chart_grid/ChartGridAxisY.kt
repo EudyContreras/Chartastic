@@ -201,6 +201,7 @@ class ChartGridAxisY(
             referenceUpper.textColor = options.labelTextColor
             referenceUpper.textSize = options.labelTextSize
             referenceUpper.typeFace = options.labelTypeFace
+            referenceUpper.render = options.showLabels
             referenceUpper.paint = paint
             referenceUpper.build()
 
@@ -211,6 +212,7 @@ class ChartGridAxisY(
             referenceLower.textColor = options.labelTextColor
             referenceLower.textSize = options.labelTextSize
             referenceLower.typeFace = options.labelTypeFace
+            referenceLower.render = options.showLabels
             referenceUpper.paint = paint
             referenceLower.build()
 
@@ -221,8 +223,8 @@ class ChartGridAxisY(
 
             val height: Float = (bottom - top)
 
-            val referenceUpperWidth = referenceUpper.dimension.width + (options.padding.end + options.tickLength) + options.padding.start
-            val referenceLowerWidth = referenceLower.dimension.width + (options.padding.end + options.tickLength) + options.padding.start
+            val referenceUpperWidth = (if (options.showLabels) referenceUpper.dimension.width else 0f) + (options.padding.end + options.tickLength) + options.padding.start
+            val referenceLowerWidth = (if (options.showLabels) referenceLower.dimension.width else 0f) + (options.padding.end + options.tickLength) + options.padding.start
 
             val reference = if (referenceUpperWidth > referenceLowerWidth) referenceUpper else referenceLower
 
@@ -249,6 +251,7 @@ class ChartGridAxisY(
                 val chartText = ChartText(value, options.labelValuePrepend, options.labelValueAppend)
                 chartText.copyStyle(reference)
                 chartText.paint = paint
+                chartText.render = options.showLabels
                 chartText.build()
 
                 chartText.x = reference.x
@@ -274,6 +277,7 @@ class ChartGridAxisY(
                 val chartText = ChartText(value, options.labelValuePrepend, options.labelValueAppend)
                 chartText.copyStyle(reference)
                 chartText.paint = paint
+                chartText.render = options.showLabels
                 chartText.build()
 
                 chartText.x = reference.x
@@ -659,53 +663,41 @@ class ChartGridAxisY(
 
     private fun handleIntegerType(
         values: List<Int>,
-        _positivePointCount: Int,
-        _negativePointCount: Int
+        positivePointCount: Int,
+        negativePointCount: Int
     ): ValueCalculation {
-        val valuesUpper = mutableListOf<Int>()
-        val valuesLower = mutableListOf<Int>()
+        val valuesUpper = ArrayList<Int>()
+        val valuesLower = ArrayList<Int>()
 
         val max = values.max()!!
         val min = values.min()!!
 
-        val threshold = 0.5f
+        val maxRounded = max.roundToNearest(shift = 1, ratio = 0.5f)
+        val minRounded = min.roundToNearest(shift = 1, ratio = 0.5f)
 
-        val maxRounded = max.normalize(threshold)
-        val minRounded = min.normalize(threshold)
+        if (max > 0 && positivePointCount > 0) {
+            val increase = (max / positivePointCount).roundToNearest(shift = 1, ratio = 0.5f, method = RoundMethod.DOWN)
 
-        if (min < 0) {
-            val positivePointCount = _positivePointCount.clamp(max,threshold, 10)
-            val negativePointCount = _negativePointCount.clamp(-min, threshold, 10)
-
-            val minPositiveScale = (maxRounded.toFloat() / positivePointCount.toFloat()) / 10f
-            val minNegativeScale = (-minRounded.toFloat() / negativePointCount.toFloat()) / 10f
-
-            for (count in positivePointCount-1 downTo  0) {
-                val value = (max / positivePointCount)
-                val point = value * count
-                valuesUpper.add(point.normalize(minPositiveScale))
+            for (count in positivePointCount-1 downTo 0) {
+                val point = increase * count
+                valuesUpper.add(point.roundToNearest(shift = 1, ratio = 0.5f))
             }
 
-            for (count in 1 until negativePointCount) {
-                val value = (min / negativePointCount)
-                val point = value * count
-                valuesLower.add(point.normalize(minNegativeScale))
-            }
-
-            valuesLower.add(minRounded)
-        } else {
-            val positivePointCount = _positivePointCount.clamp(max,threshold, 10)
-
-            val minPositiveScale = (max.toFloat() / positivePointCount.toFloat()) / 10f
-
-            for (count in positivePointCount-1 downTo  0) {
-                val value = (maxRounded / positivePointCount)
-                val point = value * count
-                valuesUpper.add(point.normalize(minPositiveScale))
-            }
+            valuesUpper.removeAll { it == maxRounded }
         }
 
-        return ValueCalculation(values, valuesUpper, valuesLower, max, maxRounded, min, minRounded)
+        if (min < 0 && negativePointCount > 0) {
+            val decrease = (min / negativePointCount).roundToNearest(shift = 1, ratio = 0.5f, method = RoundMethod.DOWN)
+
+            for (count in 1..negativePointCount) {
+                val point = decrease * count
+                valuesLower.add(point.roundToNearest(shift = 1, ratio = 0.5f))
+            }
+
+            valuesLower.removeAll { it == minRounded}
+        }
+
+        return ValueCalculation(values, valuesUpper.distinct(), valuesLower.distinct() , max, maxRounded, min, minRounded)
     }
 
     private fun handleFloatType(
