@@ -8,6 +8,7 @@ import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.interfaces.ChartBoundsOwner
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
+import com.eudycontreras.chartasticlibrary.utilities.global.BoundsChangeListener
 
 /**
  * Created by eudycontreras.
@@ -30,7 +31,11 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
         OUTER
     }
 
+    var showBoundingBoxes: Boolean = false
+
     var type: Type = Type.OUTER
+
+    override val changeListeners: ArrayList<BoundsChangeListener> by lazy { ArrayList<BoundsChangeListener>() }
 
     private val boundsBox: Shape by lazy {
         BoundingBox().apply {
@@ -49,8 +54,6 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
         }
 
     override var render: Boolean = true
-
-    override var drawBounds: Boolean = false
 
     override val anchor: BoundsAnchor = BoundsAnchor.CENTER
 
@@ -71,7 +74,7 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
         if (!render || !computeBounds) {
             return
         }
-        if (drawBounds) {
+        if (showBoundingBoxes && layoutManager != null) {
             boundsBox.render(path, paint, canvas, renderingProperties)
         }
     }
@@ -84,7 +87,7 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
     }
 
     override fun propagateNewBounds(bounds: Bounds) {
-        this.bounds.update(bounds, false)
+        this.bounds.update(bounds.drawableArea, false)
         for (owner in boundsOwners) {
             owner.value.notifyBoundsChange(owner.value.bounds)
         }
@@ -192,6 +195,8 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
                 owner.bounds.dimension.height = (boundsOwners[BoundsAnchor.BOTTOM]?.bounds?.top?:bounds.bottom) - owner.bounds.top
 
                 owner.propagateNewBounds(owner.bounds)
+
+                //handleCenterBoundsChanges(owner)
             }
         }
     }
@@ -199,21 +204,23 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
     private fun computeRemovedBoundsConstraints(anchor: BoundsAnchor) {
         when(anchor) {
             BoundsAnchor.LEFT -> {
+                val uppMostRight = (boundsOwners[BoundsAnchor.RIGHT]?.bounds?.left?:bounds.right)
+
                 boundsOwners[BoundsAnchor.CENTER]?.let {
-                    it.bounds.coordinate.x = bounds.coordinate.x
-                    it.bounds.dimension.width = (boundsOwners[BoundsAnchor.RIGHT]?.bounds?.left?:bounds.right) - it.bounds.left
+                    it.bounds.coordinate.x = 0f
+                    it.bounds.dimension.width = uppMostRight - it.bounds.left
                     it.propagateNewBounds(it.bounds)
                 }
 
                 if (type == Type.INNER){
-                    boundsOwners[BoundsAnchor.LEFT]?.let {
-                        it.bounds.coordinate.x = bounds.coordinate.x
-                        it.bounds.dimension.width = (boundsOwners[BoundsAnchor.RIGHT]?.bounds?.left?:bounds.right) - it.bounds.left
+                    boundsOwners[BoundsAnchor.TOP]?.let {
+                        it.bounds.coordinate.x = bounds.left
+                        it.bounds.dimension.width = uppMostRight - it.bounds.left
                         it.propagateNewBounds(it.bounds)
                     }
-                    boundsOwners[BoundsAnchor.RIGHT]?.let {
-                        it.bounds.coordinate.x = bounds.coordinate.x
-                        it.bounds.dimension.width = (boundsOwners[BoundsAnchor.RIGHT]?.bounds?.left?:bounds.right) - it.bounds.left
+                    boundsOwners[BoundsAnchor.BOTTOM]?.let {
+                        it.bounds.coordinate.x = bounds.left
+                        it.bounds.dimension.width = uppMostRight - it.bounds.left
                         it.propagateNewBounds(it.bounds)
                     }
                 }
@@ -275,10 +282,6 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
                     it.bounds.coordinate.x = bounds.left + bounds.dimension.width / 2
                     it.bounds.dimension.width = bounds.dimension.width / 2
                     it.propagateNewBounds(it.bounds)
-                }
-
-                if (type == Type.INNER) {
-
                 }
             }
         }
@@ -382,6 +385,31 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
         boundsOwners[BoundsAnchor.CENTER]?.let {
             it.bounds.dimension.height = newBottom - it.bounds.top
 
+            it.propagateNewBounds(it.bounds)
+        }
+    }
+
+    private fun handleCenterBoundsChanges(boundsOwner: ChartBoundsOwner){
+
+        boundsOwners[BoundsAnchor.LEFT]?.let {
+            it.bounds.right = boundsOwner.bounds.left
+            it.propagateNewBounds(it.bounds)
+        }
+
+        boundsOwners[BoundsAnchor.RIGHT]?.let {
+            it.bounds.left = boundsOwner.bounds.right
+            it.bounds.right = bounds.right
+            it.propagateNewBounds(it.bounds)
+        }
+
+        boundsOwners[BoundsAnchor.TOP]?.let {
+            it.bounds.bottom = boundsOwner.bounds.top
+            it.propagateNewBounds(it.bounds)
+        }
+
+        boundsOwners[BoundsAnchor.BOTTOM]?.let {
+            it.bounds.top = boundsOwner.bounds.bottom
+            it.bounds.bottom = bounds.bottom
             it.propagateNewBounds(it.bounds)
         }
     }

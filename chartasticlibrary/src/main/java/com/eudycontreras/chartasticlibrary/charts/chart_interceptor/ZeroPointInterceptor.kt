@@ -10,6 +10,7 @@ import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.*
 import com.eudycontreras.chartasticlibrary.shapes.Line
 import com.eudycontreras.chartasticlibrary.shapes.custom.InterceptorMarkerShape
+import com.eudycontreras.chartasticlibrary.shapes.custom.InterceptorTooltip
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 
@@ -157,6 +158,11 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
 
             lineRight.coordinate.x = (marker.centerX + (marker.radius / 2))
             lineRight.dimension.width = bounds.right - lineRight.coordinate.x
+
+            tooltip.coordinate.x = marker.centerX
+            tooltip.coordinate.y = (marker.centerY - ((marker.radius * 2) + marker.paddingMultiplier))
+
+            tooltip.pointerOffset = mapRange(marker.centerX, (bounds.left + marker.radius / 2), (bounds.right - marker.radius / 2), 0f, 1f)
         }
 
     var positionY: Float = 0f
@@ -165,7 +171,6 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
             marker.centerY = value
             lineLeft.coordinate.y = (marker.centerY) - (lineThickness / 2)
             lineRight.coordinate.y = lineLeft.coordinate.y
-
         }
 
     var shiftOffsetX: Float = Float.MAX_VALUE
@@ -176,12 +181,26 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
 
     private var marker: InterceptorMarkerShape = InterceptorMarkerShape()
 
+    private var tooltip: InterceptorTooltip = InterceptorTooltip()
+
     fun build(bounds: Bounds = Bounds()) {
         this.bounds.update(bounds)
         lineLeft.coordinate.x = bounds.coordinate.x
 
         marker.showStroke = true
         marker.strokeWidth = 1.5f.dp
+
+        tooltip.showStroke = true
+        tooltip.render = true
+        tooltip.strokeWidth = 1.dp
+        tooltip.drawShadow = true
+        tooltip.elevation = 4.dp
+        tooltip.pointerLength = 8.dp
+        tooltip.cornerRadius =  8.dp
+        tooltip.parentBounds = this.bounds
+        tooltip.bounds.dimension = Dimension(80.dp, 45.dp)
+        tooltip.shadow?.shadowColor = MutableColor.rgb(0)
+        tooltip.color = MutableColor.rgb(255)
 
         shouldRender = true
         lineRight.render = true
@@ -198,6 +217,7 @@ class ZeroPointInterceptor : ChartElement, TouchableElement {
         lineLeft.render(path, paint, canvas, renderingProperties)
         lineRight.render(path, paint, canvas, renderingProperties)
         marker.render(path, paint, canvas, renderingProperties)
+        tooltip.render(path, paint, canvas, renderingProperties)
     }
 
     override fun onTouch(event: MotionEvent, x: Float, y: Float, shapeRenderer: ShapeRenderer) {

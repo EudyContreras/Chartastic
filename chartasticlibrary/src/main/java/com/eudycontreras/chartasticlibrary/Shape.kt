@@ -18,12 +18,10 @@ abstract class Shape {
 
     var render: Boolean = true
 
-    var clipFilledArea: Boolean = false
-
     var showStroke: Boolean = false
         get() = field && strokeWidth > 0
 
-    var shadowType: Shadow.Type = Shadow.Type.OUTER;
+    var shadowType: Shadow.Type = Shadow.Type.OUTER
 
     var shadowPosition: LightSource.Position = LightSource.Position.BOTTOM_LEFT
 
@@ -31,19 +29,33 @@ abstract class Shape {
 
     var style: ShapeStyle? = null
 
-    val left: Float
+    var color: MutableColor = MutableColor()
+
+    open var bounds: Bounds = Bounds()
+
+    var left: Float
         get() = coordinate.x
+        set(value) {
+            coordinate.x = value
+        }
 
-    val top: Float
+    var top: Float
         get() = coordinate.y
+        set(value) {
+            coordinate.y = value
+        }
 
-    val bottom: Float
+    var bottom: Float
         get() = top + dimension.height
+        set(value) {
+            dimension.height = value - top
+        }
 
-    val right: Float
+    var right: Float
         get() = left + dimension.width
-
-    var bounds: Bounds = Bounds()
+        set(value) {
+            dimension.width = value - left
+        }
 
     var coordinate: Coordinate
         get() = bounds.coordinate
@@ -56,8 +68,6 @@ abstract class Shape {
         set(value) {
             bounds.dimension = value
         }
-
-    var color: MutableColor = MutableColor()
 
     var elevation: Float = 0f
         set(value) {
@@ -98,12 +108,17 @@ abstract class Shape {
 
         showStroke = false
         drawShadow = false
+        shadowType = Shadow.Type.OUTER
+        shadowPosition = LightSource.Position.BOTTOM_LEFT
 
         strokeWidth = 0f
         strokeColor = null
+        style = null
 
         shadow = null
         shader = null
+        render = true
+
     }
 
     fun update(delta: Float) {}

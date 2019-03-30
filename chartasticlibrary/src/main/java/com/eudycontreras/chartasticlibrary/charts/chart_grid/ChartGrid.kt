@@ -3,6 +3,7 @@ package com.eudycontreras.chartasticlibrary.charts.chart_grid
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.charts.ChartLayoutManager
@@ -11,6 +12,7 @@ import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.Coordinate
 import com.eudycontreras.chartasticlibrary.properties.Dimension
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
+import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 
@@ -39,6 +41,12 @@ class ChartGrid(private val layoutManager: ChartLayoutManager): ChartElement {
 
     private val majorGridLines = ArrayList<Line>()
     private val minorGridLines = ArrayList<Line>()
+
+    private val boundsBox: Shape by lazy {
+        BoundingBox().apply {
+            this.bounds.update(this@ChartGrid.bounds.drawableArea)
+        }
+    }
 
     lateinit var data: BarChartData
 
@@ -93,6 +101,10 @@ class ChartGrid(private val layoutManager: ChartLayoutManager): ChartElement {
 
         minorGridLines.forEach { it.render(path, paint, canvas, renderingProperties) }
         majorGridLines.forEach { it.render(path, paint, canvas, renderingProperties) }
+
+        if(layoutManager.showBoundingBoxes){
+            boundsBox.render(path, paint, canvas, renderingProperties)
+        }
     }
 
     fun build(bounds: Bounds = Bounds()) {
@@ -108,13 +120,13 @@ class ChartGrid(private val layoutManager: ChartLayoutManager): ChartElement {
         majorGridLines.clear()
 
         val placement = LinePlacement.ALIGNED
-        val values = gridAxisY.values?.valuesBuildData?.textElements!!
+        val values = gridAxisY.values?.valuesBuildData?.gridTextElements!!
 
         if (values.isEmpty()) {
             return
         }
 
-        val topX = gridAxisY.axisLabelBounds.right
+        val topX = if(gridAxisY.computeBounds) gridAxisY.axisLabelBounds.right else bounds.drawableArea.left
         val topWidth = bounds.drawableArea.width
 
         for (index in 0 until values.size) {
@@ -159,6 +171,9 @@ class ChartGrid(private val layoutManager: ChartLayoutManager): ChartElement {
     }
 
     private fun recreateDrawableZone(majorGridLines: ArrayList<Line>){
+        if(majorGridLines.isEmpty())
+            return
+
         val top = majorGridLines[0]
         val bottom = majorGridLines[majorGridLines.size - 1]
 

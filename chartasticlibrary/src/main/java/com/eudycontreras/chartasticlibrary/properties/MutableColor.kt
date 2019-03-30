@@ -39,13 +39,13 @@ data class MutableColor(
         this.red = red
         this.green = green
         this.blue = blue
-        colorChanged = true
+        this.colorChanged = true
         return this
     }
 
     fun updateAlpha(alpha: Int): MutableColor {
         if (alpha != this.alpha) {
-            colorChanged = true
+            this.colorChanged = true
         }
         this.alpha = alpha
         return this
@@ -53,7 +53,7 @@ data class MutableColor(
 
     fun updateAlpha(alpha: Float): MutableColor {
         if ((alpha * 255f).toInt() != this.alpha) {
-            colorChanged = true
+            this.colorChanged = true
         }
         this.alpha = (alpha * 255f).toInt()
         return this
@@ -83,47 +83,63 @@ data class MutableColor(
 
     fun addAlpha(amount: Float): MutableColor {
         alpha += clamp((Math.round(amount * 255)))
+        this.colorChanged = true
         return this
     }
 
     fun subtractAlpha(amount: Int): MutableColor {
         alpha = clamp(alpha - amount)
+        this.colorChanged = true
         return this
     }
 
     fun addAlpha(amount: Int): MutableColor {
         alpha = clamp(alpha + amount)
+        this.colorChanged = true
         return this
     }
 
     fun addRed(amount: Int): MutableColor {
         red = clamp(red + amount)
+        this.colorChanged = true
         return this
     }
 
     fun addGreen(amount: Int): MutableColor {
         green = clamp(green + amount)
+        this.colorChanged = true
         return this
     }
 
     fun addBlue(amount: Int): MutableColor {
         blue = clamp(blue + amount)
+        this.colorChanged = true
         return this
     }
 
     fun subtractRed(amount: Int): MutableColor {
         red = clamp(red - amount)
+        this.colorChanged = true
         return this
     }
 
     fun subtractGreen(amount: Int): MutableColor {
         green = clamp(green - amount)
+        this.colorChanged = true
         return this
     }
 
     fun subtractBlue(amount: Int): MutableColor {
         blue = clamp(blue - amount)
+        this.colorChanged = true
         return this
+    }
+
+    override fun reset(){
+        this.alpha = 255
+        this.red = 255
+        this.green = 255
+        this.blue = 255
     }
 
     override fun getAlpha() = alpha
@@ -140,7 +156,7 @@ data class MutableColor(
         this.green = color.green
         this.blue = color.blue
 
-        colorChanged = true
+        this.colorChanged = true
         return this
     }
 
@@ -150,7 +166,7 @@ data class MutableColor(
         this.green = green
         this.blue = blue
 
-        colorChanged = true
+        this.colorChanged = true
         return this
     }
 
@@ -173,15 +189,37 @@ data class MutableColor(
         return MutableColor(alpha, red, green, blue)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is MutableColor) return false
+
+        if (alpha != other.alpha) return false
+        if (red != other.red) return false
+        if (green != other.green) return false
+        if (blue != other.blue) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = alpha
+        result = 31 * result + red
+        result = 31 * result + green
+        result = 31 * result + blue
+        return result
+    }
+
     companion object {
 
-        val White: Color = MutableColor(255, 255, 255, 255)
-        val Black: Color = MutableColor(255, 0, 0, 0)
-        val Red: Color = MutableColor(255, 255, 0, 0)
-        val Green: Color = MutableColor(255, 0, 255, 0)
-        val Blue: Color = MutableColor(255, 0, 0, 255)
+        val WHITE: Color = MutableColor(255, 255, 255, 255)
+        val BLACK: Color = MutableColor(255, 0, 0, 0)
+        val RED: Color = MutableColor(255, 255, 0, 0)
+        val GREEN: Color = MutableColor(255, 0, 255, 0)
+        val BLUE: Color = MutableColor(255, 0, 0, 255)
+        val YELLOW: Color = MutableColor(255, 255, 255, 0)
+        val PURPLE: Color = MutableColor(255, 255, 0, 255)
 
-        val Default: Color = MutableColor()
+        val DEFAULT: Color = MutableColor()
 
         fun adjustAlpha(color: MutableColor, factor: Float) {
             color.updateAlpha((Math.round(color.alpha * factor)))

@@ -23,17 +23,29 @@ data class Bounds(
         this.layoutOwner = layoutOwner
     }
 
-    val left: Float
+    var left: Float
         get() = coordinate.x
+        set(value) {
+            coordinate.x = value
+        }
 
-    val right: Float
+    var right: Float
         get() = coordinate.x + dimension.width
+        set(value) {
+            dimension.width = value - left
+        }
 
-    val top: Float
+    var top: Float
         get() = coordinate.y
+        set(value) {
+            coordinate.y = value
+        }
 
-    val bottom: Float
+    var bottom: Float
         get() = coordinate.y + dimension.height
+        set(value) {
+            dimension.height = value - top
+        }
 
     val height: Float
         get() = bottom - top
@@ -202,6 +214,14 @@ data class Bounds(
             dimension.height = dimension.height - (it.top + it.bottom)
         }
         return this
+    }
+
+    fun reset(){
+        coordinate.x = 0f
+        coordinate.y = 0f
+        dimension.width = 0f
+        dimension.height = 0f
+        layoutOwner = null
     }
 }
 

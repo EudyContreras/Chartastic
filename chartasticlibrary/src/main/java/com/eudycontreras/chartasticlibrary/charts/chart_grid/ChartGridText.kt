@@ -1,4 +1,4 @@
-package com.eudycontreras.chartasticlibrary.charts.chart_text
+package com.eudycontreras.chartasticlibrary.charts.chart_grid
 
 import android.graphics.*
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
@@ -6,25 +6,20 @@ import com.eudycontreras.chartasticlibrary.charts.ChartElement
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.Dimension
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
+import com.eudycontreras.chartasticlibrary.utilities.extensions.recycle
 import com.eudycontreras.chartasticlibrary.utilities.extensions.sp
 
 /**
  * Created by eudycontreras.
  */
 
-class ChartText(
+class ChartGridText(
     var value: Any,
     var prefix: String = "",
     var suffix: String = ""
 ) : ChartElement {
 
-    private var mRender: Boolean = true
-
-    override var render: Boolean
-        get() = mRender
-        set(value) {
-            mRender = value
-        }
+    override var render: Boolean = true
 
     enum class Alignment {
         LEFT,
@@ -40,17 +35,18 @@ class ChartText(
     var textColor: MutableColor = MutableColor.rgb(255, 255, 255)
     var typeFace: Typeface = Typeface.DEFAULT
 
-    var alignment: Alignment = Alignment.LEFT
-
-    var paint: Paint = Paint()
+    var alignment: Alignment =
+        Alignment.LEFT
 
     var x: Float = 0f
     var y: Float = 0f
 
+    lateinit var paint: Paint
+
     lateinit var dimension: Dimension
 
     fun build(bounds: Bounds = Bounds()) {
-        paint.reset()
+        paint.recycle()
         paint.typeface = typeFace
         paint.textSize = textSize
         paint.color = textColor.toColor()
@@ -61,16 +57,16 @@ class ChartText(
 
     override fun render(
         path: Path,
-        p: Paint,
+        paint: Paint,
         canvas: Canvas,
         renderingProperties: ShapeRenderer.RenderingProperties
     ) {
-        if (mRender) {
-            canvas.drawText(text, x, y, paint)
+        if (render) {
+            canvas.drawText(text, x, y, this.paint)
         }
     }
 
-    fun copyStyle(other: ChartText) {
+    fun copyStyle(other: ChartGridText) {
         this.textSize = other.textSize
         this.typeFace = other.typeFace
         this.textColor = other.textColor

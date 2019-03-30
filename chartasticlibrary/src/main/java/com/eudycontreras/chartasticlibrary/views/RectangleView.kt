@@ -3,7 +3,6 @@ package com.eudycontreras.chartasticlibrary.views
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.*
@@ -25,8 +24,6 @@ class RectangleView : View, ChartView {
 
     private var fullyVisible: Boolean = false
     private var initialized: Boolean = false
-
-    private var paint: Paint = Paint()
 
     private var chartRenderer: ChartRenderer = ChartRenderer(this)
 
@@ -50,7 +47,7 @@ class RectangleView : View, ChartView {
         }
     }
     init {
-        setLayerType(LAYER_TYPE_SOFTWARE, paint)
+        setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
     private fun setUpAttributes(typedArray: TypedArray) {
@@ -76,7 +73,7 @@ class RectangleView : View, ChartView {
 
         val bounds = Bounds(Coordinate(0f, 0f), Dimension(usableWidth, usableHeight))
 
-        chartRenderer.shapeRenderer = ShapeRenderer(paint).apply {
+        chartRenderer.shapeRenderer = ShapeRenderer().apply {
             properties.lightSource = LightSource(usableWidth / 2, usableHeight)
         }
 

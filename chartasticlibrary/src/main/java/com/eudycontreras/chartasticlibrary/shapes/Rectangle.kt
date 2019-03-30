@@ -9,6 +9,7 @@ import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableShape
 import com.eudycontreras.chartasticlibrary.properties.Shadow
 import com.eudycontreras.chartasticlibrary.utilities.extensions.drawRoundRect
+import com.eudycontreras.chartasticlibrary.utilities.extensions.recycle
 
 /**
  * Created by eudycontreras.
@@ -24,15 +25,12 @@ class Rectangle: Shape(), TouchableShape {
 
     }
 
-    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        isAntiAlias = true
-    }
-
-
-    override fun render(path: Path, p: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
+    override fun render(path: Path, paint: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
+
+        paint.recycle()
 
         if (style != null) {
             style?.invoke(canvas, paint, path, coordinate.y, coordinate.y, dimension.width, dimension.height)
@@ -40,7 +38,6 @@ class Rectangle: Shape(), TouchableShape {
         }
 
         if (drawShadow && shadow?.shadowType == Shadow.Type.OUTER) {
-            paint.reset()
             if (renderingProperties.useSystemShadow) {
                 paint.setShadowLayer(elevation, 0f, 0f, shadow!!.shadowColor.updateAlpha(255).toColor())
             } else {
@@ -70,7 +67,7 @@ class Rectangle: Shape(), TouchableShape {
         }
 
         if (drawShadow && shadow?.shadowType == Shadow.Type.INNER) {
-            paint.reset()
+            paint.recycle()
             if (renderingProperties.useSystemShadow) {
                 paint.setShadowLayer(elevation, 0f, 0f, shadow!!.shadowColor.updateAlpha(255).toColor())
             } else {

@@ -25,6 +25,8 @@ abstract class Color {
 
     abstract fun toColor(): Int
 
+    abstract fun reset()
+
     protected fun clamp(color: Int): Int {
         return when {
             color > 255 -> 255

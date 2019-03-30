@@ -35,10 +35,22 @@ fun mapRange(value: Float, fromMin: Float, fromMax: Float, toMin: Float, toMax: 
     return (value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin
 }
 
+fun mapRange(value: Float, fromMin: Float, fromMax: Float, toMin: Float, toMax: Float, clampMin: Float, clampMax: Float): Float {
+    return clamp(((value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin), clampMin, clampMax)
+}
+
 fun mapRange(value: Double, fromMin: Double, fromMax: Double, toMin: Double, toMax: Double): Double {
     return (value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin
 }
 
 fun mapRange(value: Int, fromMin: Int, fromMax: Int, toMin: Int, toMax: Int): Int {
     return (value - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin
+}
+
+fun clamp(value: Float, minValue: Float, maxValue: Float): Float {
+    return if (value < minValue) minValue else if (value > maxValue) maxValue else value
+}
+
+fun clamp(value: Int, minValue: Int, maxValue: Int): Int {
+    return if (value < minValue) minValue else if (value > maxValue) maxValue else value
 }

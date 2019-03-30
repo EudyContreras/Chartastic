@@ -7,6 +7,7 @@ import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.extensions.recycle
 
 /**
  * Created by eudycontreras.
@@ -34,7 +35,7 @@ class BoundingBox : Shape() {
             return
         }
 
-        paint.reset()
+        paint.recycle()
 
         if(renderFill) {
             paint.style = Paint.Style.FILL

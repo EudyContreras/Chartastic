@@ -22,6 +22,7 @@ import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line
 import com.eudycontreras.chartasticlibrary.utilities.extensions.asFloat
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
+import com.eudycontreras.chartasticlibrary.utilities.global.BoundsChangeListener
 import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 
 /**
@@ -44,6 +45,8 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
         }
     }
 
+    override val changeListeners: ArrayList<BoundsChangeListener> by lazy { ArrayList<BoundsChangeListener>() }
+
     override var computeBounds: Boolean = true
         set(value) {
             field = value
@@ -53,8 +56,6 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
                 layoutManager.addBoundsOwner(this)
             }
         }
-
-    override var drawBounds: Boolean = false
 
     override val anchor: ChartLayoutManager.BoundsAnchor = ChartLayoutManager.BoundsAnchor.CENTER
 
@@ -96,17 +97,19 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
         setBorderThickness(1.5f.dp, Border.ALL)
 
         setUpGridArea(this.bounds.drawableArea)
-        //setUpInterceptor(this.bounds.drawableArea)
+        setUpInterceptor(this.bounds.drawableArea)
         setUpBorders(this.chartGrid.bounds.drawableArea)
     }
 
     private fun setUpGridArea(bounds: Bounds) {
         chartGrid.data = barChart.data
         chartGrid.minorGridLineCount = 0
-        chartGrid.minorGridLineColor = MutableColor.rgba(100, 100, 110, 0.10f)
+
         chartGrid.majorGridLineColor = MutableColor.rgba(100, 105, 110, 0.10f)
+        chartGrid.minorGridLineColor = MutableColor.rgba(100, 100, 110, 0.10f)
+
         chartGrid.majorGridLineThickness = 1.5f.dp
-        chartGrid.minorGridLineThickness = 0.7f.dp
+        chartGrid.minorGridLineThickness = 0.4f.dp
 
         chartGrid.showGridLines(true, ChartGrid.GridLineType.MAJOR)
         chartGrid.showGridLines(false, ChartGrid.GridLineType.MINOR)
@@ -307,15 +310,16 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
 
     override fun propagateNewBounds(bounds: Bounds) {
         this.bounds.update(bounds, false)
-        if (drawBounds) {
+        if (layoutManager.showBoundingBoxes) {
             boundsBox.bounds.update(bounds.drawableArea, false)
         }
 
         interceptor.build(bounds.drawableArea)
-        chartGrid.build(bounds.drawableArea)
+        zeroPointInterceptor.build(bounds.drawableArea)
 
         setUpBars()
         setUpBorders(chartGrid.bounds.drawableArea)
+
     }
 
     override fun render(
@@ -327,23 +331,25 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
         if (!render || !computeBounds) {
             return
         }
-        if (drawBounds) {
+        if (layoutManager.showBoundingBoxes) {
             boundsBox.render(path, paint, canvas, renderingProperties)
         }
 
         chartGrid.render(path, paint, canvas, renderingProperties)
         barChart.data.chartItems.forEach { it.render(path, paint, canvas, renderingProperties) }
-        //interceptor.render(path, paint, canvas, renderingProperties)
+        interceptor.render(path, paint, canvas, renderingProperties)
         zeroPointInterceptor.render(path, paint, canvas, renderingProperties)
         borders.forEach { it.render(path, paint, canvas, renderingProperties) }
     }
 
     override fun onTouch(event: MotionEvent, x: Float, y: Float, shapeRenderer: ShapeRenderer) {
         zeroPointInterceptor.onTouch(event, x, y, shapeRenderer)
+        interceptor.onTouch(event, x, y, shapeRenderer)
     }
 
     override fun onLongPressed(event: MotionEvent, x: Float, y: Float) {
         zeroPointInterceptor.onLongPressed(event, x, y)
+        interceptor.onLongPressed(event, x, y)
     }
 
     fun setBorderColor(color: MutableColor, border: Border = Border.ALL) {

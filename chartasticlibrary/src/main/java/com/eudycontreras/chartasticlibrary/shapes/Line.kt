@@ -5,7 +5,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import com.eudycontreras.chartasticlibrary.Shape
 import com.eudycontreras.chartasticlibrary.ShapeRenderer
-import com.eudycontreras.chartasticlibrary.utilities.extensions.drawRoundRect
+import com.eudycontreras.chartasticlibrary.utilities.extensions.recycle
 
 /**
  * Created by eudycontreras.
@@ -13,14 +13,12 @@ import com.eudycontreras.chartasticlibrary.utilities.extensions.drawRoundRect
 
 class Line : Shape() {
 
-    val paint = Paint()
-
-    override fun render(path: Path, p: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
+    override fun render(path: Path, paint: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
 
-        paint.reset()
+        paint.recycle()
 
         if (drawShadow) {
             if (renderingProperties.useSystemShadow) {
@@ -38,7 +36,7 @@ class Line : Shape() {
             paint.shader = shader
         }
 
-        canvas.drawRoundRect(path, left, top, right, bottom, corners, paint)
+        canvas.drawRoundRect(left, top, right, bottom, corners.rx, corners.ry, paint)
 
         if (showStroke) {
 
@@ -47,7 +45,7 @@ class Line : Shape() {
                 paint.strokeWidth = strokeWidth
                 paint.color = it.toColor()
 
-                canvas.drawRoundRect(path, left, top, right, bottom, corners, paint)
+                canvas.drawRoundRect(left, top, right, bottom, corners.rx, corners.ry, paint)
             }
         }
     }

@@ -6,20 +6,37 @@ import android.graphics.Path
 import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableShape
 import com.eudycontreras.chartasticlibrary.properties.LightSource
+import com.eudycontreras.chartasticlibrary.shapes.Circle
+import com.eudycontreras.chartasticlibrary.shapes.Line
+import com.eudycontreras.chartasticlibrary.shapes.Rectangle
 
 /**
  * Created by eudycontreras.
  */
 
 class ShapeRenderer(
-    var paint: Paint = Paint(),
     var properties: RenderingProperties = RenderingProperties.Default
 ) {
+    enum class ShapeType {
+        CIRCLE,
+        RECTANGLE,
+        LINE,
+        POLYGON
+    }
+
     private val path: Path = Path()
 
     private val shapes = ArrayList<Shape>()
 
-    private val shapePool = ArrayList<Shape>()
+    private val shapePool = HashMap<ShapeType,Shape>().apply {
+        this[ShapeType.LINE] = Line()
+        this[ShapeType.CIRCLE] = Circle()
+        this[ShapeType.RECTANGLE] = Rectangle()
+    }
+
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        isAntiAlias = true
+    }
 
     var renderCapsule: ((Path, Paint, Canvas, RenderingProperties) -> Unit)? = null
 
@@ -44,6 +61,8 @@ class ShapeRenderer(
     fun <T : Shape> removeShape(vararg shape: T) {
         shapes.removeAll(shape)
     }
+
+    fun getShape(type: ShapeType): Shape = shapePool.getValue(type)
 
     fun renderShape(canvas: Canvas) {
         if(!renderShapes)

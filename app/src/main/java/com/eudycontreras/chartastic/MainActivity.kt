@@ -43,36 +43,34 @@ class MainActivity : AppCompatActivity() {
         val color = MutableColor(ContextCompat.getColor(this, R.color.colorAccent))
 
         val coders = arrayOf(
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-10001..10001).random(), color.adjust(1.2f))
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
+            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f))
 
         )
 
@@ -97,22 +95,20 @@ class MainActivity : AppCompatActivity() {
                 createRecord(coders[11]),
                 createRecord(coders[12]),
                 createRecord(coders[13]),
-                createRecord(coders[14]),
-                createRecord(coders[15]),
-                createRecord(coders[16]),
-                createRecord(coders[17]),
-                createRecord(coders[18]),
-                createRecord(coders[19]),
-                createRecord(coders[20]),
-                createRecord(coders[21]),
-                createRecord(coders[22]),
-                createRecord(coders[23]),
-                createRecord(coders[24]),
-                createRecord(coders[25]),
-                createRecord(coders[26]),
-                createRecord(coders[27]),
-                createRecord(coders[28]),
-                createRecord(coders[29])
+                createRecord(coders[0]),
+                createRecord(coders[1]),
+                createRecord(coders[2]),
+                createRecord(coders[3]),
+                createRecord(coders[4]),
+                createRecord(coders[5]),
+                createRecord(coders[6]),
+                createRecord(coders[7]),
+                createRecord(coders[8]),
+                createRecord(coders[9]),
+                createRecord(coders[10]),
+                createRecord(coders[11]),
+                createRecord(coders[12]),
+                createRecord(coders[13])
             )
         )
 
@@ -123,9 +119,9 @@ class MainActivity : AppCompatActivity() {
 
         coders.sortBy { it.loc }
 
-        val range = 0 until ((dataTable.getRecords().size * 0.3).toInt()..dataTable.getRecords().size).random()
+        val range = 0 until ((dataTable.getRecords().size * 1f).toInt()..dataTable.getRecords().size).random()
 
-        for (i in range) {
+        for (i in 0 until  dataTable.getRecords().size) {
             val coder = coders[i]
             val item = BarChartItem(coder.name, coder.loc, coder)
             item.elevation = 0.dp
@@ -138,8 +134,8 @@ class MainActivity : AppCompatActivity() {
             item.hoverColor = MutableColor.fromColor(color).addGreen(55).addBlue(55)
             item.cornerRadius = BarChartItem.DEFAULT_ROUND_RADIUS
             item.backgroundOptions.padding = 0.dp
-            item.backgroundOptions.color = MutableColor.rgba(90, 96, 98, 0.15f)
-            item.backgroundOptions.showBackground = false
+            item.backgroundOptions.color = MutableColor.rgba(90, 96, 98, 0.1f)
+            item.backgroundOptions.showBackground = true
             item.gradient = Gradient(arrayOf(
                 MutableColor.fromColor(color),
                 MutableColor.fromColor(color).subtractGreen(95).subtractBlue(95),
@@ -158,14 +154,10 @@ class MainActivity : AppCompatActivity() {
             MutableColor(255, 190, 40, 40)
         ), Gradient.LEFT_TO_RIGHT)
 
-        chart.barHighlightCriteria = { it as Coder
-            it.name.contentEquals("Jose")
-        }
-
         chart.barRevealAnimation = BarAnimation().apply {
-            delay = 100
+            delay = 200
             duration = 450
-            stagger = 30
+            stagger = 40
             sequential = true
             type = BarAnimation.AnimationType.LEFT_TO_RIGHT
             interpolator = OvershootInterpolator()

@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableGroup
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataType
+import com.eudycontreras.chartasticlibrary.properties.Bounds
 
 
 typealias AndroidColor = Color
@@ -29,3 +30,5 @@ typealias DataChangeListener = (DataTableValue) -> Unit
 typealias ValueChangeListener <T> = (old: T, new: T) -> Unit
 
 typealias PropertyChangeListener <T> = (oldValue: T, newValue: T, name: String) -> Unit
+
+typealias BoundsChangeListener = (bounds: Bounds) -> Unit

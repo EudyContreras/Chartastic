@@ -12,6 +12,20 @@ class CornerRadii {
     var bottomLeft: Boolean = false
     var bottomRight: Boolean = false
 
+    val values: FloatArray by lazy {
+        val tl = if (topLeft) Pair(rx, ry) else Pair(0f, 0f)
+        val tr = if (topRight) Pair(rx, ry) else Pair(0f, 0f)
+        val bl = if (bottomLeft) Pair(rx, ry) else Pair(0f, 0f)
+        val br = if (bottomRight) Pair(rx, ry) else Pair(0f, 0f)
+
+        return@lazy floatArrayOf(
+            tl.first, tl.second,
+            tr.first, tr.second,
+            bl.first, bl.second,
+            br.first, br.second
+        )
+    }
+
     fun reset() {
         rx = 0f
         ry = 0f

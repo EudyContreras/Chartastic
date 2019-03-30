@@ -159,18 +159,16 @@ class Shadow {
         if (steps <= 0) steps = 1
     }
 
-    fun draw(shape: Shape, path: Path, paint: Paint, canvas: Canvas) {
-        path.reset()
-
+    fun draw(shape: Shape, path: Path, paint: Paint, canvas: Canvas, polygon: Boolean = false) {
         if (shadowType == Type.INNER) {
-            drawInnerShadow(shape, path, paint, canvas)
+            drawInnerShadow(shape, path, paint, canvas, polygon)
         }
         else {
-            drawOuterShadow(shape, path, paint, canvas)
+            drawOuterShadow(shape, path, paint, canvas, polygon)
         }
     }
 
-    private fun drawInnerShadow(shape: Shape, path: Path, paint: Paint, canvas: Canvas) {
+    private fun drawInnerShadow(shape: Shape, path: Path, paint: Paint, canvas: Canvas, polygon: Boolean) {
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 1f + steps
 
@@ -205,9 +203,7 @@ class Shadow {
         }
     }
 
-   private fun drawOuterShadow(shape: Shape, path: Path, paint: Paint, canvas: Canvas) {
-       path.reset()
-
+   private fun drawOuterShadow(shape: Shape, path: Path, paint: Paint, canvas: Canvas, polygon: Boolean) {
        val shiftedLeft = shape.coordinate.x - shiftLeft
        val shiftedTop = shape.coordinate.y - shiftTop
        val shiftedRight = (shape.coordinate.x + shape.dimension.width) + shiftRight

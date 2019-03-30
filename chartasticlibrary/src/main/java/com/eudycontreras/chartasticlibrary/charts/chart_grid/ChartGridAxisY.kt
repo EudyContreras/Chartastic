@@ -12,7 +12,6 @@ import com.eudycontreras.chartasticlibrary.charts.chart_data.DataTableValue
 import com.eudycontreras.chartasticlibrary.charts.chart_data.DataType
 import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChartData
 import com.eudycontreras.chartasticlibrary.charts.chart_options.AxisYOptions
-import com.eudycontreras.chartasticlibrary.charts.chart_text.ChartText
 import com.eudycontreras.chartasticlibrary.charts.interfaces.ChartBoundsOwner
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.Coordinate
@@ -21,6 +20,7 @@ import com.eudycontreras.chartasticlibrary.properties.Padding
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
 import com.eudycontreras.chartasticlibrary.shapes.Line
 import com.eudycontreras.chartasticlibrary.utilities.extensions.*
+import com.eudycontreras.chartasticlibrary.utilities.global.BoundsChangeListener
 import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
 
 /**
@@ -56,7 +56,9 @@ class ChartGridAxisY(
             }
         }
 
-    override var drawBounds: Boolean = false
+    override val changeListeners: ArrayList<BoundsChangeListener> by lazy {
+        ArrayList<BoundsChangeListener>()
+    }
 
     override val bounds: Bounds = Bounds(this)
 
@@ -99,13 +101,13 @@ class ChartGridAxisY(
                 Type.LEFT -> {
                     buildLeft(bounds.drawableArea)
                     values?.valuesBuildData?.let {
-                        buildLeftTicks(it.textElements)
+                        buildLeftTicks(it.gridTextElements)
                     }
                 }
                 Type.RIGHT -> {
                     buildRight(bounds.drawableArea)
                     values?.valuesBuildData?.let {
-                        buildRightTicks(it.textElements)
+                        buildRightTicks(it.gridTextElements)
                     }
                 }
             }
@@ -115,13 +117,13 @@ class ChartGridAxisY(
             Type.LEFT -> {
                 buildLeft(bounds.drawableArea)
                 values?.valuesBuildData?.let {
-                    buildLeftTicks(it.textElements)
+                    buildLeftTicks(it.gridTextElements)
                 }
             }
             Type.RIGHT -> {
                 buildRight(bounds.drawableArea)
                 values?.valuesBuildData?.let {
-                    buildRightTicks(it.textElements)
+                    buildRightTicks(it.gridTextElements)
                 }
             }
         }
@@ -141,17 +143,20 @@ class ChartGridAxisY(
             Type.LEFT -> {
                 buildLeft(bounds.drawableArea)
                 values?.valuesBuildData?.let {
-                    buildLeftTicks(it.textElements)
+                    buildLeftTicks(it.gridTextElements)
                 }
             }
             Type.RIGHT -> {
                 buildRight(bounds.drawableArea)
                 values?.valuesBuildData?.let {
-                    buildRightTicks(it.textElements)
+                    buildRightTicks(it.gridTextElements)
                 }
             }
         }
-        if (drawBounds) {
+
+        changeListeners.forEach { it.invoke(this.bounds) }
+
+        if(layoutManager.showBoundingBoxes){
             boundsBox.bounds.update(axisLabelBounds.drawableArea, false)
         }
     }
@@ -166,12 +171,12 @@ class ChartGridAxisY(
             return
         }
 
-        if (drawBounds) {
+        if(layoutManager.showBoundingBoxes){
             boundsBox.render(path, paint, canvas, renderingProperties)
         }
 
         values?.valuesBuildData?.let { data ->
-            data.textElements.forEach { it.render(path, paint, canvas, renderingProperties) }
+            data.gridTextElements.forEach { it.render(path, paint, canvas, renderingProperties) }
         }
 
         if (options.showTickLines) {
@@ -187,17 +192,23 @@ class ChartGridAxisY(
 
         val valuesY = computeValues(data.valueY, data.valueTypeY, options.positiveValuePointCount, options.negativeValuePointCount)
 
-        val chartTexts = mutableListOf<ChartText>()
+        val chartTexts = mutableListOf<ChartGridText>()
 
         val zeroPoint = Coordinate()
 
-        val paint = Paint()
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            isAntiAlias = true
+        }
 
         var margin = 0f
 
         valuesY?.let {
-            val referenceUpper = ChartText(it.maxValueRounded, options.labelValuePrepend, options.labelValueAppend)
-            referenceUpper.alignment = ChartText.Alignment.RIGHT
+            val referenceUpper = ChartGridText(
+                it.maxValueRounded,
+                options.labelValuePrepend,
+                options.labelValueAppend
+            )
+            referenceUpper.alignment = ChartGridText.Alignment.RIGHT
             referenceUpper.textColor = options.labelTextColor
             referenceUpper.textSize = options.labelTextSize
             referenceUpper.typeFace = options.labelTypeFace
@@ -207,13 +218,17 @@ class ChartGridAxisY(
 
             referenceUpper.y = (bounds.top + (referenceUpper.dimension.height))
 
-            val referenceLower = ChartText(it.minValueRounded, options.labelValuePrepend, options.labelValueAppend)
-            referenceLower.alignment = ChartText.Alignment.RIGHT
+            val referenceLower = ChartGridText(
+                it.minValueRounded,
+                options.labelValuePrepend,
+                options.labelValueAppend
+            )
+            referenceLower.alignment = ChartGridText.Alignment.RIGHT
             referenceLower.textColor = options.labelTextColor
             referenceLower.textSize = options.labelTextSize
             referenceLower.typeFace = options.labelTypeFace
             referenceLower.render = options.showLabels
-            referenceUpper.paint = paint
+            referenceLower.paint = paint
             referenceLower.build()
 
             referenceLower.y = (bounds.top + (referenceLower.dimension.height))
@@ -248,7 +263,11 @@ class ChartGridAxisY(
 
                 paint.reset()
 
-                val chartText = ChartText(value, options.labelValuePrepend, options.labelValueAppend)
+                val chartText = ChartGridText(
+                    value,
+                    options.labelValuePrepend,
+                    options.labelValueAppend
+                )
                 chartText.copyStyle(reference)
                 chartText.paint = paint
                 chartText.render = options.showLabels
@@ -274,7 +293,11 @@ class ChartGridAxisY(
 
                 paint.reset()
 
-                val chartText = ChartText(value, options.labelValuePrepend, options.labelValueAppend)
+                val chartText = ChartGridText(
+                    value,
+                    options.labelValuePrepend,
+                    options.labelValueAppend
+                )
                 chartText.copyStyle(reference)
                 chartText.paint = paint
                 chartText.render = options.showLabels
@@ -296,7 +319,7 @@ class ChartGridAxisY(
     private fun findZeroPointPosition(
         point: Any,
         data: BarChartData,
-        chartTexts: MutableList<ChartText>
+        chartGridTexts: MutableList<ChartGridText>
     ): Float? {
         if (point.isNumeric(data.valueTypeY)) {
             if (!point.isZero(data.valueTypeY)) {
@@ -304,20 +327,20 @@ class ChartGridAxisY(
                     if (data.valueTypeY == DataType.NUMERIC_WHOLE) {
                         if (point is Long) {
 
-                            val highest: Int = chartTexts[0].value.restored()
+                            val highest: Int = chartGridTexts[0].value.restored()
 
                             if (point >= highest) {
                                 return null
                             }
 
-                            val match = chartTexts.find { it.value.restored<Long>() == point }
+                            val match = chartGridTexts.find { it.value.restored<Long>() == point }
 
                             if (match == null) {
 
-                                val upperElement = chartTexts
+                                val upperElement = chartGridTexts
                                     .sortedBy { it.value.restored<Long>() }
                                     .first { it.value.restored<Long>() > point }
-                                val lowerElement = chartTexts.first { it.value.restored<Long>() < point }
+                                val lowerElement = chartGridTexts.first { it.value.restored<Long>() < point }
 
                                 val upperYCoordinate = (upperElement.y - upperElement.dimension.height / 2)
                                 val lowerYCoordinate = (lowerElement.y - lowerElement.dimension.height / 2)
@@ -339,20 +362,20 @@ class ChartGridAxisY(
 
                         } else if (point is Int) {
 
-                            val highest: Int = chartTexts[0].value.restored()
+                            val highest: Int = chartGridTexts[0].value.restored()
 
                             if (point >= highest) {
                                 return null
                             }
 
-                            val match = chartTexts.find { it.value.restored<Int>() == point }
+                            val match = chartGridTexts.find { it.value.restored<Int>() == point }
 
                             if (match == null) {
 
-                                val upperElement = chartTexts
+                                val upperElement = chartGridTexts
                                     .sortedBy { it.value.restored<Int>() }
                                     .first { it.value.restored<Int>() > point }
-                                val lowerElement = chartTexts.first { it.value.restored<Int>() < point }
+                                val lowerElement = chartGridTexts.first { it.value.restored<Int>() < point }
 
                                 val upperYCoordinate = (upperElement.y - upperElement.dimension.height / 2)
                                 val lowerYCoordinate = (lowerElement.y - lowerElement.dimension.height / 2)
@@ -390,16 +413,16 @@ class ChartGridAxisY(
         return null
     }
 
-    private fun buildLeftTicks(chartTexts: List<ChartText>) {
+    private fun buildLeftTicks(chartGridTexts: List<ChartGridText>) {
 
-        if(chartTexts.isEmpty()) {
+        if(chartGridTexts.isEmpty()) {
             return
         }
         tickLines.clear()
 
         val x = bounds.right - options.tickLength
 
-        for (text in chartTexts) {
+        for (text in chartGridTexts) {
 
             val y = (text.y - (text.dimension.height / 2f)) - options.tickWidth / 2f
 
@@ -440,7 +463,7 @@ class ChartGridAxisY(
 
         val valuesY = computeValues(data.valueY, data.valueTypeY, options.positiveValuePointCount, options.negativeValuePointCount)
 
-        val chartTexts = mutableListOf<ChartText>()
+        val chartTexts = mutableListOf<ChartGridText>()
 
         var zeroPoint = Coordinate()
 
@@ -451,8 +474,12 @@ class ChartGridAxisY(
         valuesY?.let {
             val points = it.upperPoints
 
-            val reference = ChartText(it.maxValueRounded, options.labelValuePrepend, options.labelValueAppend)
-            reference.alignment = ChartText.Alignment.LEFT
+            val reference = ChartGridText(
+                it.maxValueRounded,
+                options.labelValuePrepend,
+                options.labelValueAppend
+            )
+            reference.alignment = ChartGridText.Alignment.LEFT
             reference.textColor = options.labelTextColor
             reference.textSize = options.labelTextSize
             reference.typeFace = options.labelTypeFace
@@ -484,7 +511,11 @@ class ChartGridAxisY(
 
                 paint.reset()
 
-                val chartText = ChartText(value, options.labelValuePrepend, options.labelValueAppend)
+                val chartText = ChartGridText(
+                    value,
+                    options.labelValuePrepend,
+                    options.labelValueAppend
+                )
                 chartText.copyStyle(reference)
                 chartText.paint = paint
                 chartText.build()
@@ -504,16 +535,16 @@ class ChartGridAxisY(
         values = valuesY
     }
 
-    private fun buildRightTicks(chartTexts: List<ChartText>) {
+    private fun buildRightTicks(chartGridTexts: List<ChartGridText>) {
 
-        if(chartTexts.isEmpty()) {
+        if(chartGridTexts.isEmpty()) {
             return
         }
         tickLines.clear()
 
         val x = bounds.left
 
-        for (text in chartTexts) {
+        for (text in chartGridTexts) {
             val y = (text.y - (text.dimension.height / 2f)) - options.tickWidth / 2f
 
             val tick = Line()
@@ -764,7 +795,7 @@ class ChartGridAxisY(
         return ValueCalculation(values, valuesUpper, valuesLower, 0, 0, 0, 0)
     }
 
-    fun getElements() = values?.valuesBuildData?.textElements
+    fun getElements() = values?.valuesBuildData?.gridTextElements
 
     data class ValueCalculation(
         val values: List<Any>,
@@ -778,7 +809,7 @@ class ChartGridAxisY(
     )
 
     data class AxisBuildData(
-        val textElements: List<ChartText> = ArrayList(),
+        val gridTextElements: List<ChartGridText> = ArrayList(),
         val start: Float = 0f,
         val margin: Float = 0f
     ) {

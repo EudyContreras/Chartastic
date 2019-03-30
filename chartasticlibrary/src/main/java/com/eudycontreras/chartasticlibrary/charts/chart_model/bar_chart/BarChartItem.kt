@@ -236,9 +236,11 @@ data class BarChartItem<Data>(
         if (!render) {
             return
         }
+
         if (backgroundOptions.showBackground) {
             backgroundOptions.background.render(path, paint, canvas, renderingProperties)
         }
+
         shape.render(path, paint, canvas, renderingProperties)
     }
 

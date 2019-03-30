@@ -37,14 +37,14 @@ class InterceptorMarkerShape: Shape() {
             coordinate.y = value - (radius/2)
         }
 
-    val paint = Paint()
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        isAntiAlias = true
+    }
 
-    override fun render(path: Path, p: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
+    override fun render(path: Path, paint: Paint, canvas: Canvas, renderingProperties: ShapeRenderer.RenderingProperties) {
         if (!render) {
             return
         }
-
-        paint.reset()
 
         if (drawShadow) {
             if (renderingProperties.useSystemShadow) {

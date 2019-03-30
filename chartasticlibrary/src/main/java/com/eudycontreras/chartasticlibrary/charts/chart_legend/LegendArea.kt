@@ -10,6 +10,7 @@ import com.eudycontreras.chartasticlibrary.charts.chart_model.bar_chart.BarChart
 import com.eudycontreras.chartasticlibrary.charts.interfaces.ChartBoundsOwner
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
+import com.eudycontreras.chartasticlibrary.utilities.global.BoundsChangeListener
 
 /**
  * Created by eudycontreras.
@@ -34,9 +35,9 @@ class LegendArea(private val barChart: BarChart, private val layoutManager: Char
         }
     }
 
-    override var render: Boolean = true
+    override val changeListeners: ArrayList<BoundsChangeListener> by lazy { ArrayList<BoundsChangeListener>() }
 
-    override var drawBounds: Boolean = false
+    override var render: Boolean = true
 
     override var computeBounds: Boolean = true
         set(value) {
@@ -76,7 +77,7 @@ class LegendArea(private val barChart: BarChart, private val layoutManager: Char
         if (!render || !computeBounds) {
             return
         }
-        if (drawBounds) {
+        if(layoutManager.showBoundingBoxes){
             boundsBox.render(path, paint, canvas, renderingProperties)
         }
     }
@@ -90,7 +91,7 @@ class LegendArea(private val barChart: BarChart, private val layoutManager: Char
 
     override fun propagateNewBounds(bounds: Bounds) {
         this.bounds.update(bounds, false)
-        if (drawBounds) {
+        if(layoutManager.showBoundingBoxes){
             boundsBox.bounds.update(bounds.drawableArea, false)
         }
     }
