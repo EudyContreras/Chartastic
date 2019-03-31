@@ -120,8 +120,8 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
         val optionsLeft = AxisYOptions().apply {
             labelValueAppend = " LOC"
             padding = Padding(4.dp, 4.dp, 0.dp, 0.dp)
-            positiveValuePointCount = 10
-            negativeValuePointCount = 10
+            positiveValuePointCount = 6
+            negativeValuePointCount = 0
             showLabels = true
             showTickLines = true
             chartData = data
@@ -169,8 +169,8 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
         chartAxisXTop.computeBounds = false
         chartLegendTop.computeBounds = false
         chartLegendBottom.computeBounds = false
-        /*chartAxisYLeft.computeBounds = false
-        chartAxisYRight.computeBounds = false*/
+        //chartAxisYLeft.computeBounds = false
+        //chartAxisYRight.computeBounds = false
     }
 
     override fun render(

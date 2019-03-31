@@ -58,18 +58,6 @@ class MainActivity : AppCompatActivity() {
             Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
             Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
             Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
             Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f))
 
         )
@@ -95,20 +83,8 @@ class MainActivity : AppCompatActivity() {
                 createRecord(coders[11]),
                 createRecord(coders[12]),
                 createRecord(coders[13]),
-                createRecord(coders[0]),
-                createRecord(coders[1]),
-                createRecord(coders[2]),
-                createRecord(coders[3]),
-                createRecord(coders[4]),
-                createRecord(coders[5]),
-                createRecord(coders[6]),
-                createRecord(coders[7]),
-                createRecord(coders[8]),
-                createRecord(coders[9]),
-                createRecord(coders[10]),
-                createRecord(coders[11]),
-                createRecord(coders[12]),
-                createRecord(coders[13])
+                createRecord(coders[14]),
+                createRecord(coders[15])
             )
         )
 

@@ -707,25 +707,25 @@ class ChartGridAxisY(
         val minRounded = min.roundToNearest(shift = 1, ratio = 0.5f)
 
         if (max > 0 && positivePointCount > 0) {
-            val increase = (max / positivePointCount).roundToNearest(shift = 1, ratio = 0.5f, method = RoundMethod.DOWN)
+            val increase = (max / positivePointCount)
+
+            val magnitude = increase.magnitude()
 
             for (count in positivePointCount-1 downTo 0) {
                 val point = increase * count
-                valuesUpper.add(point.roundToNearest(shift = 1, ratio = 0.5f))
+                valuesUpper.add(point.roundToNearest(shift = magnitude.first, ratio = magnitude.second))
             }
-
-            valuesUpper.removeAll { it == maxRounded }
         }
 
         if (min < 0 && negativePointCount > 0) {
-            val decrease = (min / negativePointCount).roundToNearest(shift = 1, ratio = 0.5f, method = RoundMethod.DOWN)
+            val decrease = (min / negativePointCount)
+
+            val magnitude = Math.abs(decrease).magnitude()
 
             for (count in 1..negativePointCount) {
                 val point = decrease * count
-                valuesLower.add(point.roundToNearest(shift = 1, ratio = 0.5f))
+                valuesLower.add(point.roundToNearest(shift = magnitude.first, ratio = magnitude.second))
             }
-
-            valuesLower.removeAll { it == minRounded}
         }
 
         return ValueCalculation(values, valuesUpper.distinct(), valuesLower.distinct() , max, maxRounded, min, minRounded)

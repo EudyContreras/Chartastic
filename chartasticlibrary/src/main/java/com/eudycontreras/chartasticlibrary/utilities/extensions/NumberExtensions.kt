@@ -43,6 +43,17 @@ fun Int.clamp(maxValue: Int, minRatio: Float, scale: Int): Int {
 private var positiveScale = intArrayOf(10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000, 1_000_000_000)
 private var negativeScale = intArrayOf(-10, -100, -1_000, -10_000, -100_000, -1_000_000, -10_000_000, -100_000_000, -1_000_000_000)
 
+fun Int.magnitude(): Pair<Int, Float> {
+    return when{
+        this <= 4 -> Pair(2, 0.25f)
+        this <= 9 -> Pair(2, 0.5f)
+        this <= 19 -> Pair(2, 0.5f)
+        this <= 49 -> Pair(2, 0.5f)
+        this <= 74 -> Pair(2, 0.5f)
+        this <= 99 -> Pair(1, 0.5f)
+        else -> Pair(1, 1f)
+    }
+}
 
 fun Int.normalize(ratio: Float = 1.0f): Int{
 

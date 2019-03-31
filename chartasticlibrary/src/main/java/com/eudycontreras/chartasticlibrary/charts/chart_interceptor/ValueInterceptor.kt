@@ -265,6 +265,9 @@ class ValueInterceptor : ChartElement, TouchableElement {
     }
 
     override fun onTouch(event: MotionEvent, x: Float, y: Float, shapeRenderer: ShapeRenderer) {
+        if(!allowIntercept)
+            return
+
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 shapeRenderer.delegateTouchEvent(event, x, y)
@@ -288,6 +291,8 @@ class ValueInterceptor : ChartElement, TouchableElement {
     }
 
     override fun onLongPressed(event: MotionEvent, x: Float, y: Float) {
+        if(!allowIntercept)
+            return
         if (!shouldRender && visible) {
             shouldRender = true
             positionX = x
