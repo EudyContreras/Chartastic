@@ -2,6 +2,23 @@
 
 This document contains information about what each element of of the bar chart should feature. Features that are checked are currently supported by **Chartastic**
 
+## General Requirements
+
+* Allow the chart to have empty state for when there is no data to be shown.
+* Allow the user to specify rules for how the chart will be built. 
+* The chart should have a loading state during data fetch or process with progress indication.
+* Allow the user to specify rules for how much data is shown based on some criteria.
+* Allow the user to specify min and max sizes for the chart.
+* Allow the user to specify visual rendering rules for different screen orientations.
+* Each chart element should be able to handle all sorts of touch and gesture events.
+* Allow the user to specify transitions between the states of the chart.
+* The chart plot are should allow scroll, zoom and panning.
+* The user should be able to bind to charts that share a dataset
+* The chart should support different types of axis values.
+* The chart plot are should support different chart types stacked on top of eachother.
+* The chart should support custom tooltip layout.
+* The chart shoudl support custom element layouts.
+
 ## Bar Chart
 
  - [x] The chart should be able to represent ranges from positive to negative
@@ -108,6 +125,10 @@ Here is a list of all the element supported by the bar chart and their current s
    - [ ] The bars should be able to be grouped or clusterd by a desired key value
    - [ ] The bar cluster should support parallel and sequential group animations
    
+* **Ploat Area**
+
+   - [ ] The plot area should be able to scrool to reveal more series/bars
+   
 * **Y Axis**
 
    - [x] The y axis should be able to show a desired number of value/label points
@@ -119,5 +140,4 @@ Here is a list of all the element supported by the bar chart and their current s
    - [x] The y axis labels should support preffix and suffix appenditures to the values
    - [x] The y axis labels should be properly rounded based on magnitude
    - [ ] The y axis labels should minor ticks
-   - [x]
  
