@@ -12,20 +12,28 @@ This document contains information about what each element of of the bar chart s
 * Allow the user to specify visual rendering rules for different screen orientations.
 * Each chart element should be able to handle all sorts of touch and gesture events.
 * Allow the user to specify transitions between the states of the chart.
+* The chart should be able to visually interpolate between different datasets with timed animations.
 * The chart plot are should allow scroll, zoom and panning.
 * The user should be able to bind to charts that share a dataset
 * The chart should support different types of axis values.
 * The chart plot are should support different chart types stacked on top of eachother.
 * The chart should support custom tooltip layout.
-* The chart shoudl support custom element layouts.
+* The chart should support custom element layouts.
+* The chart view should be able to reveal onto the screen using user specified animations.
+
+## Personal Todo List
+
+* Add ticks logic ticks coupled with bar clusters
+* Add posiblility of user to add formatting for the labels
+* Improve existing APIs so that code becomes more easily maintainable
 
 ## Bar Chart
 
  - [x] The chart should be able to represent ranges from positive to negative
  - [x] The chart should be modular and allow for adding and removing elements while adapting seamlessly
- - [ ] The chart should support negative range values
+ - [ ] The chart should support negative range values
  - [ ] The chart should be able to scrool to reveal more values.
- - [ ] The chart should be modular adaptive. Parst should be added or remove seamlessly
+ - [ ] The chart should be modular adaptive. Parst should be added or remove seamlessly
  - [ ] The chart should be able to input a max and min positive range for any axis
  - [ ] The chart should be able to input a max and min negative range for any axis
  
@@ -103,7 +111,7 @@ Here is a list of all the element supported by the bar chart and their current s
    - [x] The bars should have a controllable rounded corner radius for both ends
    - [x] The bars should be able to have stroke/border of any width and color
    - [ ] The bars should be able to have labels with their respective values
-   - [ ] The bars should be able to show tooltips at a desired location upon touch 
+   - [x] The bars should be able to show tooltips at a desired location upon touch 
    - [x] The bars should be able to handle long press events
    - [x] The bars should be able to handle hovers events
    - [ ] The bars should be able to listen and adapt to live data changes
@@ -113,8 +121,8 @@ Here is a list of all the element supported by the bar chart and their current s
          * Glow at the top of the bar
          * Drawable at the top, middle or bottom of the bar
          * Othe options desired by the user
-   - [ ] The bars should support listen types of listeners
-   - [ ] The bars should be able to support ordering. Ex: Highest to lowes, Highest in center, etc
+   - [ ] The bars should support different types of listeners (Bar revealed, Bar selected, Bar hovererd, etc)
+   - [x] The bars should be able to support ordering. Ex: Highest to lowes, Highest in center, etc
    - [ ] Allow the bars to overlap in any direction (left to right or right to left)
    - [ ] A bar among all the bars should be highlightable with user specified high-lighting.
        * **Possible functionality:**
@@ -139,5 +147,9 @@ Here is a list of all the element supported by the bar chart and their current s
    - [x] The y axis labels should be able to support any type of value (integers, doubles, etc)
    - [x] The y axis labels should support preffix and suffix appenditures to the values
    - [x] The y axis labels should be properly rounded based on magnitude
-   - [ ] The y axis labels should minor ticks
+   - [x] The y axis labels should minor ticks
+   - [ ] The y axis labels should be able to be angled/skewed
+   - [ ] The y axis label values should support different default and user createdd formats
+   - [ ] The y axis should support user submitted values while sticking to the real values of the data
+   
  
