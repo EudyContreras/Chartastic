@@ -40,27 +40,27 @@ This document contains information about what each element of of the bar chart s
 ## Bar Chart Elements
 
 | Element | Description|
-|---|---|
-|* **Bar Series**| The bars representing the information fed to the chart.|
-|* **Bar Dividers**| The dividers which are used for separating the bars containing different data.|
-|* **Bar Cluster**| A group of bars which belong to a same category.|
-|* **Cluster Dividers**| The dividers which are used for grouping and separating bar clusters.|
-|* **Bar Tooltip**| The tooptip usually shown at the top of a vertical bar or end of a horizontal one.|
-|* **Bar Background**| The background shape or decoration of a bar of series used as a visual element.|
-|* **Bar Decoration**| The decoration that can be attached to a bar at any of the specified anchors.|
+|--------------------------|----------------------------------------------------------------------------------------------------------|
+|* **Bar Series**&nbsp;| The bars representing the information fed to the chart.|
+|* **Bar Dividers**&nbsp;&nbsp;| The dividers which are used for separating the bars containing different data.|
+|* **Bar Cluster**&nbsp;&nbsp;| A group of bars which belong to a same category.|
+|* **Cluster Dividers**&nbsp;&nbsp;| The dividers which are used for grouping and separating bar clusters.|
+|* **Bar Tooltip**&nbsp;&nbsp;| The tooptip usually shown at the top of a vertical bar or end of a horizontal one.|
+|* **Bar Background**&nbsp;&nbsp;| The background shape or decoration of a bar of series used as a visual element.|
+|* **Bar Decoration**&nbsp;&nbsp;| The decoration that can be attached to a bar at any of the specified anchors.|
 |* **Data Point Marker**| A marker which visualizes the point of the value of the data with the plot area.|
 |* **Data Point Label**| A label assigned to data point (These values can be rounded).|
-|* **Trend Line**| A line that overlays the chart and shows information about the procession of the data among series.|
+|* **Trend Line**&nbsp;| A line that overlays the chart and shows information about the procession of the data among series.|
 |* **Trend Line Point**| A single point on the trend line which represents a single piece of data.|
-|* **Legend Area**| The area where the user can see what the visual data shown by the chart represents.|
-|* **Legend Element**| A single element shown at the legend section representing a specific type of data shown.|
-|* **Plot Area**| The area in which the visually representation of the data is shown.|
-|* **Plot Area Border**| The border of the plot area|
+|* **Legend Area**&nbsp;| The area where the user can see what the visual data shown by the chart represents.|
+|* **Legend Element**&nbsp;| A single element shown at the legend section representing a specific type of data shown.|
+|* **Plot Area**&nbsp;&nbsp;| The area in which the visually representation of the data is shown.|
+|* **Plot Area Border**&nbsp;| The border of the plot area|
 |* **Plot Area Scroller**| The scroller helper which assist the user when scrolling through the data.|
 |* **Value Interceptor**| Visual element that allows the user to intercept with hover the different series shown in the plot area.|
 |* **Value Tooltip**| The tooltip showing information about the element being intercepted by the interceptor.|
-|* **X Axis**| The Y axis of the chart where the vertical labels or values are shown at any or both sides of the chart.|
-|* **Y Axis**| The X axis of the chart where the horizontal labels or values are shown at any or both sides of the chart.|
+|* **X Axis**&nbsp;&nbsp;| The Y axis of the chart where the vertical labels or values are shown at any or both sides of the chart.|
+|* **Y Axis**&nbsp;&nbsp;| The X axis of the chart where the horizontal labels or values are shown at any or both sides of the chart.|
 |* **Major Grid Lines**| The horizontal lines which represent a value limit or data point of the Y axis.|
 |* **Minor Grid Lines**| The mid points between major grid lines reprenting in between values of values shown on the Y axis.|
 |* **Major Tick Lines**| The vertical lines which represent a data limit or data point of the x axis.|
