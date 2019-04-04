@@ -42,9 +42,9 @@ This document contains information about what each element of of the bar chart s
 | Element | Description|
 |---|---|
 |* **Bar Series**| The bars representing the information fed to the chart.|
-|* **Bar Series Dividers**| The dividers which are used for separating the bars containing different data.|
+|* **Bar Dividers**| The dividers which are used for separating the bars containing different data.|
 |* **Bar Cluster**| A group of bars which belong to a same category.|
-|* **Bar Cluster Dividers**| The dividers which are used for grouping and separating bar clusters.|
+|* **Cluster Dividers**| The dividers which are used for grouping and separating bar clusters.|
 |* **Bar Tooltip**| The tooptip usually shown at the top of a vertical bar or end of a horizontal one.|
 |* **Bar Background**| The background shape or decoration of a bar of series used as a visual element.|
 |* **Bar Decoration**| The decoration that can be attached to a bar at any of the specified anchors.|
