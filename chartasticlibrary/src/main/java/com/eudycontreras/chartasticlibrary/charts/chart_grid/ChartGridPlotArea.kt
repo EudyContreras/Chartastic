@@ -16,10 +16,8 @@ import com.eudycontreras.chartasticlibrary.charts.interfaces.ChartBoundsOwner
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.Bounds
 import com.eudycontreras.chartasticlibrary.properties.Gradient
-import com.eudycontreras.chartasticlibrary.properties.LightSource
 import com.eudycontreras.chartasticlibrary.properties.MutableColor
 import com.eudycontreras.chartasticlibrary.shapes.BoundingBox
-import com.eudycontreras.chartasticlibrary.shapes.Line
 import com.eudycontreras.chartasticlibrary.utilities.extensions.asFloat
 import com.eudycontreras.chartasticlibrary.utilities.extensions.dp
 import com.eudycontreras.chartasticlibrary.utilities.global.BoundsChangeListener
@@ -29,15 +27,6 @@ import com.eudycontreras.chartasticlibrary.utilities.global.mapRange
  * Created by eudycontreras.
  */
 class ChartGridPlotArea(private val barChart: BarChart, private val layoutManager: ChartLayoutManager) : ChartBoundsOwner, ChartElement, TouchableElement {
-
-    enum class Border(var value: Int) {
-        TOP(0),
-        LEFT(1),
-        RIGHT(2),
-        BOTTOM(3),
-        NONE(4),
-        ALL(-1),
-    }
 
     private val boundsBox: Shape by lazy {
         BoundingBox().apply {
@@ -63,16 +52,14 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
 
     override val bounds: Bounds = Bounds(this)
 
-    private var borderLineThickness = 1.dp
-
-    private val borders = arrayListOf(Line(), Line(), Line(), Line())
-
     var spacingMultiplier: Float = 0.45f
 
-    val zeroPadding: Float = 0.dp
+    val zeroPadding: Float = 12.dp
 
     var barsRevealed: Boolean = false
         private set
+
+    val gridBorder: ChartGridBorder = ChartGridBorder()
 
     val interceptor: ValueInterceptor = ValueInterceptor()
 
@@ -88,17 +75,22 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
     fun build(bounds: Bounds = Bounds()) {
         this.bounds.update(bounds)
 
-        setBorderColor(MutableColor.rgb(255, 255, 255), Border.ALL)
-
-        showBorder(false, Border.ALL)
-
-        setBorderElevation(0f, Border.ALL)
-
-        setBorderThickness(1.5f.dp, Border.ALL)
-
+        setUpGridBorder(this.chartGrid.bounds.drawableArea)
         setUpGridArea(this.bounds.drawableArea)
         setUpInterceptor(this.bounds.drawableArea)
-        setUpBorders(this.chartGrid.bounds.drawableArea)
+    }
+
+    private fun setUpGridBorder(bounds: Bounds){
+
+        gridBorder.setBorderColor(MutableColor.rgb(255, 255, 255), ChartGridBorder.Border.ALL)
+
+        gridBorder.showBorder(false, ChartGridBorder.Border.ALL)
+
+        gridBorder.setBorderElevation(0f, ChartGridBorder.Border.ALL)
+
+        gridBorder.setBorderThickness(1.5f.dp, ChartGridBorder.Border.ALL)
+
+        gridBorder.build(bounds)
     }
 
     private fun setUpGridArea(bounds: Bounds) {
@@ -135,39 +127,13 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
         zeroPointInterceptor.lineColor = MutableColor.rgb(255, 255, 255)
         zeroPointInterceptor.markerColor = MutableColor.rgb(255)
         zeroPointInterceptor.markerOuterColor = MutableColor.rgb(255).updateAlpha(0.5f)
-        zeroPointInterceptor.lineThickness = 1f.dp
+        zeroPointInterceptor.lineThickness = 2.dp
         zeroPointInterceptor.markerRadius = 10.dp
         zeroPointInterceptor.markerPaddingMultiplier = 0.5f
         zeroPointInterceptor.showShadows = true
         zeroPointInterceptor.positionY = zeroPoint
         zeroPointInterceptor.positionX = (bounds.left + (bounds.width / 2)) +  zeroPointInterceptor.markerRadius
         zeroPointInterceptor.build(bounds)
-    }
-
-    private fun setUpBorders(bounds: Bounds) {
-        borders.forEach { it.shadowPosition = LightSource.Position.BOTTOM_LEFT }
-
-        val left = bounds.left
-        val right = bounds.right
-
-        val top = bounds.top
-        val bottom = bounds.bottom
-
-        borders[Border.TOP.value].coordinate.x = left
-        borders[Border.TOP.value].coordinate.y = top
-        borders[Border.TOP.value].dimension.width = Math.abs(left - right)
-
-        borders[Border.LEFT.value].coordinate.x = left
-        borders[Border.LEFT.value].coordinate.y = top
-        borders[Border.LEFT.value].dimension.height = Math.abs(bottom - top)
-
-        borders[Border.BOTTOM.value].coordinate.x = left
-        borders[Border.BOTTOM.value].coordinate.y = bottom - borders[Border.BOTTOM.value].dimension.height
-        borders[Border.BOTTOM.value].dimension.width = Math.abs(left - right)
-
-        borders[Border.RIGHT.value].coordinate.x = right - borders[Border.RIGHT.value].dimension.width
-        borders[Border.RIGHT.value].coordinate.y = top
-        borders[Border.RIGHT.value].dimension.height = Math.abs(bottom - top)
     }
 
     fun setUpBars() {
@@ -295,9 +261,31 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
 
         createBarSeries()
 
+        barChart.chartAxisXTop.buildBarTicks(chartGrid.getMajorLines())
+        barChart.chartAxisXBottom.buildBarTicks(chartGrid.getMajorLines())
+
         barChart.acrossGradient?.run { applyCrossGradient(this) }
 
-        barChart.view.onFullyVisible = { animateBarReveal() }
+        barChart.view.onFullyVisible = {
+            if (barChart.barRevealAnimation != null) {
+                animateBarReveal()
+            } else {
+                barsRevealed = true
+                barChart.data.chartItems.forEach { bar ->
+                    bar.onPreAnimation()
+                    bar.onAnimate(1f)
+                    bar.onPostAnimation()
+                    barChart.view.updateView()
+                    barChart.barHighlightCriteria?.let {
+                        if (it.invoke(bar.data)) {
+                            if (bar.highlightable) {
+                                bar.applyHighlight()
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -318,7 +306,8 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
         zeroPointInterceptor.build(bounds.drawableArea)
 
         setUpBars()
-        setUpBorders(chartGrid.bounds.drawableArea)
+
+        gridBorder.build(chartGrid.bounds.drawableArea)
 
     }
 
@@ -337,9 +326,9 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
 
         chartGrid.render(path, paint, canvas, renderingProperties)
         barChart.data.chartItems.forEach { it.render(path, paint, canvas, renderingProperties) }
+        gridBorder.render(path, paint, canvas, renderingProperties)
         interceptor.render(path, paint, canvas, renderingProperties)
         zeroPointInterceptor.render(path, paint, canvas, renderingProperties)
-        borders.forEach { it.render(path, paint, canvas, renderingProperties) }
     }
 
     override fun onTouch(event: MotionEvent, x: Float, y: Float, shapeRenderer: ShapeRenderer) {
@@ -350,89 +339,5 @@ class ChartGridPlotArea(private val barChart: BarChart, private val layoutManage
     override fun onLongPressed(event: MotionEvent, x: Float, y: Float) {
         zeroPointInterceptor.onLongPressed(event, x, y)
         interceptor.onLongPressed(event, x, y)
-    }
-
-    fun setBorderColor(color: MutableColor, border: Border = Border.ALL) {
-        if (border == Border.ALL) {
-            borders.forEach { it.color.setColor(color) }
-            return
-        }
-        borders[border.value].color.setColor(color)
-    }
-
-    fun setBorderElevation(elevation: Float, border: Border = Border.ALL) {
-        if (border == Border.ALL) {
-            borders.forEach {
-                if (it.render) {
-                    it.drawShadow = elevation > 0
-                    it.elevation = elevation
-                }
-            }
-            return
-        }
-
-        if (borders[border.value].render) {
-            borders[border.value].drawShadow = elevation > 0
-            borders[border.value].elevation = elevation
-        }
-    }
-
-    fun setBorderThickness(thickness: Float, border: Border = Border.ALL) {
-        if (border == Border.ALL) {
-            this.borderLineThickness = thickness
-            borders[Border.TOP.value].dimension.height = thickness
-            borders[Border.LEFT.value].dimension.width = thickness
-            borders[Border.BOTTOM.value].dimension.height = thickness
-            borders[Border.RIGHT.value].dimension.width = thickness
-            return
-        }
-        when (border) {
-            Border.RIGHT -> borders[Border.RIGHT.value].dimension.width = thickness
-            Border.TOP -> borders[Border.TOP.value].dimension.height = thickness
-            Border.LEFT -> borders[Border.LEFT.value].dimension.width = thickness
-            Border.BOTTOM -> borders[Border.BOTTOM.value].dimension.height = thickness
-            else -> this.borderLineThickness = thickness
-        }
-    }
-
-    fun getBorderThickness(border: Border = Border.ALL): Float {
-        if (border == Border.ALL) {
-            return borderLineThickness
-        }
-        return when (border) {
-            Border.RIGHT -> borders[Border.RIGHT.value].dimension.width
-            Border.TOP -> borders[Border.TOP.value].dimension.height
-            Border.LEFT -> borders[Border.LEFT.value].dimension.width
-            Border.BOTTOM -> borders[Border.BOTTOM.value].dimension.height
-            else -> borderLineThickness
-        }
-    }
-
-    fun showBorder(show: Boolean, border: Border = Border.ALL) {
-        if (border == Border.ALL) {
-            borders.forEach { it.render = show }
-            return
-        }
-        borders[border.value].render = show
-    }
-
-    fun isBorderVisible(border: Border = Border.ALL): Boolean{
-        return if (border == Border.ALL) {
-            borders.all { it.render }
-        } else {
-            borders[border.value].render
-        }
-    }
-
-    fun getBorderColor(border: Border): MutableColor {
-        return borders[border.value].color
-    }
-
-    fun getBorderElevation(border: Border): Float {
-        return borders[border.value].elevation
-    }
-
-    fun getBorders(): Collection<Line> {
-        return borders
     }
 }

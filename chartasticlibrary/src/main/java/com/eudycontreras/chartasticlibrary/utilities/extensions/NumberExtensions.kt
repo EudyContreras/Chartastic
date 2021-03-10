@@ -121,6 +121,7 @@ enum class RoundMethod {
     UP,
     DOWN
 }
+
 fun Int.roundToNearest(ratio: Float = 1.0f, shift: Int = 2, multiple: Int? = null, method: RoundMethod = RoundMethod.UP): Int {
     if(this == 0) {
         return this

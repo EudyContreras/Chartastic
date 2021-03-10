@@ -84,6 +84,7 @@ class RectangleView : View, ChartView {
         if(scrollingParent == null){
             fullyVisible = true
             onFullyVisible?.invoke(this)
+            chartRenderer.notifyFullyVisible()
             return
         }
     }
@@ -117,6 +118,7 @@ class RectangleView : View, ChartView {
                     if (!fullyVisible) {
                         fullyVisible = true
                         onFullyVisible?.invoke(this)
+                        chartRenderer.notifyFullyVisible()
                     }
                 }
 
@@ -130,6 +132,7 @@ class RectangleView : View, ChartView {
                         if (!fullyVisible) {
                             fullyVisible = true
                             onFullyVisible?.invoke(this)
+                            chartRenderer.notifyFullyVisible()
                         }
                     }
                 }
@@ -143,6 +146,7 @@ class RectangleView : View, ChartView {
                     if (!fullyVisible) {
                         fullyVisible = true
                         onFullyVisible?.invoke(this)
+                        chartRenderer.notifyFullyVisible()
                     }
                 }
                 parent.setOnScrollChangeListener { v: NestedScrollView?, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int ->
@@ -155,6 +159,7 @@ class RectangleView : View, ChartView {
                         if (!fullyVisible) {
                             fullyVisible = true
                             onFullyVisible?.invoke(this)
+                            chartRenderer.notifyFullyVisible()
                         }
                     }
                 }

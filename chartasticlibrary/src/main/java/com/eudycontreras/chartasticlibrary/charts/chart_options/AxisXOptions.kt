@@ -14,7 +14,7 @@ import com.eudycontreras.chartasticlibrary.utilities.global.from
  * Created by eudycontreras.
  */
 
-class AxisYOptions: PropertyChangeObservable() {
+class AxisXOptions: PropertyChangeObservable() {
 
     enum class Values {
         POSITIVE,

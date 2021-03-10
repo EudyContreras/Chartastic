@@ -14,6 +14,7 @@ import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridAxisX
 import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridAxisY
 import com.eudycontreras.chartasticlibrary.charts.chart_grid.ChartGridPlotArea
 import com.eudycontreras.chartasticlibrary.charts.chart_legend.LegendArea
+import com.eudycontreras.chartasticlibrary.charts.chart_options.AxisXOptions
 import com.eudycontreras.chartasticlibrary.charts.chart_options.AxisYOptions
 import com.eudycontreras.chartasticlibrary.charts.interfaces.TouchableElement
 import com.eudycontreras.chartasticlibrary.properties.*
@@ -65,8 +66,6 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
 
     var showDataBarTooltips: Boolean = false
 
-    var showGridBorder: ChartGridPlotArea.Border = ChartGridPlotArea.Border.NONE
-
     var barHighlightCriteria: HighlightCriteria? = null
 
     var acrossGradient: Gradient? = null
@@ -96,7 +95,7 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
         this.view = view
 
         val widthMultiplier = 1f
-        val heightMultiplier = 0.91f
+        val heightMultiplier = 0.96f
 
         val rectBounds = setBackground(
             x = (bounds.dimension.width / 2) - ((bounds.dimension.width / 2) * widthMultiplier),
@@ -119,9 +118,12 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
 
         val optionsLeft = AxisYOptions().apply {
             labelValueAppend = " LOC"
+            computedValues = AxisYOptions.Values.ALL
             padding = Padding(4.dp, 4.dp, 0.dp, 0.dp)
             positiveValuePointCount = 6
-            negativeValuePointCount = 0
+            negativeValuePointCount = 6
+            tickLength = 12.dp
+            tickWidth = 2.dp
             showLabels = true
             showTickLines = true
             chartData = data
@@ -135,10 +137,35 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
 
         val optionsRight = AxisYOptions().apply {
             labelValueAppend = ""
+            valuePointCount = 6
+            padding = Padding(4.dp, 2.dp, 0.dp, 0.dp)
+            showLabels = false
+            showTickLines = true
+            tickLength = 12.dp
+            tickWidth = 2.dp
+            chartData = data
+            build()
+        }
+
+        val optionsTop = AxisXOptions().apply {
+            labelValueAppend = ""
+            valuePointCount = 5
+            padding = Padding(4.dp, 6.dp, 0.dp, 0.dp)
+            showLabels = false
+            showTickLines = false
+            tickLength = 8.dp
+            chartData = data
+            build()
+        }
+
+        val optionsBottom = AxisXOptions().apply {
+            labelValueAppend = ""
             valuePointCount = 5
             padding = Padding(4.dp, 6.dp, 0.dp, 0.dp)
             showLabels = false
             showTickLines = true
+            tickWidth = 3.dp
+            tickLength = 12.dp
             chartData = data
             build()
         }
@@ -149,9 +176,11 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
         chartAxisYRight.build()
 
         chartAxisXTop = ChartGridAxisX(this, chartLayoutManagerInner,ChartGridAxisX.Type.TOP)
+        chartAxisXTop.options = optionsTop
         chartAxisXTop.bounds.updateDimensions(0f, 40.dp)
 
         chartAxisXBottom = ChartGridAxisX(this, chartLayoutManagerInner,ChartGridAxisX.Type.BOTTOM)
+        chartAxisXBottom.options = optionsBottom
         chartAxisXBottom.bounds.updateDimensions(0f, 40.dp)
 
         chartLegendTop = LegendArea(this, chartLayoutManagerOuter, LegendArea.Position.TOP)
@@ -169,8 +198,8 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
         chartAxisXTop.computeBounds = false
         chartLegendTop.computeBounds = false
         chartLegendBottom.computeBounds = false
-        //chartAxisYLeft.computeBounds = false
-        //chartAxisYRight.computeBounds = false
+        chartAxisYLeft.computeBounds = true
+        chartAxisYRight.computeBounds = true
     }
 
     override fun render(
@@ -182,10 +211,9 @@ class BarChart(private val context: Context, var data: BarChartData) : Chart, To
         if (!render) {
             return
         }
-
+        chartGridPlotArea.render(path, paint, canvas, renderingProperties)
         chartAxisXTop.render(path, paint, canvas, renderingProperties)
         chartAxisXBottom.render(path, paint, canvas, renderingProperties)
-        chartGridPlotArea.render(path, paint, canvas, renderingProperties)
         chartAxisYLeft.render(path, paint, canvas, renderingProperties)
         chartAxisYRight.render(path, paint, canvas, renderingProperties)
         chartLegendTop.render(path, paint, canvas, renderingProperties)

@@ -38,78 +38,66 @@ class MainActivity : AppCompatActivity() {
         Log.d("","")
     }
 
-    private fun createChart(view: RectangleView, name: String) {
+    private fun createChartData(
+        coderCount: Int,
+        color: MutableColor
+    ): Pair<ArrayList<Coder>,Pair<MatrixProperties, DataTableMatrix>> {
 
-        val color = MutableColor(ContextCompat.getColor(this, R.color.colorAccent))
+        val minValue =  -600
+        val maxValue = 600
 
-        val coders = arrayOf(
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f)),
-            Coder("Carlos", (-1001..1001).random(), color.adjust(1.2f))
+        val colorAdjust = 1.2f
 
-        )
+        val collect = ArrayList<Array<Any>>()
+        val coders = ArrayList<Coder>()
+
+        collect.add(arrayOf(DataType.ALPHABETIC, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_DECIMAL, DataType.BINARY))
+        collect.add(arrayOf("Coder", "LOC", "Repos Owned", "Projects", "Age", "Contributions", "Hourly Rate", "Married"))
+
+        for (count in 0 until coderCount){
+            val coder =  Coder("Carlos", (minValue..maxValue).random(), color.adjust(colorAdjust))
+            coders.add(coder)
+            collect.add(createRecord(coder))
+        }
+
+        coders.sortBy { it.loc }
+
+        val array = arrayOf<Array<Any>>()
 
         val data = Pair<MatrixProperties, DataTableMatrix>(
             arrayOf(
                 Triple("Year", DataType.NUMERIC_WHOLE, 2015)
             ),
-            arrayOf(
-                arrayOf(DataType.ALPHABETIC, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_WHOLE, DataType.NUMERIC_DECIMAL, DataType.BINARY),
-                arrayOf("Coder", "LOC", "Repos Owned", "Projects", "Age", "Contributions", "Hourly Rate", "Married"),
-                createRecord(coders[0]),
-                createRecord(coders[1]),
-                createRecord(coders[2]),
-                createRecord(coders[3]),
-                createRecord(coders[4]),
-                createRecord(coders[5]),
-                createRecord(coders[6]),
-                createRecord(coders[7]),
-                createRecord(coders[8]),
-                createRecord(coders[9]),
-                createRecord(coders[10]),
-                createRecord(coders[11]),
-                createRecord(coders[12]),
-                createRecord(coders[13]),
-                createRecord(coders[14]),
-                createRecord(coders[15])
-            )
+            collect.toArray(array)
         )
 
-        val dataTable = DataTable.parseWith(data)
+        return Pair(coders, data)
+    }
+
+    private fun createChart(view: RectangleView, name: String) {
+        val coderCount = 10
+
+        val color = MutableColor(ContextCompat.getColor(this, R.color.lightBlue))
+        val data = createChartData(coderCount,color)
+
+        val dataTable = DataTable.parseWith(data.second)
 
         val chartData = BarChartData(dataTable, "Coder", "LOC")
         chartData.zeroPoint = 0
 
-        coders.sortBy { it.loc }
-
-        val range = 0 until ((dataTable.getRecords().size * 1f).toInt()..dataTable.getRecords().size).random()
-
         for (i in 0 until  dataTable.getRecords().size) {
-            val coder = coders[i]
+            val coder = data.first[i]
             val item = BarChartItem(coder.name, coder.loc, coder)
             item.elevation = 0.dp
             item.color = color
             item.roundedTop = true
-            item.roundedBottom = false
+            item.roundedBottom = true
             item.elevationShadowColor = MutableColor.fromColor(color)
             item.elevationShadowPosition = LightSource.Position.TOP_LEFT_RIGHT
             item.activeColor = MutableColor.fromColor(color).subtractGreen(45).subtractBlue(45)
             item.hoverColor = MutableColor.fromColor(color).addGreen(55).addBlue(55)
             item.cornerRadius = BarChartItem.DEFAULT_ROUND_RADIUS
-            item.backgroundOptions.padding = 0.dp
+            item.backgroundOptions.padding = 2.dp
             item.backgroundOptions.color = MutableColor.rgba(90, 96, 98, 0.1f)
             item.backgroundOptions.showBackground = true
             item.gradient = Gradient(arrayOf(

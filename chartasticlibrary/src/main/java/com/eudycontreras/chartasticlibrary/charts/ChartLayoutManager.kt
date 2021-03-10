@@ -195,8 +195,6 @@ class ChartLayoutManager(parentBounds: Bounds, val layoutManager: ChartLayoutMan
                 owner.bounds.dimension.height = (boundsOwners[BoundsAnchor.BOTTOM]?.bounds?.top?:bounds.bottom) - owner.bounds.top
 
                 owner.propagateNewBounds(owner.bounds)
-
-                //handleCenterBoundsChanges(owner)
             }
         }
     }

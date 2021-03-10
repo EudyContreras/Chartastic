@@ -16,8 +16,6 @@ class ChartRenderer(private var view: ChartView) {
 
     var shapeRenderer = ShapeRenderer()
 
-    var rendering: Boolean = false
-
     fun <T : Chart> addChart(chart: T) {
         charts.add(chart)
     }
@@ -34,7 +32,7 @@ class ChartRenderer(private var view: ChartView) {
         charts.removeAll(chart)
     }
 
-    fun notifyFullyVissible() {
+    fun notifyFullyVisible() {
 
     }
 

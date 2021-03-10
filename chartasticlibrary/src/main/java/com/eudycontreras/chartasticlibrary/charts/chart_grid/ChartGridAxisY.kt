@@ -479,6 +479,7 @@ class ChartGridAxisY(
                 options.labelValuePrepend,
                 options.labelValueAppend
             )
+            reference.render = options.showLabels
             reference.alignment = ChartGridText.Alignment.LEFT
             reference.textColor = options.labelTextColor
             reference.textSize = options.labelTextSize
@@ -499,7 +500,7 @@ class ChartGridAxisY(
             axisLabelBounds.coordinate.x = reference.x - (options.padding.start + options.tickLength)
             axisLabelBounds.coordinate.y = bounds.top
             axisLabelBounds.dimension.height = (bottom) - axisLabelBounds.coordinate.y
-            axisLabelBounds.dimension.width = reference.dimension.width + (options.padding.start + options.tickLength) + options.padding.end
+            axisLabelBounds.dimension.width = (if (options.showLabels) reference.dimension.width  else 0f) + (options.padding.start + options.tickLength) + options.padding.end
 
             val increase = height / points.count().toFloat()
 
@@ -518,6 +519,7 @@ class ChartGridAxisY(
                 )
                 chartText.copyStyle(reference)
                 chartText.paint = paint
+                chartText.render = options.showLabels
                 chartText.build()
 
                 chartText.x = reference.x
@@ -559,21 +561,23 @@ class ChartGridAxisY(
             tickLines.add(tick)
         }
 
-        val line = Line()
+        if (options.showTickLineBar) {
+            val line = Line()
 
-        val first = tickLines.first()
-        val last = tickLines.last()
+            val first = tickLines.first()
+            val last = tickLines.last()
 
-        line.color.setColor(options.tickColor)
-        line.elevation = 0f
-        line.drawShadow = false
-        line.render = options.showTickLineBar
-        line.coordinate.x = x
-        line.coordinate.y = first.top
-        line.dimension.width = options.tickWidth
-        line.dimension.height = last.bottom - first.top
+            line.color.setColor(options.tickColor)
+            line.elevation = 0f
+            line.drawShadow = false
+            line.render = options.showTickLineBar
+            line.coordinate.x = x
+            line.coordinate.y = first.top
+            line.dimension.width = options.tickWidth
+            line.dimension.height = last.bottom - first.top
 
-        tickLines.add(line)
+            tickLines.add(line)
+        }
     }
 
     private fun computeValues(
@@ -700,8 +704,8 @@ class ChartGridAxisY(
         val valuesUpper = ArrayList<Int>()
         val valuesLower = ArrayList<Int>()
 
-        val max = values.max()!!
-        val min = values.min()!!
+        val max = if(options.computedValues == AxisYOptions.Values.POSITIVE || options.computedValues == AxisYOptions.Values.ALL) values.max()!! else 0
+        val min = if(options.computedValues == AxisYOptions.Values.NEGATIVE || options.computedValues == AxisYOptions.Values.ALL) values.min()!! else 0
 
         val maxRounded = max.roundToNearest(shift = 1, ratio = 0.5f)
         val minRounded = min.roundToNearest(shift = 1, ratio = 0.5f)
@@ -718,6 +722,7 @@ class ChartGridAxisY(
         }
 
         if (min < 0 && negativePointCount > 0) {
+
             val decrease = (min / negativePointCount)
 
             val magnitude = Math.abs(decrease).magnitude()
@@ -728,7 +733,15 @@ class ChartGridAxisY(
             }
         }
 
-        return ValueCalculation(values, valuesUpper.distinct(), valuesLower.distinct() , max, maxRounded, min, minRounded)
+        return ValueCalculation(getValues(values, options.computedValues), valuesUpper.distinct(), valuesLower.distinct() , max, maxRounded, min, minRounded)
+    }
+
+    private fun getValues(values: List<Int>, type: AxisYOptions.Values): List<Int>{
+        return when (type){
+            AxisYOptions.Values.POSITIVE -> values.filter { it >= 0 }
+            AxisYOptions.Values.NEGATIVE -> values.filter { it < 0 }
+            AxisYOptions.Values.ALL -> values
+        }
     }
 
     private fun handleFloatType(
